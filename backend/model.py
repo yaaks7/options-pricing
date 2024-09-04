@@ -1,3 +1,4 @@
+import numpy as np
 from numpy import exp, sqrt, log 
 from scipy.stats import norm 
 
@@ -39,7 +40,7 @@ class BlackScholes:
     def get_put_price(self):
         return self.put_price
 
-class BinomialModel:
+class Binomial:
     def __init__(
         self,
         time_to_maturity: float,
@@ -95,14 +96,62 @@ class BinomialModel:
     def get_option_price(self):
         return self.option_price
 
+class MonteCarlo:
+    def __init__(
+        self,
+        time_to_maturity: float,
+        strike: float,
+        current_price: float,
+        volatility: float,
+        interest_rate: float,
+        num_simulations: int,
+        num_steps: int,
+        option_type: str = 'call'  # 'call' ou 'put'
+    ):
+        self.time_to_maturity = time_to_maturity
+        self.strike = strike
+        self.current_price = current_price
+        self.volatility = volatility
+        self.interest_rate = interest_rate
+        self.num_simulations = num_simulations
+        self.num_steps = num_steps
+        self.option_type = option_type
+        self.option_price = None
+
+    def calculate(self):
+        dt = self.time_to_maturity / self.num_steps
+        discount_factor = np.exp(-self.interest_rate * self.time_to_maturity)
+
+        # Générer des chemins simulés pour les prix de l'actif sous-jacent
+        prices = np.zeros((self.num_simulations, self.num_steps + 1))
+        prices[:, 0] = self.current_price
+
+        for t in range(1, self.num_steps + 1):
+            Z = np.random.standard_normal(self.num_simulations)
+            prices[:, t] = prices[:, t - 1] * np.exp(
+                (self.interest_rate - 0.5 * self.volatility ** 2) * dt
+                + self.volatility * np.sqrt(dt) * Z
+            )
+
+        # Calcul des valeurs finales des options
+        if self.option_type == 'call':
+            option_values = np.maximum(prices[:, -1] - self.strike, 0)
+        elif self.option_type == 'put':
+            option_values = np.maximum(self.strike - prices[:, -1], 0)
+
+        # Calcul du prix de l'option
+        self.option_price = discount_factor * np.mean(option_values)
+
+    def get_option_price(self):
+        return self.option_price
 
 
 if __name__ == "__main__":
     # Exemple d'utilisation du modèle Black Scholes
-    time_to_maturity = 2  # Temps jusqu'à maturité en années
-    strike = 90  # Prix d'exercice
-    current_price = 100  # Prix actuel de l'actif sous-jacent
-    volatility = 0.2  # Volatilité
+    time_to_maturity = 4  # Temps jusqu'à maturité en années
+    strike = 100  # Prix d'exercice
+    current_price = 130  # Prix actuel de l'actif sous-jacent
+    volatility = 0.25  # Volatilité
     interest_rate = 0.05  # Taux d'intérêt sans risque
 
     # Exemple d'utilisation du modèle Binomiale
@@ -121,12 +170,12 @@ if __name__ == "__main__":
     BS.calculate()
 
     # Affichage des résultats
-    print(f" BS Call Price: {BS.get_call_price()}")
-    print(f" BS Put Price: {BS.get_put_price()}")
+    print(f" BS call Price: {BS.get_call_price()}")
+    print(f" BS put Price: {BS.get_put_price()}")
 
 
-    # Initialisation de la classe BinomialModel
-    BM = BinomialModel(
+    # Initialisation de la classe Binomial
+    B = Binomial(
         time_to_maturity=time_to_maturity,
         strike=strike,
         current_price=current_price,
@@ -136,7 +185,28 @@ if __name__ == "__main__":
         option_type=option_type,
         is_american=is_american
     )
-    BM.calculate()
+    B.calculate()
 
     # Affichage des résultats
-    print(f" BM Call Price: {BM.get_option_price()}")
+    print(f" B {option_type} Price: {B.get_option_price()}")
+
+    # Exemple d'utilisation du modèle Monte-Carlo
+    num_simulations = 10000  # Nombre de simulations
+    num_steps = 100  # Nombre de pas de temps
+    option_type = 'call'  # 'call' ou 'put'
+
+    # Initialisation de la classe MonteCarlo
+    MC = MonteCarlo(
+        time_to_maturity=time_to_maturity,
+        strike=strike,
+        current_price=current_price,
+        volatility=volatility,
+        interest_rate=interest_rate,
+        num_simulations=num_simulations,
+        num_steps=num_steps,
+        option_type=option_type
+    )
+    MC.calculate()
+
+    # Affichage des résultats
+    print(f" MC {option_type} Price: {MC.get_option_price()}")
