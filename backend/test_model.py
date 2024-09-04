@@ -4,6 +4,7 @@ from greeks import Greeks
 
 #%%
 # Valeur théorique des options (Black-Scholes) sur : https://blackschole.streamlit.app/#black-scholes-pricing-model
+# Valeur théorique des Greeks sur : https://vindeep.com/Derivatives/OptionPriceCalc.aspx
 #%%
 def test_black_scholes():
     # Paramètres de test pour le modèle Black-Scholes
