@@ -1,6 +1,9 @@
 import pytest
 from model import BlackScholes, Binomial, MonteCarlo
 
+#%%
+# Valeur théorique des options (Black-Scholes) sur : https://blackschole.streamlit.app/#black-scholes-pricing-model
+#%%
 def test_black_scholes():
     # Paramètres de test pour le modèle Black-Scholes
     test_cases = [

@@ -16,23 +16,25 @@ class BlackScholes:
         self.current_price = current_price
         self.volatility = volatility
         self.interest_rate = interest_rate
+        self.d1 = None
+        self.d2 = None
 
     def calculate(self):
         # Calcul des variables d1 et d2
-        d1 = (
+        self.d1 = (
             log(self.current_price / self.strike) +
             (self.interest_rate + 0.5 * self.volatility ** 2) * self.time_to_maturity
         ) / (self.volatility * sqrt(self.time_to_maturity))
         
-        d2 = d1 - self.volatility * sqrt(self.time_to_maturity)
+        self.d2 = self.d1 - self.volatility * sqrt(self.time_to_maturity)
 
         # Calcul des prix d'options
-        self.call_price = self.current_price * norm.cdf(d1) - (
-            self.strike * exp(-self.interest_rate * self.time_to_maturity) * norm.cdf(d2)
+        self.call_price = self.current_price * norm.cdf(self.d1) - (
+            self.strike * exp(-self.interest_rate * self.time_to_maturity) * norm.cdf(self.d2)
         )
         self.put_price = (
-            self.strike * exp(-self.interest_rate * self.time_to_maturity) * norm.cdf(-d2)
-        ) - self.current_price * norm.cdf(-d1)
+            self.strike * exp(-self.interest_rate * self.time_to_maturity) * norm.cdf(-self.d2)
+        ) - self.current_price * norm.cdf(-self.d1)
 
     def get_call_price(self):
         return self.call_price
@@ -40,6 +42,12 @@ class BlackScholes:
     def get_put_price(self):
         return self.put_price
 
+    def get_d1(self):
+        return self.d1
+
+    def get_d2(self):
+        return self.d2
+        
 class Binomial:
     def __init__(
         self,
