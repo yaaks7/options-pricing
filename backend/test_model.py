@@ -1,5 +1,6 @@
 import pytest
 from model import BlackScholes, Binomial, MonteCarlo
+from greeks import Greeks
 
 #%%
 # Valeur théorique des options (Black-Scholes) sur : https://blackschole.streamlit.app/#black-scholes-pricing-model
@@ -55,6 +56,29 @@ def test_monte_carlo():
         model = MonteCarlo(time_to_maturity, strike, current_price, volatility, interest_rate, num_simulations, num_steps, option_type)
         model.calculate()
         assert pytest.approx(model.get_option_price(), 0.5) == expected_price
+        
+def test_greeks():
+    # Paramètres de test pour les Greeks
+    test_cases = [
+    # (time_to_maturity, strike, current_price, volatility, interest_rate, option_type, expected_delta, expected_gamma, expected_vega, expected_theta, expected_rho)
+    (2, 120, 110, 0.25, 0.03, 'call', 0.54, 0.010206444978343634, 0.617, -0.0142895, 0.904),  
+    (1, 90, 110, 0.30, 0.04, 'call', 0.83, 0.0076824, 0.279, -0.01850016, 0.642),  
+    (2, 130, 160, 0.20, 0.02, 'call', 0.85, 0.00525618, 0.538, -0.0126330, 1.92),  
+    (1, 130, 100, 0.25, 0.05, 'put', -0.77, 0.012274, 0.307, 0.00363712, -1.033), 
+    (2, 80, 120, 0.35, 0.05, 'put', -0.1022774, 0.003003558, 0.303, -0.005080827, -0.318)   
+    ]
+    
+    for case in test_cases:
+        time_to_maturity, strike, current_price, volatility, interest_rate, option_type, expected_delta, expected_gamma, expected_vega, expected_theta, expected_rho = case
+        bs = BlackScholes(time_to_maturity, strike, current_price, volatility, interest_rate)
+        bs.calculate()
+        greeks = Greeks(bs, option_type)
+        
+        assert pytest.approx(greeks.delta(), 0.01) == expected_delta
+        assert pytest.approx(greeks.gamma(), 0.001) == expected_gamma
+        assert pytest.approx(greeks.vega(), 0.001) == expected_vega
+        assert pytest.approx(greeks.theta(), 0.001) == expected_theta
+        assert pytest.approx(greeks.rho(), 0.01) == expected_rho
 
 if __name__ == "__main__":
     pytest.main()
