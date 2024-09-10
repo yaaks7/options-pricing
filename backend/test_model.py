@@ -1,6 +1,9 @@
 import pytest
 from model import BlackScholes, Binomial, MonteCarlo
+from mlp_model import NeuralNetwork  
+from sklearn.metrics import mean_squared_error,mean_absolute_error, r2_score
 from greeks import Greeks
+import pandas as pd
 
 #%%
 # Valeur théorique des options (Black-Scholes) sur : https://blackschole.streamlit.app/#black-scholes-pricing-model
@@ -56,7 +59,44 @@ def test_monte_carlo():
         time_to_maturity, strike, current_price, volatility, interest_rate, num_simulations, num_steps, option_type, expected_price = case
         model = MonteCarlo(time_to_maturity, strike, current_price, volatility, interest_rate, num_simulations, num_steps, option_type)
         model.calculate()
-        assert pytest.approx(model.get_option_price(), 0.5) == expected_price
+        assert pytest.approx(model.get_option_price(), 0.1) == expected_price
+
+def test_neural_network():
+    # Paramètres de test pour le modèle NeuralNetwork
+    test_cases = [
+        # (time_to_maturity, strike, current_price, volatility, interest_rate, option_type, expected_price)
+        (1, 100, 100, 0.2, 0.05, 'call', 10.45),
+        (2, 120, 110, 0.25, 0.03, 'call', 14.19),
+        (0.5, 90, 100, 0.3, 0.04, 'call', 15.18),
+        (3, 150, 130, 0.35, 0.02, 'call', 26.97),
+        (4, 100, 130, 0.25, 0.05, 'call', 52.98)
+    ]
+
+    for case in test_cases:
+        time_to_maturity, strike, current_price, volatility, interest_rate, option_type, expected_price = case
+
+        # Charger le modèle pré-entraîné
+        model = NeuralNetwork(time_to_maturity, strike, current_price, volatility, interest_rate, option_type)
+        model.load()  # This loads the saved model and the fitted scaler
+        
+        # Create the input data as a DataFrame to match the format used during training
+        input_data = pd.DataFrame({
+            'time_to_maturity': [time_to_maturity],
+            'strike': [strike],
+            'current_price': [current_price],
+            'volatility': [volatility],
+            'interest_rate': [interest_rate]
+        })
+
+        # Calculer le prix avec le modèle pré-entraîné
+        predicted_price = model.calculate_with_dataframe(input_data)
+
+        # Debugging: Print the expected and predicted values for each case
+        print(f"Expected {option_type} price: {expected_price}, Predicted {option_type} price: {predicted_price}")
+
+        # Tester la précision avec une tolérance de 0.1 $
+        assert pytest.approx(predicted_price, 0.1) == expected_price
+
         
 def test_greeks():
     # Paramètres de test pour les Greeks

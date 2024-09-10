@@ -1,6 +1,7 @@
 import numpy as np
 from numpy import exp, sqrt, log 
 from scipy.stats import norm 
+from mlp_model import NeuralNetwork
 
 class BlackScholes:
     def __init__(
@@ -156,10 +157,10 @@ class MonteCarlo:
 
 if __name__ == "__main__":
     # Exemple d'utilisation du modèle Black Scholes
-    time_to_maturity = 4  # Temps jusqu'à maturité en années
-    strike = 100  # Prix d'exercice
-    current_price = 130  # Prix actuel de l'actif sous-jacent
-    volatility = 0.25  # Volatilité
+    time_to_maturity = 2  # Temps jusqu'à maturité en années
+    strike = 130  # Prix d'exercice
+    current_price = 200  # Prix actuel de l'actif sous-jacent
+    volatility = 0.30  # Volatilité
     interest_rate = 0.05  # Taux d'intérêt sans risque
 
     # Exemple d'utilisation du modèle Binomiale
@@ -178,8 +179,7 @@ if __name__ == "__main__":
     BS.calculate()
 
     # Affichage des résultats
-    print(f" BS call Price: {BS.get_call_price()}")
-    print(f" BS put Price: {BS.get_put_price()}")
+    print(f"Black-Scholes {option_type} Price: {BS.get_call_price() if option_type == 'call' else BS.get_put_price()}")
 
 
     # Initialisation de la classe Binomial
@@ -196,7 +196,7 @@ if __name__ == "__main__":
     B.calculate()
 
     # Affichage des résultats
-    print(f" B {option_type} Price: {B.get_option_price()}")
+    print(f"B {option_type} Price: {B.get_option_price()}")
 
     # Exemple d'utilisation du modèle Monte-Carlo
     num_simulations = 10000  # Nombre de simulations
@@ -217,4 +217,18 @@ if __name__ == "__main__":
     MC.calculate()
 
     # Affichage des résultats
-    print(f" MC {option_type} Price: {MC.get_option_price()}")
+    print(f"MC {option_type} Price: {MC.get_option_price()}")
+
+    # NeuralNetwork Model (MLP)
+    MLP = NeuralNetwork(
+        time_to_maturity=time_to_maturity,
+        strike=strike,
+        current_price=current_price,
+        volatility=volatility,
+        interest_rate=interest_rate,
+        option_type=option_type
+    )
+    #MLP.train()
+    MLP.load()  # Load the trained model
+    # Affichage des résultats
+    print(f"Neural Network {option_type} Price: {MLP.get_option_price()}")
