@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from keras.models import Sequential
-from keras.layers import Dense
+from keras.models import Sequential # type: ignore
+from keras.layers import Dense # type: ignore
 from sklearn.preprocessing import MinMaxScaler
-from keras.models import load_model
+from keras.models import load_model # type: ignore
 import os
 import joblib  # For saving and loading the scaler
 
@@ -50,14 +50,17 @@ class NeuralNetwork:
         return pd.DataFrame(data, columns=['time_to_maturity', 'strike', 'current_price', 'volatility', 'interest_rate', 'price'])
 
     def MLP(self, input_shape):
-        # Create an MLP model
+    # Create an MLP model with more layers and units
         model = Sequential()
-        model.add(Dense(64, input_dim=input_shape, activation='relu'))
+        model.add(Dense(128, input_dim=input_shape, activation='relu'))
+        model.add(Dense(128, activation='relu'))
         model.add(Dense(64, activation='relu'))
+        model.add(Dense(32, activation='relu'))
         model.add(Dense(1))  # Single output: option price
 
         model.compile(optimizer='adam', loss='mean_squared_error')
         self.model = model
+
 
     def train(self, num_samples=100000):
         # Generate data and train the model
