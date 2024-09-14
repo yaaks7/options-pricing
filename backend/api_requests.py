@@ -28,23 +28,30 @@ if __name__ == "__main__":
     time.sleep(2)
 
     try:
-        # Données d'entrée pour calculer le prix d'une option
-        price_data = {
-            "time_to_maturity": 2,
-            "strike": 120,
-            "current_price": 110,
-            "volatility": 0.25,
-            "interest_rate": 0.03,
-            "model_type": "black_scholes",
-            "option_type": "call"
-        }
+        # Test des différents modèles
+        model_types = ['black_scholes', 'binomial', 'monte_carlo', 'mlp']
 
-        # Appeler l'API pour calculer le prix
-        price_result = calculate_price(price_data)
-        print("Prix de l'option :", price_result)
+        for model_type in model_types:
+            # Données d'entrée pour calculer le prix d'une option
+            price_data = {
+                "time_to_maturity": 2,
+                "strike": 120,
+                "current_price": 110,
+                "volatility": 0.25,
+                "interest_rate": 0.03,
+                "model_type": model_type,  
+                "option_type": "call",
+                "steps": 100,  # Utilisé pour le modèle binomial et Monte Carlo
+                "num_simulations": 10000  # Utilisé pour le modèle Monte Carlo
+            }
 
-        # Appeler l'API pour calculer les Greeks
+            # Appeler l'API pour calculer le prix
+            price_result = calculate_price(price_data)
+            print(f"Prix de l'option ({model_type}) :", price_result)
+
+        # Appeler l'API pour calculer les Greeks avec Black-Scholes
         greeks_result = calculate_greeks(price_data)
         print("Greeks :", greeks_result)
+
     except Exception as e:
         print(f"Erreur : {e}")

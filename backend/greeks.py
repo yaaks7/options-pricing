@@ -62,7 +62,7 @@ if __name__ == "__main__":
     option_type = 'call'  # 'call' ou 'put'
 
     # Initialisation de la classe BlackScholes
-    bs = BlackScholes(time_to_maturity, strike, current_price, volatility, interest_rate)
+    bs = BlackScholes(time_to_maturity, strike, current_price, volatility, interest_rate, option_type)
     bs.calculate()
 
     # Initialisation de la classe Greeks avec l'instance de BlackScholes et l'option_type

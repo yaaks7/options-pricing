@@ -84,10 +84,12 @@ class NeuralNetwork:
         print("Model and scaler saved successfully in the 'mlp' folder.")
 
     def load(self):
-        # Load the saved model and scaler from the 'mlp' folder
-        self.model = load_model(os.path.join(self.save_dir, 'NeuralNetwork.h5'))
-        self.scaler = joblib.load(os.path.join(self.save_dir, 'scaler.pkl'))
-        print("Model and scaler loaded successfully.")
+        # Check if the model and scaler exist, else train the model
+        if not os.path.exists(os.path.join(self.save_dir, 'NeuralNetwork.h5')):
+            self.train()
+        else:
+            self.model = load_model(os.path.join(self.save_dir, 'NeuralNetwork.h5'))
+            self.scaler = joblib.load(os.path.join(self.save_dir, 'scaler.pkl'))
 
     def calculate(self):
         # Scale the input data and predict

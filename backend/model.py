@@ -11,6 +11,7 @@ class BlackScholes:
         current_price: float,
         volatility: float,
         interest_rate: float,
+        option_type: str = 'call',
     ):
         self.time_to_maturity = time_to_maturity
         self.strike = strike
@@ -19,6 +20,9 @@ class BlackScholes:
         self.interest_rate = interest_rate
         self.d1 = None
         self.d2 = None
+        self.call_price = None
+        self.put_price = None
+        self.option_type = option_type
 
     def calculate(self):
         # Calcul des variables d1 et d2
@@ -37,17 +41,18 @@ class BlackScholes:
             self.strike * exp(-self.interest_rate * self.time_to_maturity) * norm.cdf(-self.d2)
         ) - self.current_price * norm.cdf(-self.d1)
 
-    def get_call_price(self):
-        return self.call_price
-
-    def get_put_price(self):
-        return self.put_price
+    def get_option_price(self, option_type: str):
+        if option_type == 'call':
+            return self.call_price
+        elif option_type == 'put':
+            return self.put_price
 
     def get_d1(self):
         return self.d1
 
     def get_d2(self):
         return self.d2
+
         
 class Binomial:
     def __init__(
@@ -174,12 +179,13 @@ if __name__ == "__main__":
         strike=strike,
         current_price=current_price,
         volatility=volatility,
-        interest_rate=interest_rate
+        interest_rate=interest_rate,
+        option_type = option_type
     )
     BS.calculate()
 
     # Affichage des résultats
-    print(f"Black-Scholes {option_type} Price: {BS.get_call_price() if option_type == 'call' else BS.get_put_price()}")
+    print(f"BS {option_type} Price: {BS.get_option_price(option_type)}")
 
 
     # Initialisation de la classe Binomial
