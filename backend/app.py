@@ -14,7 +14,7 @@ class OptionPricingInput(BaseModel):
     current_price: float
     volatility: float
     interest_rate: float
-    type_choose: str  # 'black_scholes', 'binomial', 'monte_carlo', 'mlp'
+    model_type: str  # 'black_scholes', 'binomial', 'monte_carlo', 'mlp'
     option_type: str = 'call'  # 'call' or 'put'
     steps: int = 100  # Number of steps for Binomial model
     num_simulations: int = 10000  # Number of simulations for Monte Carlo model
@@ -24,14 +24,13 @@ class OptionPricingInput(BaseModel):
 
 @app.post("/calculate_price/")
 def calculate_price(data: OptionPricingInput):
-
-    if data.type_choose == 'black_scholes':
-        model = BlackScholes(data.time_to_maturity, data.strike, data.current_price, data.volatility, data.interest_rate)
-    elif data.type_choose == 'binomial':
+    if data.model_type == 'binomial':
         model = Binomial(data.time_to_maturity, data.strike, data.current_price, data.volatility, data.interest_rate, steps=data.steps, option_type=data.option_type)
-    elif data.type_choose == 'monte_carlo':
+    elif data.model_type == 'black_scholes':
+        model = BlackScholes(data.time_to_maturity, data.strike, data.current_price, data.volatility, data.interest_rate)
+    elif data.model_type == 'monte_carlo':
         model = MonteCarlo(data.time_to_maturity, data.strike, data.current_price, data.volatility, data.interest_rate, num_simulations=data.num_simulations, num_steps=data.steps, option_type=data.option_type)
-    elif data.type_choose == 'mlp':
+    elif data.model_type == 'mlp':
         model = NeuralNetwork(data.time_to_maturity, data.strike, data.current_price, data.volatility, data.interest_rate, data.option_type)
         model.load()  # Load the trained model
     else:

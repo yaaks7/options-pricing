@@ -39,7 +39,7 @@ if __name__ == "__main__":
                 "current_price": 110,
                 "volatility": 0.25,
                 "interest_rate": 0.03,
-                "model_type": model_type,  
+                "model_type": "binomial",  
                 "option_type": "call",
                 "steps": 100,  # Utilisé pour le modèle binomial et Monte Carlo
                 "num_simulations": 10000  # Utilisé pour le modèle Monte Carlo
