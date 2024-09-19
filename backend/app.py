@@ -76,7 +76,9 @@ def calculate_neural_network(option_data: OptionData):
         option_type=option_data.option_type
     )
     model.load()
-    return {"price": model.get_option_price()}
+    price = model.get_option_price()
+    return {"price": float(price)}  # Convertir numpy.float32 en float standard
+
 
 @app.post("/greeks")
 def calculate_greeks(option_data: OptionData):
@@ -100,4 +102,4 @@ def calculate_greeks(option_data: OptionData):
     }
 
 # Run the FastAPI application with Uvicorn (e.g., from terminal)
-# uvicorn main:app --reload
+# uvicorn app:app --reload

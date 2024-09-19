@@ -2,7 +2,30 @@ import requests
 import subprocess
 import time
 
+# URL de base de l'API
 BASE_URL = "http://127.0.0.1:8000"
+
+# Données de l'option pour les requêtes
+option_data = {
+    "time_to_maturity": 2,
+    "strike": 130,
+    "current_price": 200,
+    "volatility": 0.30,
+    "interest_rate": 0.05,
+    "option_type": "call"
+}
+
+montecarlo_data = {
+    **option_data,
+    "num_simulations": 10000,
+    "num_steps": 100
+}
+
+binomial_data = {
+    **option_data,
+    "steps": 100,
+    "is_american": False
+}
 
 def start_api_server():
     # Lancer le fichier batch pour démarrer Uvicorn
@@ -10,54 +33,54 @@ def start_api_server():
     # Attendre quelques secondes pour que le serveur démarre
     time.sleep(3)
 
-def calculate_price(data):
-    url = f"{BASE_URL}/calculate_price/"
-    response = requests.post(url, json=data)
+def send_black_scholes():
+    """Envoie une requête pour tester le modèle Black-Scholes."""
+    url = f"{BASE_URL}/price/blackscholes"
+    response = requests.post(url, json=option_data)
+    print("Black-Scholes Price:", response.json())
 
-    if response.status_code != 200:
-        print(f"HTTP error {response.status_code}: {response.text}")
-        return
-    
-    try:
-        response_data = response.json()
-        print(f"Réponse de l'API : {response_data}")
-        return response_data
-    except Exception as e:
-        print(f"Erreur lors de l'interprétation de la réponse : {e}, Réponse brute : {response.text}")
-        raise e
+def send_binomial():
+    """Envoie une requête pour tester le modèle Binomial."""
+    url = f"{BASE_URL}/price/binomial"
+    response = requests.post(url, json=binomial_data)
+    print("Binomial Price:", response.json())
 
+def send_montecarlo():
+    """Envoie une requête pour tester le modèle Monte Carlo."""
+    url = f"{BASE_URL}/price/montecarlo"
+    response = requests.post(url, json=montecarlo_data)
+    print("Monte Carlo Price:", response.json())
 
-def calculate_greeks(data):
-    url = f"{BASE_URL}/calculate_greeks/"
-    response = requests.post(url, json=data)
-    return response.json()
+def send_neural_network():
+    """Envoie une requête pour tester le modèle Neural Network."""
+    url = f"{BASE_URL}/price/neuralnetwork"
+    response = requests.post(url, json=option_data)
+    print("Neural Network Price:", response.json())
+
+def send_greeks():
+    """Envoie une requête pour calculer les Greeks."""
+    url = f"{BASE_URL}/greeks"
+    response = requests.post(url, json=option_data)
+    print("Greeks:", response.json())
+
 
 if __name__ == "__main__":
     start_api_server()
     time.sleep(2)  # Wait for the server to start
+    
+    # Test des 4 modèles de pricing
+    print("---- Testing Black-Scholes ----")
+    send_black_scholes()
 
-    model_types = ['black_scholes', 'binomial', 'monte_carlo', 'mlp']
+    print("---- Testing Binomial ----")
+    send_binomial()
 
-    for model_type in model_types:
-        price_data = {
-            "time_to_maturity": 2,
-            "strike": 120,
-            "current_price": 110,
-            "volatility": 0.25,
-            "interest_rate": 0.03,
-            "model_type": model_type,
-            "option_type": "call",
-            "steps": 100,  # Binomial-specific
-            "num_simulations": 10000  # Monte Carlo-specific
-        }
+    print("---- Testing Monte Carlo ----")
+    send_montecarlo()
 
-        try:
-            price_result = calculate_price(price_data)
-            print(f"Prix de l'option ({model_type}) :", price_result)
-        except Exception as e:
-            print(f"Erreur pour {model_type}: {e}")
+    print("---- Testing Neural Network ----")
+    send_neural_network()
 
-        # Appeler l'API pour calculer les Greeks avec Black-Scholes
-        #greeks_result = calculate_greeks(price_data)
-        #print("Greeks :", greeks_result)
-
+    # Test des Greeks
+    print("---- Testing Greeks ----")
+    send_greeks()

@@ -22,12 +22,15 @@ def test_black_scholes():
     
     for case in test_cases:
         time_to_maturity, strike, current_price, volatility, interest_rate, expected_call, expected_put = case
-        model = BlackScholes(time_to_maturity, strike, current_price, volatility, interest_rate, option_type="call")
-        model.calculate()
+        model1 = BlackScholes(time_to_maturity, strike, current_price, volatility, interest_rate, option_type="call")
+        model1.calculate()
         # Tester le prix de l'option Call
-        assert pytest.approx(model.get_option_price("call"), 0.01) == expected_call
+        assert pytest.approx(model1.get_option_price(), 0.01) == expected_call
+
+        model2 = BlackScholes(time_to_maturity, strike, current_price, volatility, interest_rate, option_type="put")
+        model2.calculate()
         # Tester le prix de l'option Put
-        assert pytest.approx(model.get_option_price("put"), 0.01) == expected_put
+        assert pytest.approx(model2.get_option_price(), 0.01) == expected_put
 
 
 def test_binomial():

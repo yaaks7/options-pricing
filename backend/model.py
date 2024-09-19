@@ -46,6 +46,12 @@ class BlackScholes:
             return self.call_price
         elif self.option_type == 'put':
             return self.put_price
+        
+    def get_d1(self):
+        return self.d1
+
+    def get_d2(self):
+        return self.d2
 
 
         
