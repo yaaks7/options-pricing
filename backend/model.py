@@ -41,17 +41,12 @@ class BlackScholes:
             self.strike * exp(-self.interest_rate * self.time_to_maturity) * norm.cdf(-self.d2)
         ) - self.current_price * norm.cdf(-self.d1)
 
-    def get_option_price(self, option_type: str):
-        if option_type == 'call':
+    def get_option_price(self):
+        if self.option_type == 'call':
             return self.call_price
-        elif option_type == 'put':
+        elif self.option_type == 'put':
             return self.put_price
 
-    def get_d1(self):
-        return self.d1
-
-    def get_d2(self):
-        return self.d2
 
         
 class Binomial:
@@ -185,7 +180,7 @@ if __name__ == "__main__":
     BS.calculate()
 
     # Affichage des résultats
-    print(f"BS {option_type} Price: {BS.get_option_price(option_type)}")
+    print(f"BS {option_type} Price: {BS.get_option_price()}")
 
 
     # Initialisation de la classe Binomial

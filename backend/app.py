@@ -1,53 +1,96 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from model import BlackScholes, Binomial, MonteCarlo
-from greeks import Greeks
 from mlp_model import NeuralNetwork
+from greeks import Greeks
 
-# Initialize FastAPI
 app = FastAPI()
 
-# Data model for option pricing input
-class OptionPricingInput(BaseModel):
-    time_to_maturity: float  # In years
+class OptionData(BaseModel):
+    time_to_maturity: float
     strike: float
     current_price: float
     volatility: float
     interest_rate: float
-    model_type: str  # 'black_scholes', 'binomial', 'monte_carlo', 'mlp'
-    option_type: str = 'call'  # 'call' or 'put'
-    steps: int = 100  # Number of steps for Binomial model
-    num_simulations: int = 10000  # Number of simulations for Monte Carlo model
+    option_type: str  # 'call' or 'put'
 
-    class Config:
-        protected_namespaces = ()  # Autorise l'utilisation de 'model_type'
+class MonteCarloData(OptionData):
+    num_simulations: int
+    num_steps: int
 
-@app.post("/calculate_price/")
-def calculate_price(data: OptionPricingInput):
-    if data.model_type == 'binomial':
-        model = Binomial(data.time_to_maturity, data.strike, data.current_price, data.volatility, data.interest_rate, steps=data.steps, option_type=data.option_type)
-    elif data.model_type == 'black_scholes':
-        model = BlackScholes(data.time_to_maturity, data.strike, data.current_price, data.volatility, data.interest_rate)
-    elif data.model_type == 'monte_carlo':
-        model = MonteCarlo(data.time_to_maturity, data.strike, data.current_price, data.volatility, data.interest_rate, num_simulations=data.num_simulations, num_steps=data.steps, option_type=data.option_type)
-    elif data.model_type == 'mlp':
-        model = NeuralNetwork(data.time_to_maturity, data.strike, data.current_price, data.volatility, data.interest_rate, data.option_type)
-        model.load()  # Load the trained model
-    else:
-        return {"error": "Invalid model type"}
+class BinomialData(OptionData):
+    steps: int
+    is_american: bool
 
+@app.post("/price/blackscholes")
+def calculate_black_scholes(option_data: OptionData):
+    model = BlackScholes(
+        time_to_maturity=option_data.time_to_maturity,
+        strike=option_data.strike,
+        current_price=option_data.current_price,
+        volatility=option_data.volatility,
+        interest_rate=option_data.interest_rate,
+        option_type=option_data.option_type
+    )
     model.calculate()
+    return {"price": model.get_option_price()}
 
-    # Use get_option_price for all models
-    return {"option_price": model.get_option_price(data.option_type)}
-
-# Endpoint for calculating Greeks (Black-Scholes only)
-@app.post("/calculate_greeks/")
-def calculate_greeks(data: OptionPricingInput):
-    model = BlackScholes(data.time_to_maturity, data.strike, data.current_price, data.volatility, data.interest_rate)
+@app.post("/price/binomial")
+def calculate_binomial(option_data: BinomialData):
+    model = Binomial(
+        time_to_maturity=option_data.time_to_maturity,
+        strike=option_data.strike,
+        current_price=option_data.current_price,
+        volatility=option_data.volatility,
+        interest_rate=option_data.interest_rate,
+        steps=option_data.steps,
+        option_type=option_data.option_type,
+        is_american=option_data.is_american
+    )
     model.calculate()
-    greeks = Greeks(model, data.option_type)
+    return {"price": model.get_option_price()}
 
+@app.post("/price/montecarlo")
+def calculate_monte_carlo(option_data: MonteCarloData):
+    model = MonteCarlo(
+        time_to_maturity=option_data.time_to_maturity,
+        strike=option_data.strike,
+        current_price=option_data.current_price,
+        volatility=option_data.volatility,
+        interest_rate=option_data.interest_rate,
+        num_simulations=option_data.num_simulations,
+        num_steps=option_data.num_steps,
+        option_type=option_data.option_type
+    )
+    model.calculate()
+    return {"price": model.get_option_price()}
+
+@app.post("/price/neuralnetwork")
+def calculate_neural_network(option_data: OptionData):
+    model = NeuralNetwork(
+        time_to_maturity=option_data.time_to_maturity,
+        strike=option_data.strike,
+        current_price=option_data.current_price,
+        volatility=option_data.volatility,
+        interest_rate=option_data.interest_rate,
+        option_type=option_data.option_type
+    )
+    model.load()
+    return {"price": model.get_option_price()}
+
+@app.post("/greeks")
+def calculate_greeks(option_data: OptionData):
+    bs_model = BlackScholes(
+        time_to_maturity=option_data.time_to_maturity,
+        strike=option_data.strike,
+        current_price=option_data.current_price,
+        volatility=option_data.volatility,
+        interest_rate=option_data.interest_rate,
+        option_type=option_data.option_type
+    )
+    bs_model.calculate()
+
+    greeks = Greeks(bs_model, option_type=option_data.option_type)
     return {
         "delta": greeks.delta(),
         "gamma": greeks.gamma(),
@@ -56,7 +99,5 @@ def calculate_greeks(data: OptionPricingInput):
         "rho": greeks.rho()
     }
 
-# Test endpoint to verify the API is running
-@app.get("/")
-def read_root():
-    return {"message": "API is running successfully!"}
+# Run the FastAPI application with Uvicorn (e.g., from terminal)
+# uvicorn main:app --reload
