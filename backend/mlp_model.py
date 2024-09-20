@@ -1,10 +1,16 @@
 import numpy as np
 import pandas as pd
+import tensorflow as tf
+from tensorflow.keras import layers, models, optimizers, regularizers # type: ignore
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential # type: ignore
 from keras.layers import Dense # type: ignore
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import load_model # type: ignore
+from keras.layers import Dropout # type: ignore
+from keras.regularizers import l2 # type: ignore
+from keras.callbacks import EarlyStopping # type: ignore
+from keras.optimizers import Adam # type: ignore
 import os
 import joblib  # For saving and loading the scaler
 
@@ -24,30 +30,30 @@ class NeuralNetwork:
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
 
-    def generate_data(self, num_samples=100000):
+    def generate_data(self, num_samples=1000000):
         from model import BlackScholes
 
         # Generate synthetic data using Black-Scholes model
         data = []
         for _ in range(num_samples):
-            time_to_maturity = np.random.uniform(0.01, 2)  # in years
-            strike = np.random.uniform(50, 150)
-            current_price = np.random.uniform(50, 150)
-            volatility = np.random.uniform(0.1, 0.5)
-            interest_rate = np.random.uniform(0.01, 0.05)
+            time_to_maturity = np.random.uniform(0.5, 10)  # in years
+            strike = np.random.uniform(10, 500)
+            current_price = np.random.uniform(10, 500)
+            volatility = np.random.uniform(0.01, 0.80)
+            interest_rate = np.random.uniform(0.01, 0.50)
+            option_type = np.random.choice(['call', 'put'])  # Randomly choose call or put
 
             # Use Black-Scholes model for price calculation
-            BS = BlackScholes(time_to_maturity, strike, current_price, volatility, interest_rate)
+            BS = BlackScholes(time_to_maturity, strike, current_price, volatility, interest_rate, option_type)
             BS.calculate()
 
-            if self.option_type == 'call':
-                price = BS.get_call_price()
-            else:
-                price = BS.get_put_price()
+            price = BS.get_option_price()
 
-            data.append([time_to_maturity, strike, current_price, volatility, interest_rate, price])
+            # Append all inputs, including option_type (0 for put, 1 for call)
+            option_type_binary = 1 if option_type == 'call' else 0
+            data.append([time_to_maturity, strike, current_price, volatility, interest_rate, option_type_binary, price])
 
-        return pd.DataFrame(data, columns=['time_to_maturity', 'strike', 'current_price', 'volatility', 'interest_rate', 'price'])
+        return pd.DataFrame(data, columns=['time_to_maturity', 'strike', 'current_price', 'volatility', 'interest_rate', 'option_type', 'price'])
 
     def MLP(self, input_shape):
     # Create an MLP model with more layers and units
@@ -60,29 +66,37 @@ class NeuralNetwork:
 
         model.compile(optimizer='adam', loss='mean_squared_error')
         self.model = model
-
-
-    def train(self, num_samples=100000):
-        # Generate data and train the model
+        
+    def train(self, num_samples=1000000):
         df = self.generate_data(num_samples)
-        X = df[['time_to_maturity', 'strike', 'current_price', 'volatility', 'interest_rate']]
+
+        X = df[['time_to_maturity', 'strike', 'current_price', 'volatility', 'interest_rate', 'option_type']]
         y = df['price']
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-        # Scale the data
         X_train_scaled = self.scaler.fit_transform(X_train)
         X_test_scaled = self.scaler.transform(X_test)
 
-        # Create and train the model
+        # Création du modèle simplifié
         self.MLP(input_shape=X_train_scaled.shape[1])
-        self.model.fit(X_train_scaled, y_train, epochs=10, batch_size=32, verbose=1)
 
-        # Save the trained model and the scaler to the 'mlp' folder
+        # EarlyStopping avec une patience réduite
+        early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)
+
+        # Entraînement avec un batch size de 64 pour un meilleur ajustement
+        self.model.fit(X_train_scaled, y_train, epochs=50, batch_size=64, validation_data=(X_test_scaled, y_test),
+                       callbacks=[early_stopping], verbose=1)
+
+        # Évaluation finale
+        test_loss = self.model.evaluate(X_test_scaled, y_test, verbose=1)
+        print(f"Test set evaluation - Loss: {test_loss}")
+
+        # Sauvegarde du modèle
         self.model.save(os.path.join(self.save_dir, 'NeuralNetwork.h5'))
         joblib.dump(self.scaler, os.path.join(self.save_dir, 'scaler.pkl'))
-        print("Model and scaler saved successfully in the 'mlp' folder.")
-
+        print("Modèle et scaler sauvegardés.")
+    
     def load(self):
         # Check if the model and scaler exist, else train the model
         if not os.path.exists(os.path.join(self.save_dir, 'NeuralNetwork.h5')):
@@ -92,13 +106,17 @@ class NeuralNetwork:
             self.scaler = joblib.load(os.path.join(self.save_dir, 'scaler.pkl'))
 
     def calculate(self):
-        # Scale the input data and predict
-        inputs = np.array([[self.time_to_maturity, self.strike, self.current_price, self.volatility, self.interest_rate]])
+        # Prepares the inputs for prediction, including the option_type
+        inputs = np.array([[self.time_to_maturity, self.strike, self.current_price, self.volatility, self.interest_rate, 1 if self.option_type == 'call' else 0]])
+    
+        # Scale the inputs
         inputs_scaled = self.scaler.transform(inputs)
-
-        # Predict the price
+    
+        # Predict the price using the neural network model
         predicted_price = self.model.predict(inputs_scaled)
+    
         return predicted_price[0][0]
+
 
     def get_option_price(self):
         return self.calculate()

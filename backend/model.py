@@ -163,10 +163,10 @@ class MonteCarlo:
 
 if __name__ == "__main__":
     # Exemple d'utilisation du modèle Black Scholes
-    time_to_maturity = 2  # Temps jusqu'à maturité en années
-    strike = 130  # Prix d'exercice
-    current_price = 200  # Prix actuel de l'actif sous-jacent
-    volatility = 0.30  # Volatilité
+    time_to_maturity = 1  # Temps jusqu'à maturité en années
+    strike = 100  # Prix d'exercice
+    current_price = 100  # Prix actuel de l'actif sous-jacent
+    volatility = 0.2  # Volatilité
     interest_rate = 0.05  # Taux d'intérêt sans risque
 
     # Exemple d'utilisation du modèle Binomiale
@@ -208,7 +208,6 @@ if __name__ == "__main__":
     # Exemple d'utilisation du modèle Monte-Carlo
     num_simulations = 10000  # Nombre de simulations
     num_steps = 100  # Nombre de pas de temps
-    option_type = 'call'  # 'call' ou 'put'
 
     # Initialisation de la classe MonteCarlo
     MC = MonteCarlo(
