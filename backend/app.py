@@ -1,10 +1,20 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from model import BlackScholes, Binomial, MonteCarlo
 from mlp_model import NeuralNetwork
 from greeks import Greeks
 
 app = FastAPI()
+
+# Configuration du middleware CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Autorise seulement les requêtes venant de ton frontend
+    allow_credentials=True,
+    allow_methods=["*"],  # Autorise toutes les méthodes (GET, POST, etc.)
+    allow_headers=["*"],  # Autorise tous les headers (Content-Type, Authorization, etc.)
+)
 
 class OptionData(BaseModel):
     time_to_maturity: float
