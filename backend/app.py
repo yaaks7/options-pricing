@@ -192,3 +192,33 @@ def calculate_greeks(option_data: OptionData):
         }
     }
 
+from pl_heatmap import pnl_heatmap
+
+class HeatmapInput(BaseModel):
+    purchase_price: float
+    min_volatility: float
+    max_volatility: float
+    min_spot_price: float
+    max_spot_price: float
+    strike: float
+    time_to_maturity: float
+    interest_rate: float
+
+@app.post("/heatmap_pnl/")
+async def get_heatmap_pnl(data: HeatmapInput):
+    pnl_matrix_call, pnl_matrix_put, volatilities, spot_prices = pnl_heatmap(
+        data.purchase_price,
+        data.min_volatility,
+        data.max_volatility,
+        data.min_spot_price,
+        data.max_spot_price,
+        data.strike,
+        data.time_to_maturity,
+        data.interest_rate
+    )
+    return {
+        "pnl_matrix_call": pnl_matrix_call.tolist(),  # Convert to list for JSON serialization
+        "pnl_matrix_put": pnl_matrix_put.tolist(),
+        "volatilities": volatilities.tolist(),
+        "spot_prices": spot_prices.tolist()
+    }

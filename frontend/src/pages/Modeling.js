@@ -1,6 +1,7 @@
 // src/pages/Modeling.js
 import React, { useState } from 'react';
 import { fetchBlackScholesPrice, fetchBinomialPrice, fetchMonteCarloPrice, fetchNeuralNetworkPrice, fetchGreeks } from '../services/api';
+import HeatmapPnl from '../components/HeatmapPnl';  // Assure-toi que le chemin est correct
 
 const Modeling = () => {
   const [selectedModels, setSelectedModels] = useState({
@@ -255,6 +256,14 @@ const Modeling = () => {
           </div>
         </div>
       )}
+
+      {/* Section pour la Heatmap */}
+      <HeatmapPnl
+        strikePrice={formData.strikePrice}
+        timeToMaturity={formData.timeToMaturity}
+        interestRate={formData.interestRate}
+      />
+
     </div>
   );
 };

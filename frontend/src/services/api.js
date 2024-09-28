@@ -31,3 +31,8 @@ export const fetchGreeks = async (data) => {
   return response.data;
 };
 
+// Requête pour récupérer la Heatmap P&L
+export const fetchHeatmapPnl = async (data) => {
+  const response = await axios.post('http://localhost:8000/heatmap_pnl/', data);
+  return response.data;
+};
