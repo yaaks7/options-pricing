@@ -102,7 +102,7 @@ def test_neural_network():
         # Debugging: Afficher les valeurs prévues et prédites pour chaque cas
         print(f"Expected {option_type} price: {expected_price}, Predicted {option_type} price: {predicted_price}")
 
-        # Tester la précision avec une tolérance de 0.1 $
+        # Tester la précision avec une tolérance de 0.5 $
         assert pytest.approx(predicted_price, 0.5) == expected_price
 
 

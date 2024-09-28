@@ -11,8 +11,7 @@ option_data = {
     "strike": 130,
     "current_price": 200,
     "volatility": 0.30,
-    "interest_rate": 0.05,
-    "option_type": "call"
+    "interest_rate": 0.05
 }
 
 montecarlo_data = {
@@ -28,34 +27,32 @@ binomial_data = {
 }
 
 def start_api_server():
-    # Lancer le fichier batch pour démarrer Uvicorn
     subprocess.Popen(["start", "cmd", "/k", "start_api.bat"], shell=True)
-    # Attendre quelques secondes pour que le serveur démarre
     time.sleep(3)
 
 def send_black_scholes():
     """Envoie une requête pour tester le modèle Black-Scholes."""
     url = f"{BASE_URL}/price/blackscholes"
     response = requests.post(url, json=option_data)
-    print("Black-Scholes Price:", response.json())
+    print("Black-Scholes Prices:", response.json())
 
 def send_binomial():
     """Envoie une requête pour tester le modèle Binomial."""
     url = f"{BASE_URL}/price/binomial"
     response = requests.post(url, json=binomial_data)
-    print("Binomial Price:", response.json())
+    print("Binomial Prices:", response.json())
 
 def send_montecarlo():
     """Envoie une requête pour tester le modèle Monte Carlo."""
     url = f"{BASE_URL}/price/montecarlo"
     response = requests.post(url, json=montecarlo_data)
-    print("Monte Carlo Price:", response.json())
+    print("Monte Carlo Prices:", response.json())
 
 def send_neural_network():
     """Envoie une requête pour tester le modèle Neural Network."""
     url = f"{BASE_URL}/price/neuralnetwork"
     response = requests.post(url, json=option_data)
-    print("Neural Network Price:", response.json())
+    print("Neural Network Prices:", response.json())
 
 def send_greeks():
     """Envoie une requête pour calculer les Greeks."""
@@ -66,8 +63,8 @@ def send_greeks():
 
 if __name__ == "__main__":
     start_api_server()
-    time.sleep(2)  # Wait for the server to start
-    
+    time.sleep(2)  
+
     # Test des 4 modèles de pricing
     print("---- Testing Black-Scholes ----")
     send_black_scholes()
