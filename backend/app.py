@@ -192,7 +192,7 @@ def calculate_greeks(option_data: OptionData):
         }
     }
 
-from pl_heatmap import pnl_heatmap
+from plot import pnl_heatmap
 
 class HeatmapInput(BaseModel):
     purchase_price: float
@@ -222,3 +222,33 @@ async def get_heatmap_pnl(data: HeatmapInput):
         "volatilities": volatilities.tolist(),
         "spot_prices": spot_prices.tolist()
     }
+
+from plot import option_sensitivity
+
+class SensitivityOptionInput(BaseModel):
+    model_type: list
+    parameter: str
+    fixed_params: dict
+    steps: int
+
+@app.post("/option_sensitivity/")
+async def get_option_sensitivity(data: SensitivityOptionInput):
+    # Calcul des résultats
+    results = option_sensitivity(
+        model_type=data.model_type,
+        parameter=data.parameter,
+        fixed_params=data.fixed_params,
+        steps=data.steps
+    )
+    
+    # Convertir les arrays Numpy en listes pour sérialisation JSON
+    results['values'] = results['values'].tolist()
+    for model in results['call']:
+        results['call'][model] = [float(val) for val in results['call'][model]]
+    for model in results['put']:
+        results['put'][model] = [float(val) for val in results['put'][model]]
+    
+    return results  
+
+
+
