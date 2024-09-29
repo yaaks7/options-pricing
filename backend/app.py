@@ -250,5 +250,30 @@ async def get_option_sensitivity(data: SensitivityOptionInput):
     
     return results  
 
+from plot import greeks_sensitivity
+
+class GreeksSensitivityInput(BaseModel):
+    greek: str
+    parameter: str
+    fixed_params: dict
+    steps: int
+
+@app.post("/greeks_sensitivity/")
+async def get_greeks_sensitivity(data: GreeksSensitivityInput):
+    # Calcul des résultats de la sensibilité des greeks
+    results = greeks_sensitivity(
+        greek=data.greek,
+        parameter=data.parameter,
+        fixed_params=data.fixed_params,
+        steps=data.steps
+    )
+
+    # Convertir les arrays Numpy en listes pour sérialisation JSON
+    results['values'] = results['values'].tolist()
+    results['call'] = [float(val) for val in results['call']]
+    results['put'] = [float(val) for val in results['put']]
+
+    return results
+
 
 

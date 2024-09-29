@@ -1,6 +1,7 @@
 import numpy as np
 from model import BlackScholes, Binomial, MonteCarlo
 from mlp_model import NeuralNetwork
+from greeks import Greeks
 
 def pnl_heatmap(purchase_price, min_volatility, max_volatility, min_spot_price, max_spot_price, strike, time_to_maturity, interest_rate):
     # Define the range of volatilities and spot prices
@@ -176,6 +177,75 @@ def option_sensitivity(model_type, parameter, fixed_params, steps=10):
 
     return sensitivity_results
 
+
+def greeks_sensitivity(greek, parameter, fixed_params, steps=10):
+    """
+    Calcule la sensibilité des greeks (delta, gamma, theta, vega, rho) pour les options Call et Put.
+
+    :param greek: Le greek à calculer (par exemple 'delta', 'gamma', 'theta', 'vega', 'rho').
+    :param parameter: Le paramètre à faire varier (par exemple 'strike', 'time_to_maturity', 'volatility', etc.).
+    :param fixed_params: Dictionnaire contenant les paramètres fixes pour le calcul des greeks.
+    :param steps: Nombre de pas pour faire varier le paramètre.
+    :return: Dictionnaire des valeurs des greeks pour les types d'options call et put.
+    """
+
+    # Extraire les paramètres fixes
+    time_to_maturity = fixed_params.get('time_to_maturity', 1)
+    strike = fixed_params.get('strike', 100)
+    current_price = fixed_params.get('current_price', 100)
+    volatility = fixed_params.get('volatility', 0.2)
+    interest_rate = fixed_params.get('interest_rate', 0.05)
+
+    # Définir la plage de valeurs pour le paramètre sélectionné
+    if parameter == 'strike':
+        values = np.linspace(fixed_params['min_strike'], fixed_params['max_strike'], steps)
+    elif parameter == 'time_to_maturity':
+        values = np.linspace(fixed_params['min_time_to_maturity'], fixed_params['max_time_to_maturity'], steps)
+    elif parameter == 'volatility':
+        values = np.linspace(fixed_params['min_volatility'], fixed_params['max_volatility'], steps)
+    elif parameter == 'current_price':
+        values = np.linspace(fixed_params['min_current_price'], fixed_params['max_current_price'], steps)
+    else:
+        raise ValueError("Paramètre non valide")
+
+    sensitivity_results = {
+        'call': [],
+        'put': [],
+        'values': values
+    }
+
+    # Boucle pour faire varier le paramètre choisi
+    for value in values:
+        # Calcul des greeks pour les options Call et Put
+        bs_call = BlackScholes(
+            time_to_maturity if parameter != 'time_to_maturity' else value,
+            strike if parameter != 'strike' else value,
+            current_price if parameter != 'current_price' else value,
+            volatility if parameter != 'volatility' else value,
+            interest_rate, 'call'
+        )
+        bs_put = BlackScholes(
+            time_to_maturity if parameter != 'time_to_maturity' else value,
+            strike if parameter != 'strike' else value,
+            current_price if parameter != 'current_price' else value,
+            volatility if parameter != 'volatility' else value,
+            interest_rate, 'put'
+        )
+        bs_call.calculate()
+        bs_put.calculate()
+
+        greeks_call = Greeks(bs_call, 'call')
+        greeks_put = Greeks(bs_put, 'put')
+
+        # Sélectionner le greek demandé
+        sensitivity_results['call'].append(getattr(greeks_call, greek)())
+        sensitivity_results['put'].append(getattr(greeks_put, greek)())
+
+    return sensitivity_results
+
+
+
+
 if __name__ == "__main__":
     # Exemple de paramètres fixes pour les tests
     fixed_params = {
@@ -198,12 +268,15 @@ if __name__ == "__main__":
     }
 
     # Test pour la sensibilité en fonction du strike pour BlackScholes et Binomial
-    result = option_sensitivity(
+    result1 = option_sensitivity(
         model_type=['BlackScholes', 'Binomial'],  # Modèles à tester
         parameter='volatility',  # Paramètre que l'on souhaite faire varier
         fixed_params=fixed_params,  # Paramètres fixes
         steps=10  # Nombre de pas pour faire varier le strike
     )
+
+    result = greeks_sensitivity('vega', 'strike', fixed_params)
+
 
     # Affichage des résultats pour vérifier
     print("Sensibilité des options en fonction du strike:")
