@@ -36,3 +36,15 @@ export const fetchHeatmapPnl = async (data) => {
   const response = await axios.post('http://localhost:8000/heatmap_pnl/', data);
   return response.data;
 };
+
+// Requête pour récupérer le graphique de sensibilité des options
+export const fetchOptionSensitivity = async (data) => {
+  try {
+    const response = await axios.post('http://localhost:8000/option_sensitivity/', data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching option sensitivity:", error);
+    throw error;
+  }
+};
+

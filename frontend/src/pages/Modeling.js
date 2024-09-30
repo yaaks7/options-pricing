@@ -1,7 +1,8 @@
 // src/pages/Modeling.js
 import React, { useState } from 'react';
 import { fetchBlackScholesPrice, fetchBinomialPrice, fetchMonteCarloPrice, fetchNeuralNetworkPrice, fetchGreeks } from '../services/api';
-import HeatmapPnl from '../components/HeatmapPnl';  // Assure-toi que le chemin est correct
+import HeatmapPnl from '../components/HeatmapPnl';
+import OptionSensitivityGraph from '../components/OptionSensitivity';
 
 const Modeling = () => {
   const [selectedModels, setSelectedModels] = useState({
@@ -204,7 +205,7 @@ const Modeling = () => {
               checked={selectedModels.monteCarlo}
               onChange={handleModelChange}
             />
-            Monte Carlo
+            Monte-Carlo
           </label>
           <label>
             <input
@@ -263,6 +264,18 @@ const Modeling = () => {
         timeToMaturity={formData.timeToMaturity}
         interestRate={formData.interestRate}
       />
+
+      {/* Composant Option Sensitivity Graph */}
+      <OptionSensitivityGraph
+        currentPrice={formData.currentPrice}
+        strikePrice={formData.strikePrice}
+        timeToMaturity={formData.timeToMaturity}
+        volatility={formData.volatility}
+        interestRate={formData.interestRate}
+        selectedModels={Object.keys(selectedModels).filter((model) => selectedModels[model])}  // Filtrer uniquement les modèles sélectionnés
+      />
+
+
 
     </div>
   );

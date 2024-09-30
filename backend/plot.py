@@ -268,14 +268,14 @@ if __name__ == "__main__":
     }
 
     # Test pour la sensibilité en fonction du strike pour BlackScholes et Binomial
-    result1 = option_sensitivity(
+    result = option_sensitivity(
         model_type=['BlackScholes', 'Binomial'],  # Modèles à tester
         parameter='volatility',  # Paramètre que l'on souhaite faire varier
         fixed_params=fixed_params,  # Paramètres fixes
         steps=10  # Nombre de pas pour faire varier le strike
     )
-
-    result = greeks_sensitivity('vega', 'strike', fixed_params)
+    
+    #result = greeks_sensitivity('delta', 'strike', fixed_params)
 
 
     # Affichage des résultats pour vérifier
