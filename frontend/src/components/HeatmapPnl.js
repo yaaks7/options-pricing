@@ -95,17 +95,14 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate }) => {
           <input type="number" name="spotPriceMax" value={spotPriceRange.max} onChange={handleInputChange} required />
         </label>
 
-        {/* Sélection du type d'option */}
-        <div>
-          <label>
-            <input type="radio" name="optionType" value="call" checked={optionType === 'call'} onChange={handleOptionTypeChange} />
-            Call
-          </label>
-          <label>
-            <input type="radio" name="optionType" value="put" checked={optionType === 'put'} onChange={handleOptionTypeChange} />
-            Put
-          </label>
-        </div>
+        {/* Sélection entre Call et Put */}
+        <label>
+          Option Type:
+          <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
+            <option value="call">Call</option>
+            <option value="put">Put</option>
+          </select>
+        </label>
 
         <button type="submit">Generate Heatmap</button>
       </form>

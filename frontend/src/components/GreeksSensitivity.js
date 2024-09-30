@@ -127,15 +127,6 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
         </select>
       </label>
 
-      {/* Sélection entre Call et Put */}
-      <label>
-        Option Type:
-        <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
-          <option value="call">Call</option>
-          <option value="put">Put</option>
-        </select>
-      </label>
-
       {/* Champs pour entrer les valeurs min et max */}
       <label>
         {minLabel}
@@ -145,6 +136,15 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
         {maxLabel}
         <input type="number" value={maxParam} onChange={(e) => setMaxParam(e.target.value)} required />
       </label>
+
+      {/* Sélection entre Call et Put */}
+      <label>
+        Option Type:
+        <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
+          <option value="call">Call</option>
+          <option value="put">Put</option>
+        </select>
+      </label>      
 
       <button onClick={generateGraph}>Generate Sensitivity Graph</button>
 

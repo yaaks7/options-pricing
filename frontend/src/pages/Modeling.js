@@ -1,9 +1,9 @@
-// src/pages/Modeling.js
 import React, { useState } from 'react';
 import { fetchBlackScholesPrice, fetchBinomialPrice, fetchMonteCarloPrice, fetchNeuralNetworkPrice, fetchGreeks } from '../services/api';
 import HeatmapPnl from '../components/HeatmapPnl';
 import OptionSensitivityGraph from '../components/OptionSensitivity';
 import GreeksSensitivityGraph from '../components/GreeksSensitivity';
+import '../App.css'; // Importing CSS
 
 const Modeling = () => {
   const [selectedModels, setSelectedModels] = useState({
@@ -21,12 +21,12 @@ const Modeling = () => {
     interestRate: ''
   });
 
+  const [activeTab, setActiveTab] = useState('heatmap'); // Add state to track active tab
   const [errors, setErrors] = useState({});
   const [results, setResults] = useState(null);
   const [greeks, setGreeks] = useState(null); 
-  const [modelNames, setModelNames] = useState([]); // Ajout pour stocker les noms des modèles
+  const [modelNames, setModelNames] = useState([]);
 
-  // Validation des données avant l'envoi
   const validateForm = () => {
     let formErrors = {};
     let valid = true;
@@ -71,9 +71,8 @@ const Modeling = () => {
     };
 
     const promises = [];
-    const models = []; // Stocke les noms des modèles sélectionnés
+    const models = [];
 
-    // Requêtes pour les prix avec noms des modèles
     if (selectedModels.blackScholes) {
       promises.push(fetchBlackScholesPrice(requestData));
       models.push("Black-Scholes");
@@ -83,208 +82,162 @@ const Modeling = () => {
       models.push("Neural Network");
     }
     if (selectedModels.monteCarlo) {
-      const monteCarloData = {
-        ...requestData,
-        num_simulations: 10000,
-        num_steps: 100
-      };
+      const monteCarloData = { ...requestData, num_simulations: 10000, num_steps: 100 };
       promises.push(fetchMonteCarloPrice(monteCarloData));
       models.push("Monte Carlo");
     }
     if (selectedModels.binomial) {
-      const binomialData = {
-        ...requestData,
-        steps: 100,
-        is_american: false
-      };
+      const binomialData = { ...requestData, steps: 100, is_american: false };
       promises.push(fetchBinomialPrice(binomialData));
       models.push("Binomial");
     }
 
-    // Requête pour les Greeks
     const greeksPromise = fetchGreeks(requestData);
     promises.push(greeksPromise);
 
     try {
       const responses = await Promise.all(promises);
 
-      const greeksData = responses.pop();  // Récupérer les Greeks
-      setResults(responses);  // Récupérer les résultats des prix des options
-      setGreeks(greeksData);  // Stocker les Greeks
-      setModelNames(models);  // Stocker les noms des modèles
+      const greeksData = responses.pop();
+      setResults(responses);
+      setGreeks(greeksData);
+      setModelNames(models);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
   return (
-    <div>
-      <h2>Option Pricing Modeling</h2>
+    <div className="modeling-container">
+      {/* Sidebar */}
+      <div className="sidebar">
+        <form onSubmit={handleSubmit}>
+          <h3 className="centered-title">Enter Parameters</h3>
 
-      <form onSubmit={handleSubmit}>
-        <label>
-          Current Price:
-          <input
-            type="number"
-            name="currentPrice"
-            value={formData.currentPrice}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        
-        <label>
-          Strike Price:
-          <input
-            type="number"
-            name="strikePrice"
-            value={formData.strikePrice}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        
-        <label>
-          Time to Maturity (Years):
-          <input
-            type="number"
-            name="timeToMaturity"
-            value={formData.timeToMaturity}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        
-        <label>
-          Volatility (%):
-          <input
-            type="number"
-            name="volatility"
-            value={formData.volatility}
-            onChange={handleChange}
-            required
-          />
-          {errors.volatility && <p style={{ color: 'red' }}>{errors.volatility}</p>}
-        </label>
-        
-        <label>
-          Interest Rate (%):
-          <input
-            type="number"
-            name="interestRate"
-            value={formData.interestRate}
-            onChange={handleChange}
-            required
-          />
-          {errors.interestRate && <p style={{ color: 'red' }}>{errors.interestRate}</p>}
-        </label>
-        
-        <div>
+          <label>Current Price:</label>
+          <input type="number" name="currentPrice" value={formData.currentPrice} onChange={handleChange} required />
+          
+          <label>Strike Price:</label>
+          <input type="number" name="strikePrice" value={formData.strikePrice} onChange={handleChange} required />
+          
+          <label>Time to Maturity (Years):</label>
+          <input type="number" name="timeToMaturity" value={formData.timeToMaturity} onChange={handleChange} required />
+          
+          <label>Volatility (%):</label>
+          <input type="number" name="volatility" value={formData.volatility} onChange={handleChange} required />
+          {errors.volatility && <p className="error">{errors.volatility}</p>}
+          
+          <label>Interest Rate (%):</label>
+          <input type="number" name="interestRate" value={formData.interestRate} onChange={handleChange} required />
+          {errors.interestRate && <p className="error">{errors.interestRate}</p>}
+
           <h3>Select Models</h3>
-          <label>
-            <input
-              type="checkbox"
-              name="blackScholes"
-              checked={selectedModels.blackScholes}
-              onChange={handleModelChange}
-            />
-            Black-Scholes
+          <label className="wrapper">
+            <span>Black-Scholes</span>
+            <span><input type="checkbox" name="blackScholes" checked={selectedModels.blackScholes} onChange={handleModelChange} /></span>
           </label>
-          <label>
-            <input
-              type="checkbox"
-              name="binomial"
-              checked={selectedModels.binomial}
-              onChange={handleModelChange}
-            />
-            Binomial
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="monteCarlo"
-              checked={selectedModels.monteCarlo}
-              onChange={handleModelChange}
-            />
-            Monte-Carlo
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="neuralNetwork"
-              checked={selectedModels.neuralNetwork}
-              onChange={handleModelChange}
-            />
-            Neural Network
-          </label>
-        </div>
 
-        <button type="submit">Generate Prices</button>
-      </form>
+          <label className="wrapper">
+            <span>Binomial</span>
+            <span><input type="checkbox" name="binomial" checked={selectedModels.binomial} onChange={handleModelChange} /></span>
+          </label>
 
-      {/* Affichage des résultats des prix */}
-      {results && (
-        <div>
-          <h3>Results:</h3>
-          {results.map((result, index) => (
-            <div key={index}>
-              <h4>{modelNames[index]}</h4> {/* Afficher le nom du modèle */}
-              <p>Call Price: {result.call_price}</p>
-              <p>Put Price: {result.put_price}</p>
-            </div>
-          ))}
-        </div>
-      )}
+          <label className="wrapper">
+            <span>Monte-Carlo</span>
+            <span><input type="checkbox" name="monteCarlo" checked={selectedModels.monteCarlo} onChange={handleModelChange} /></span>
+          </label>
 
-      {/* Affichage des Greeks */}
-      {greeks && (
-        <div>
-          <h3>Greeks:</h3>
-          <div>
-            <h4>Call Greeks</h4>
-            <p>Delta: {greeks.call.delta}</p>
-            <p>Gamma: {greeks.call.gamma}</p>
-            <p>Vega: {greeks.call.vega}</p>
-            <p>Theta: {greeks.call.theta}</p>
-            <p>Rho: {greeks.call.rho}</p>
+          <label className="wrapper">
+            <span>Neural Network</span>
+            <span><input type="checkbox" name="neuralNetwork" checked={selectedModels.neuralNetwork} onChange={handleModelChange} /></span>
+          </label>
+
+          <div className="clearboth"></div>  {/* Clear floats */}
+
+          <button type="submit">Generate</button>
+        </form>
+      </div>
+
+      {/* Results Section */}
+      <div className="results-container">
+        <div className="results-header">
+          <div className="results-section">
+            <h4 className="centered-title">Call Prices</h4>
+            {results && results.map((result, index) => (
+              <div key={index}><p>{modelNames[index]} Call: {result.call_price.toFixed(2)}</p></div>
+            ))}
           </div>
-          <div>
-            <h4>Put Greeks</h4>
-            <p>Delta: {greeks.put.delta}</p>
-            <p>Gamma: {greeks.put.gamma}</p>
-            <p>Vega: {greeks.put.vega}</p>
-            <p>Theta: {greeks.put.theta}</p>
-            <p>Rho: {greeks.put.rho}</p>
+          <div className="results-section">
+            <h4 className="centered-title">Put Prices</h4>
+            {results && results.map((result, index) => (
+              <div key={index}><p>{modelNames[index]} Put: {result.put_price.toFixed(2)}</p></div>
+            ))}
           </div>
         </div>
-      )}
 
-      {/* Section pour la Heatmap */}
-      <HeatmapPnl
-        strikePrice={formData.strikePrice}
-        timeToMaturity={formData.timeToMaturity}
-        interestRate={formData.interestRate}
-      />
+        <div className="greeks-section boxed-container">
+          <h4 className="centered-title">Greeks</h4>
+          {greeks && (
+            <>
+              <div className="greek-values">
+                <h5>Call Greeks</h5>
+                <p>Delta: {greeks.call.delta.toFixed(2)}</p>
+                <p>Gamma: {greeks.call.gamma.toFixed(2)}</p>
+                <p>Vega: {greeks.call.vega.toFixed(2)}</p>
+                <p>Theta: {greeks.call.theta.toFixed(2)}</p>
+                <p>Rho: {greeks.call.rho.toFixed(2)}</p>
+              </div>
+              <div className="greek-values">
+                <h5>Put Greeks</h5>
+                <p>Delta: {greeks.put.delta.toFixed(2)}</p>
+                <p>Gamma: {greeks.put.gamma.toFixed(2)}</p>
+                <p>Vega: {greeks.put.vega.toFixed(2)}</p>
+                <p>Theta: {greeks.put.theta.toFixed(2)}</p>
+                <p>Rho: {greeks.put.rho.toFixed(2)}</p>
+              </div>
+            </>
+          )}
+        </div>
 
-      {/* Composant Option Sensitivity Graph */}
-      <OptionSensitivityGraph
-        currentPrice={formData.currentPrice}
-        strikePrice={formData.strikePrice}
-        timeToMaturity={formData.timeToMaturity}
-        volatility={formData.volatility}
-        interestRate={formData.interestRate}
-        selectedModels={Object.keys(selectedModels).filter((model) => selectedModels[model])}  // Filtrer uniquement les modèles sélectionnés
-      />
+        {/* Tabs for switching between graphs */}
+        <div className="tabs">
+          <button onClick={() => setActiveTab('heatmap')}>Heatmap P&L</button>
+          <button onClick={() => setActiveTab('optionSensitivity')}>Options Sensitivity</button>
+          <button onClick={() => setActiveTab('greeksSensitivity')}>Greeks Sensitivity</button>
+        </div>
 
-      {/* Composant Greeks Sensitivity Graph */}
-      <GreeksSensitivityGraph
-        currentPrice={formData.currentPrice}
-        strikePrice={formData.strikePrice}
-        timeToMaturity={formData.timeToMaturity}
-        volatility={formData.volatility}
-        interestRate={formData.interestRate}
-      />
+        {/* Display selected tab */}
+        <div className="graph-container">
+          {activeTab === 'heatmap' && (
+            <HeatmapPnl
+              strikePrice={formData.strikePrice}
+              timeToMaturity={formData.timeToMaturity}
+              interestRate={formData.interestRate}
+            />
+          )}
 
+          {activeTab === 'optionSensitivity' && (
+            <OptionSensitivityGraph
+              currentPrice={formData.currentPrice}
+              strikePrice={formData.strikePrice}
+              timeToMaturity={formData.timeToMaturity}
+              volatility={formData.volatility}
+              interestRate={formData.interestRate}
+              selectedModels={Object.keys(selectedModels).filter((model) => selectedModels[model])}
+            />
+          )}
+
+          {activeTab === 'greeksSensitivity' && (
+            <GreeksSensitivityGraph
+              currentPrice={formData.currentPrice}
+              strikePrice={formData.strikePrice}
+              timeToMaturity={formData.timeToMaturity}
+              volatility={formData.volatility}
+              interestRate={formData.interestRate}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 };

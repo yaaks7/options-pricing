@@ -158,15 +158,6 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
         </select>
       </label>
 
-      {/* Sélection entre Call et Put */}
-      <label>
-        Option Type:
-        <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
-          <option value="call">Call</option>
-          <option value="put">Put</option>
-        </select>
-      </label>
-
       {/* Champs pour entrer les valeurs min et max */}
       <label>
         {minLabel}
@@ -177,20 +168,30 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
         <input type="number" value={maxParam} onChange={(e) => setMaxParam(e.target.value)} required />
       </label>
 
+      {/* Sélection entre Call et Put */}
+      <label>
+        Option Type:
+        <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
+          <option value="call">Call</option>
+          <option value="put">Put</option>
+        </select>
+      </label>
+
       {/* Sélection des modèles disponibles */}
-      <div>
+      <div className="options-sensitivity">
         <h4>Select Models for Sensitivity Graph:</h4>
         {Object.keys(modelMap).map((model) => (
-          <div key={model}>
-            <label>
+          <label className="wrapper" key={model}>
+            <span>{modelMap[model]}</span>
+            <span>
               <input
                 type="checkbox"
                 checked={selectedModelTypes.includes(modelMap[model])}
                 onChange={() => handleModelSelection(modelMap[model])}
               />
-              {modelMap[model]} {/* Affichage correct des noms pour l'utilisateur */}
-            </label>
-          </div>
+            </span>
+            <div className="clearboth"></div> {/* Clear floats */}
+          </label>
         ))}
       </div>
 
