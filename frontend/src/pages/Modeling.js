@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { fetchBlackScholesPrice, fetchBinomialPrice, fetchMonteCarloPrice, fetchNeuralNetworkPrice, fetchGreeks } from '../services/api';
 import HeatmapPnl from '../components/HeatmapPnl';
 import OptionSensitivityGraph from '../components/OptionSensitivity';
+import GreeksSensitivityGraph from '../components/GreeksSensitivity';
 
 const Modeling = () => {
   const [selectedModels, setSelectedModels] = useState({
@@ -275,7 +276,14 @@ const Modeling = () => {
         selectedModels={Object.keys(selectedModels).filter((model) => selectedModels[model])}  // Filtrer uniquement les modèles sélectionnés
       />
 
-
+      {/* Composant Greeks Sensitivity Graph */}
+      <GreeksSensitivityGraph
+        currentPrice={formData.currentPrice}
+        strikePrice={formData.strikePrice}
+        timeToMaturity={formData.timeToMaturity}
+        volatility={formData.volatility}
+        interestRate={formData.interestRate}
+      />
 
     </div>
   );
