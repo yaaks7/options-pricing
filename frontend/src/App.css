@@ -119,7 +119,7 @@ body {
   width: 100%;
   padding: 10px;
   margin-top: 100px;
-  background-color: #4CAF50;
+  background-color: #39AEA9;
   border: none;
   border-radius: 5px;
   color: #fff;
@@ -171,6 +171,7 @@ body {
 
 .greeks-section {
   margin-top: 20px;
+  margin-bottom: 90px;
   padding: 20px;
   background-color: #2F2F2F;
   border-radius: 8px; /* Rounded box */
@@ -196,7 +197,7 @@ body {
 
 .tabs button {
   padding: 10px;
-  background-color: #4CAF50;
+  background-color: #39AEA9;
   color: white;
   border-radius: 5px;
   border: none;
@@ -224,7 +225,8 @@ body {
 }
 
 .graph-container button {
-  background-color: #4CAF50;
+  background-color: #39AEA9;
+  margin-bottom: 10px;
   border-radius: 5px;
   color: white;
   border: none;

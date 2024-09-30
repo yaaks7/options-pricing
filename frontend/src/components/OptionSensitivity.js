@@ -144,7 +144,7 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
   const [minLabel, maxLabel] = getLabel(parameter);  // Obtenir les labels appropriés
 
   return (
-    <div>
+    <div className="options-sensitivity">
       <h3>Option Sensitivity Graph</h3>
 
       {/* Sélection du paramètre à faire varier */}
@@ -178,7 +178,7 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
       </label>
 
       {/* Sélection des modèles disponibles */}
-      <div className="options-sensitivity">
+      <div>
         <h4>Select Models for Sensitivity Graph:</h4>
         {Object.keys(modelMap).map((model) => (
           <label className="wrapper" key={model}>

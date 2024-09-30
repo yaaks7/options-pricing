@@ -114,20 +114,20 @@ const Modeling = () => {
         <form onSubmit={handleSubmit}>
           <h3 className="centered-title">Enter Parameters</h3>
 
-          <label>Current Price:</label>
+          <label>Current Price ($) :</label>
           <input type="number" name="currentPrice" value={formData.currentPrice} onChange={handleChange} required />
           
-          <label>Strike Price:</label>
+          <label>Strike Price ($) :</label>
           <input type="number" name="strikePrice" value={formData.strikePrice} onChange={handleChange} required />
           
-          <label>Time to Maturity (Years):</label>
+          <label>Time to Maturity (Years) :</label>
           <input type="number" name="timeToMaturity" value={formData.timeToMaturity} onChange={handleChange} required />
           
-          <label>Volatility (%):</label>
+          <label>Volatility (%) :</label>
           <input type="number" name="volatility" value={formData.volatility} onChange={handleChange} required />
           {errors.volatility && <p className="error">{errors.volatility}</p>}
           
-          <label>Interest Rate (%):</label>
+          <label>Interest Rate (%) :</label>
           <input type="number" name="interestRate" value={formData.interestRate} onChange={handleChange} required />
           {errors.interestRate && <p className="error">{errors.interestRate}</p>}
 
@@ -164,13 +164,13 @@ const Modeling = () => {
           <div className="results-section">
             <h4 className="centered-title">Call Prices</h4>
             {results && results.map((result, index) => (
-              <div key={index}><p>{modelNames[index]} Call: {result.call_price.toFixed(2)}</p></div>
+              <div key={index}><p>{modelNames[index]} Call : {result.call_price.toFixed(2)} $</p></div>
             ))}
           </div>
           <div className="results-section">
             <h4 className="centered-title">Put Prices</h4>
             {results && results.map((result, index) => (
-              <div key={index}><p>{modelNames[index]} Put: {result.put_price.toFixed(2)}</p></div>
+              <div key={index}><p>{modelNames[index]} Put : {result.put_price.toFixed(2)} $</p></div>
             ))}
           </div>
         </div>

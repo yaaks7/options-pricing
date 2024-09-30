@@ -153,7 +153,7 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
         <Plot
           data={graphData}
           layout={{
-            title: `${greek.toUpperCase()} Sensitivity vs ${parameter.replace('_', ' ')}`,
+            title: `${greek.toUpperCase()} vs ${parameter.replace('_', ' ')}`,
             xaxis: { title: parameter.replace('_', ' ') },
             yaxis: { title: `${greek.toUpperCase()} Value` },
             autosize: true
