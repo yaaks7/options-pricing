@@ -27,14 +27,22 @@
 
 /* Model button specific color */
 .model-btn {
-    background-color: #7fff00; /* Lime green */
-    color: black;
+    background-color: #39AEA9; 
+    color: #ffffff;
+    margin-top: 5px;
 }
 
 /* Documentation button specific color */
 .doc-btn {
-    background-color: #00FFFF; /* Cyan */
-    color: black;
+    background-color: #39AEA9; 
+    color: #ffffff;
+    margin-top: 5px;
+}
+
+.history-btn {
+    background-color: #39AEA9; 
+    color: #ffffff;
+    margin-top: 5px;
 }
 
 .header-btn:hover {
@@ -63,7 +71,7 @@
     height: 50px;
     width: 50px;
     font-family: 'Titillium Web', sans-serif;
-    color: #333;
+    color: #ffffff;
     border-radius: 10px;
     box-shadow: 0px 10px 10px rgba(0,0,0,0.1);
     background: #222729;
@@ -95,9 +103,6 @@
     width: 80px;
   }
   
-  #twitter svg {
-    fill: #1da1f2;
-  }
   
   #linkedin svg {
     fill: #0e76a8;
