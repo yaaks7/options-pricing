@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 import { fetchGreeksSensitivity } from '../services/api';
 
-const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, volatility, interestRate }) => {
+const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, volatility, interestRate, pricesGenerated }) => {
   const [parameter, setParameter] = useState('volatility');  // Paramètre à faire varier
   const [greek, setGreek] = useState('delta');  // Greek à calculer
   const [minParam, setMinParam] = useState(0.1);  // Valeur min
@@ -80,6 +80,11 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
     } catch (error) {
       console.error('Error fetching sensitivity data:', error);
     }
+
+    if (!pricesGenerated) {
+      alert("Please generate the option prices first.");
+      return;
+    }
   };
 
   // Gérer l'affichage des labels min et max selon le paramètre sélectionné
@@ -105,62 +110,83 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
       <h3>Greeks Sensitivity Graph</h3>
 
       {/* Sélection du greek à calculer */}
-      <label>
-        Greek to calculate:
-        <select value={greek} onChange={(e) => setGreek(e.target.value)}>
-          <option value="delta">Delta</option>
-          <option value="gamma">Gamma</option>
-          <option value="theta">Theta</option>
-          <option value="vega">Vega</option>
-          <option value="rho">Rho</option>
-        </select>
-      </label>
+      <div style={{ justifyContent: 'space-between', marginBottom: '10px', marginTop: '10px' }}>
+        <label>
+          Greek to calculate:
+          <select value={greek} onChange={(e) => setGreek(e.target.value)}>
+            <option value="delta">Delta</option>
+            <option value="gamma">Gamma</option>
+            <option value="theta">Theta</option>
+            <option value="vega">Vega</option>
+            <option value="rho">Rho</option>
+          </select>
+        </label>
 
-      {/* Sélection du paramètre à faire varier */}
-      <label>
-        Parameter to vary:
-        <select value={parameter} onChange={(e) => setParameter(e.target.value)}>
-          <option value="volatility">Volatility</option>
-          <option value="strike">Strike Price</option>
-          <option value="current_price">Current Price</option>
-          <option value="time_to_maturity">Time to Maturity</option>
-        </select>
-      </label>
+        {/* Sélection du paramètre à faire varier */}
+        <label>
+          Parameter to vary:
+          <select value={parameter} onChange={(e) => setParameter(e.target.value)}>
+            <option value="volatility">Volatility</option>
+            <option value="strike">Strike Price</option>
+            <option value="current_price">Current Price</option>
+            <option value="time_to_maturity">Time to Maturity</option>
+          </select>
+        </label>
+      </div>
 
       {/* Champs pour entrer les valeurs min et max */}
-      <label>
-        {minLabel}
-        <input type="number" value={minParam} onChange={(e) => setMinParam(e.target.value)} required />
-      </label>
-      <label>
-        {maxLabel}
-        <input type="number" value={maxParam} onChange={(e) => setMaxParam(e.target.value)} required />
-      </label>
+      <div style={{ justifyContent: 'space-between', marginBottom: '10px'}}>
+        <label>
+          {minLabel}
+          <input type="number" value={minParam} onChange={(e) => setMinParam(e.target.value)} required />
+        </label>
+        <label>
+          {maxLabel}
+          <input type="number" value={maxParam} onChange={(e) => setMaxParam(e.target.value)} required />
+        </label>
 
-      {/* Sélection entre Call et Put */}
-      <label>
-        Option Type:
-        <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
-          <option value="call">Call</option>
-          <option value="put">Put</option>
-        </select>
-      </label>      
-
+        {/* Sélection entre Call et Put */}
+        <label>
+          Option Type:
+          <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
+            <option value="call">Call</option>
+            <option value="put">Put</option>
+          </select>
+        </label>      
+      </div>
       <button onClick={generateGraph}>Generate Sensitivity Graph</button>
 
-      {/* Affichage du graphique */}
-      {graphData && (
-        <Plot
-          data={graphData}
-          layout={{
-            title: `${greek.toUpperCase()} vs ${parameter.replace('_', ' ')}`,
-            xaxis: { title: parameter.replace('_', ' ') },
-            yaxis: { title: `${greek.toUpperCase()} Value` },
-            autosize: true
-          }}
-          style={{ width: "100%", height: "500px" }}
-        />
-      )}
+        {/* Affichage du graphique */}
+        {graphData && (
+          <Plot
+            data={graphData}
+            layout={{
+              title: {
+                text: `${greek.toUpperCase()} vs ${parameter.replace('_', ' ')}`,
+                font: { color: "#E5EFC1" }  // Text color for the title
+              },
+              xaxis: { 
+                title: {
+                  text: parameter.replace('_', ' '),
+                  font: { color: "#E5EFC1" }  // Text color for the x-axis
+                },
+                color: "#E5EFC1"  // Color for tick labels on the x-axis
+              },
+              yaxis: { 
+                title: {
+                  text: `${greek.toUpperCase()} Value`,
+                  font: { color: "#E5EFC1" }  // Text color for the y-axis
+                },
+                color: "#E5EFC1"  // Color for tick labels on the y-axis
+              },
+              autosize: true,
+              paper_bgcolor: "#1E1E1E",  // Dark background for the entire chart
+              plot_bgcolor: "#121212",   // Dark background for the plot area
+            }}
+            style={{ width: "100%", height: "500px" }}
+          />
+        )}
+
     </div>
   );
 };

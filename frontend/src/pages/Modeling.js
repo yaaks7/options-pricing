@@ -3,7 +3,8 @@ import { fetchBlackScholesPrice, fetchBinomialPrice, fetchMonteCarloPrice, fetch
 import HeatmapPnl from '../components/HeatmapPnl';
 import OptionSensitivityGraph from '../components/OptionSensitivity';
 import GreeksSensitivityGraph from '../components/GreeksSensitivity';
-import '../App.css'; // Importing CSS
+import '../App.css'; 
+import '../styles/Modelling.css'; 
 
 const Modeling = () => {
   const [selectedModels, setSelectedModels] = useState({
@@ -26,6 +27,7 @@ const Modeling = () => {
   const [results, setResults] = useState(null);
   const [greeks, setGreeks] = useState(null); 
   const [modelNames, setModelNames] = useState([]);
+  const [pricesGenerated, setPricesGenerated] = useState(false); // State for tracking if prices are generated
 
   const validateForm = () => {
     let formErrors = {};
@@ -102,12 +104,22 @@ const Modeling = () => {
       setResults(responses);
       setGreeks(greeksData);
       setModelNames(models);
+      setPricesGenerated(true); // Set pricesGenerated to true after fetching prices
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
+  const handleGraphButtonClick = (e, graphType) => {
+    if (!pricesGenerated) {
+      e.preventDefault();
+      alert("Please generate the option prices first before generating the graph.");
+    }
+  };
+  
+
   return (
+
     <div className="modeling-container">
       {/* Sidebar */}
       <div className="sidebar">
@@ -213,6 +225,7 @@ const Modeling = () => {
               strikePrice={formData.strikePrice}
               timeToMaturity={formData.timeToMaturity}
               interestRate={formData.interestRate}
+              pricesGenerated={pricesGenerated}
             />
           )}
 
@@ -224,6 +237,7 @@ const Modeling = () => {
               volatility={formData.volatility}
               interestRate={formData.interestRate}
               selectedModels={Object.keys(selectedModels).filter((model) => selectedModels[model])}
+              pricesGenerated={pricesGenerated}
             />
           )}
 
@@ -234,11 +248,13 @@ const Modeling = () => {
               timeToMaturity={formData.timeToMaturity}
               volatility={formData.volatility}
               interestRate={formData.interestRate}
+              pricesGenerated={pricesGenerated}
             />
           )}
         </div>
       </div>
     </div>
+
   );
 };
 

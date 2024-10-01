@@ -10,10 +10,12 @@ import Binomial from './pages/docs/Binomial';
 import MonteCarlo from './pages/docs/MonteCarlo';
 import NeuralNetwork from './pages/docs/NeuralNetwork';
 import Greeks from './pages/docs/Greeks';
+import Header from './components/Header';
 
 function App() {
   return (
     <Router>
+      <Header /> {/* Ensure Header appears on every page */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/modeling" element={<Modeling />} />
@@ -30,4 +32,5 @@ function App() {
 }
 
 export default App;
+
 

@@ -1,0 +1,109 @@
+/* src/components/Header.css */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333; /* Background color */
+    color: white;
+    border-radius: 15px;
+    width: 97%;
+    margin: 10px auto; 
+}
+
+
+.header-left {
+    display: flex;
+    gap: 15px;
+}
+
+.header-btn {
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+/* Model button specific color */
+.model-btn {
+    background-color: #7fff00; /* Lime green */
+    color: black;
+}
+
+/* Documentation button specific color */
+.doc-btn {
+    background-color: #00FFFF; /* Cyan */
+    color: black;
+}
+
+.header-btn:hover {
+    background-color: #555;
+    color: white;
+}
+
+/* Home icon styling */
+.home-icon {
+    width: 48px;
+    height: 48px;
+}
+
+.header-right {
+    padding-right: 15px;
+}
+
+.social-links,.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .social-btn {
+    cursor: pointer;
+    height: 50px;
+    width: 50px;
+    font-family: 'Titillium Web', sans-serif;
+    color: #333;
+    border-radius: 10px;
+    box-shadow: 0px 10px 10px rgba(0,0,0,0.1);
+    background: #222729;
+    margin: 5px;
+    transition: 0.3s;
+    justify-content: center;
+  }
+  
+  .social-btn svg {
+    height: 24px;
+    width: 24px;
+  }
+  
+  .social-btn span {
+    width: 0px;
+    overflow: hidden;
+    transition: 0.3s;
+    text-align: center;
+    margin-left: 5px;
+  }
+  
+  .social-btn:hover {
+    width: 150px;
+    border-radius: 5px;
+  }
+  
+  .social-btn:hover span {
+    padding: 2px;
+    width: 80px;
+  }
+  
+  #twitter svg {
+    fill: #1da1f2;
+  }
+  
+  #linkedin svg {
+    fill: #0e76a8;
+  }
+  
+  #github {
+    fill: #333;
+  }
+  

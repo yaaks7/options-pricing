@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Plot from 'react-plotly.js';
 import { fetchHeatmapPnl } from '../services/api';
 
-const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate }) => {
+const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated }) => {
   const [purchasePrice, setPurchasePrice] = useState('');
   const [volatilityRange, setVolatilityRange] = useState({ min: '', max: '' });
   const [spotPriceRange, setSpotPriceRange] = useState({ min: '', max: '' });
@@ -25,8 +25,13 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate }) => {
   };
 
   const generateHeatmap = async () => {
+    if (!pricesGenerated) {
+      alert("Please generate the option prices first.");
+      return;
+    }
+
     if (!purchasePrice || !volatilityRange.min || !volatilityRange.max || !spotPriceRange.min || !spotPriceRange.max) {
-      console.error('Tous les champs doivent être remplis');
+      console.error('All fields must be filled out');
       return;
     }
 
@@ -74,60 +79,76 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate }) => {
     <div>
       <h3>Heatmap P&L</h3>
       <form onSubmit={(e) => { e.preventDefault(); generateHeatmap(); }}>
-        <label>
-          Purchase Price:
-          <input type="number" name="purchasePrice" value={purchasePrice} onChange={handleInputChange} required />
-        </label>
-        <label>
-          Volatility Min (%):
-          <input type="number" name="volatilityMin" value={volatilityRange.min} onChange={handleInputChange} required />
-        </label>
-        <label>
-          Volatility Max (%):
-          <input type="number" name="volatilityMax" value={volatilityRange.max} onChange={handleInputChange} required />
-        </label>
-        <label>
-          Spot Price Min:
-          <input type="number" name="spotPriceMin" value={spotPriceRange.min} onChange={handleInputChange} required />
-        </label>
-        <label>
-          Spot Price Max:
-          <input type="number" name="spotPriceMax" value={spotPriceRange.max} onChange={handleInputChange} required />
-        </label>
-
-        {/* Sélection entre Call et Put */}
-        <label>
-          Option Type:
-          <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
-            <option value="call">Call</option>
-            <option value="put">Put</option>
-          </select>
-        </label>
-
+        <div style={{ justifyContent: 'space-between', marginBottom: '10px', marginTop: '10px' }}>
+          <label>
+            Purchase Price :
+            <input type="number" name="purchasePrice" value={purchasePrice} onChange={handleInputChange} required />
+          </label>
+          <label>
+            Volatility Min (%):
+            <input type="number" name="volatilityMin" value={volatilityRange.min} onChange={handleInputChange} required />
+          </label>
+          <label>
+            Volatility Max (%):
+            <input type="number" name="volatilityMax" value={volatilityRange.max} onChange={handleInputChange} required />
+          </label>
+        </div>
+        <div style={{ justifyContent: 'space-between', marginBottom: '10px'}}>
+          <label>
+            Spot Price Min :
+            <input type="number" name="spotPriceMin" value={spotPriceRange.min} onChange={handleInputChange} required />
+          </label>
+          <label>
+            Spot Price Max :
+            <input type="number" name="spotPriceMax" value={spotPriceRange.max} onChange={handleInputChange} required />
+          </label>
+          <label>
+            Option Type :
+            <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
+              <option value="call">Call</option>
+              <option value="put">Put</option>
+            </select>
+          </label>
+        </div>
         <button type="submit">Generate Heatmap</button>
       </form>
 
+
       {/* Affichage de la Heatmap */}
       {heatmapData && (
-        <Plot
-          data={[heatmapData]}
-          layout={{
-            title: `P&L Heatmap (${optionType.toUpperCase()})`,
-            xaxis: { 
-              title: 'Volatility',
-              tickmode: 'linear',
-              dtick: 0.05  // Ticks pour la volatilité
-            },
-            yaxis: { 
-              title: 'Spot Price',
-              tickmode: 'linear',
-              dtick: 10  // Ticks pour le prix spot
-            },
-            autosize: true
-          }}
-          style={{ width: "100%", height: "500px" }}
-        />
+          <Plot
+            data={[heatmapData]}
+            layout={{
+              title: {
+                text: `P&L Heatmap (${optionType.toUpperCase()})`,
+                font: { color: "#E5EFC1" }  // Text color for title
+              },
+              xaxis: { 
+                title: {
+                  text: 'Volatility',
+                  font: { color: "#E5EFC1" }  // Text color for axis
+                },
+                tickmode: 'linear',
+                dtick: 0.05,  // Ticks for volatility
+                color: "#E5EFC1"  // Tick labels color
+              },
+              yaxis: { 
+                title: {
+                  text: 'Spot Price',
+                  font: { color: "#E5EFC1" }  // Text color for axis
+                },
+                tickmode: 'linear',
+                dtick: 10,  // Ticks for spot price
+                color: "#E5EFC1"  // Tick labels color
+              },
+              autosize: true,
+              paper_bgcolor: "#1E1E1E",  // Background color of the entire chart
+              plot_bgcolor: "#121212",   // Background color of the plot area
+            }}
+            style={{ width: "100%", height: "500px" }}
+          />
       )}
+
     </div>
   );
 };

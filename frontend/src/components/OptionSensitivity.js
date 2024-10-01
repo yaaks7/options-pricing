@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 import { fetchOptionSensitivity } from '../services/api';
 
-const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, volatility, selectedModels }) => {
+const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, volatility, selectedModels, pricesGenerated }) => {
   const [parameter, setParameter] = useState('volatility');  // Paramètre à faire varier
   const [minParam, setMinParam] = useState('0.1');  // Valeur min
   const [maxParam, setMaxParam] = useState('0.5');  // Valeur max
@@ -52,6 +52,11 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
 
   // Fonction pour générer le graphique
   const generateGraph = async () => {
+
+    if (!pricesGenerated) {
+      alert("Please generate the option prices first.");
+      return;
+    }
     // Vérification que les modèles sont bien sélectionnés
     if (!selectedModelTypes || selectedModelTypes.length === 0) {
       alert("Please select at least one model.");
@@ -202,14 +207,32 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
         <Plot
           data={graphData}
           layout={{
-            title: `Option Price vs ${parameter.replace('_', ' ')}`,
-            xaxis: { title: parameter.replace('_', ' ') },
-            yaxis: { title: 'Option Price' },
-            autosize: true
+            title: {
+              text: `Option Price vs ${parameter.replace('_', ' ')}`,
+              font: { color: "#E5EFC1" }  // Text color for title
+            },
+            xaxis: { 
+              title: {
+                text: parameter.replace('_', ' '),
+                font: { color: "#E5EFC1" }  // Text color for axis
+              },
+              color: "#E5EFC1"  // Tick labels color
+            },
+            yaxis: { 
+              title: {
+                text: 'Option Price',
+                font: { color: "#E5EFC1" }  // Text color for axis
+              },
+              color: "#E5EFC1"  // Tick labels color
+            },
+            autosize: true,
+            paper_bgcolor: "#1E1E1E",  // Background color of the entire chart
+            plot_bgcolor: "#121212",   // Background color of the plot area
           }}
           style={{ width: "100%", height: "500px" }}
         />
       )}
+
     </div>
   );
 };
