@@ -14,7 +14,7 @@ function Header() {
           <button className="header-btn model-btn">MODEL</button>
         </Link>
         <Link to="/history">
-          <button className="header-btn history-btn">HISTORY</button>
+          <button className="header-btn history-btn">HISTORIC</button>
         </Link>
         <Link to="/documentation">
           <button className="header-btn doc-btn">DOCUMENTATION</button>

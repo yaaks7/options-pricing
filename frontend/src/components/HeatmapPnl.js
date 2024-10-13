@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import Plot from 'react-plotly.js';
 import { fetchHeatmapPnl } from '../services/api';
+import '../App.css'; 
+import '../styles/Modelling.css'; 
 
-const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated }) => {
+const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated, setLoading }) => {
   const [purchasePrice, setPurchasePrice] = useState('');
   const [volatilityRange, setVolatilityRange] = useState({ min: '', max: '' });
   const [spotPriceRange, setSpotPriceRange] = useState({ min: '', max: '' });
@@ -25,6 +27,8 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
   };
 
   const generateHeatmap = async () => {
+    setLoading(true);
+
     if (!pricesGenerated) {
       alert("Please generate the option prices first.");
       return;
@@ -73,6 +77,8 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
     } catch (error) {
       console.error('Error fetching heatmap data:', error);
     }
+
+    setLoading(false);
   };
 
   return (
@@ -81,26 +87,26 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
       <form onSubmit={(e) => { e.preventDefault(); generateHeatmap(); }}>
         <div style={{ justifyContent: 'space-between', marginBottom: '10px', marginTop: '10px' }}>
           <label>
-            Purchase Price :
-            <input type="number" name="purchasePrice" value={purchasePrice} onChange={handleInputChange} required />
+            Purchase Price ($) :
+            <input type="number" name="purchasePrice" value={purchasePrice} onChange={handleInputChange} min="0" required />
           </label>
           <label>
-            Volatility Min (%):
-            <input type="number" name="volatilityMin" value={volatilityRange.min} onChange={handleInputChange} required />
+            Volatility Min (%) :
+            <input type="number" name="volatilityMin" value={volatilityRange.min} onChange={handleInputChange} min="0" required />
           </label>
           <label>
-            Volatility Max (%):
-            <input type="number" name="volatilityMax" value={volatilityRange.max} onChange={handleInputChange} required />
+            Volatility Max (%) :
+            <input type="number" name="volatilityMax" value={volatilityRange.max} onChange={handleInputChange} min="0" required />
           </label>
         </div>
         <div style={{ justifyContent: 'space-between', marginBottom: '10px'}}>
           <label>
-            Spot Price Min :
-            <input type="number" name="spotPriceMin" value={spotPriceRange.min} onChange={handleInputChange} required />
+            Spot Price Min ($) :
+            <input type="number" name="spotPriceMin" value={spotPriceRange.min} onChange={handleInputChange} min="0" required />
           </label>
           <label>
-            Spot Price Max :
-            <input type="number" name="spotPriceMax" value={spotPriceRange.max} onChange={handleInputChange} required />
+            Spot Price Max ($) :
+            <input type="number" name="spotPriceMax" value={spotPriceRange.max} onChange={handleInputChange} min="0" required />
           </label>
           <label>
             Option Type :
@@ -110,7 +116,7 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
             </select>
           </label>
         </div>
-        <button type="submit">Generate Heatmap</button>
+        <button type="submit">Generate</button>
       </form>
 
 

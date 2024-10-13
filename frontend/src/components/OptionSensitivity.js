@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 import { fetchOptionSensitivity } from '../services/api';
+import '../App.css'; 
+import '../styles/Modelling.css'; 
 
-const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, volatility, selectedModels, pricesGenerated }) => {
+const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, volatility, selectedModels, pricesGenerated, setLoading }) => {
   const [parameter, setParameter] = useState('volatility');  // Paramètre à faire varier
   const [minParam, setMinParam] = useState('0.1');  // Valeur min
   const [maxParam, setMaxParam] = useState('0.5');  // Valeur max
@@ -52,6 +54,7 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
 
   // Fonction pour générer le graphique
   const generateGraph = async () => {
+    setLoading(true);
 
     if (!pricesGenerated) {
       alert("Please generate the option prices first.");
@@ -119,6 +122,7 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
     } catch (error) {
       console.error('Error fetching sensitivity data:', error);
     }
+    setLoading(false);
   };
 
   // Gérer la sélection des modèles pour le graphique
@@ -154,7 +158,7 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
 
       {/* Sélection du paramètre à faire varier */}
       <label>
-        Parameter to vary:
+        Parameter to vary :
         <select value={parameter} onChange={(e) => setParameter(e.target.value)}>
           <option value="volatility">Volatility</option>
           <option value="strike">Strike Price</option>
@@ -166,16 +170,16 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
       {/* Champs pour entrer les valeurs min et max */}
       <label>
         {minLabel}
-        <input type="number" value={minParam} onChange={(e) => setMinParam(e.target.value)} required />
+        <input type="number" value={minParam} onChange={(e) => setMinParam(e.target.value)} min="0" required />
       </label>
       <label>
         {maxLabel}
-        <input type="number" value={maxParam} onChange={(e) => setMaxParam(e.target.value)} required />
+        <input type="number" value={maxParam} onChange={(e) => setMaxParam(e.target.value)} min="0" required />
       </label>
 
       {/* Sélection entre Call et Put */}
       <label>
-        Option Type:
+        Option Type :
         <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
           <option value="call">Call</option>
           <option value="put">Put</option>
@@ -184,7 +188,7 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
 
       {/* Sélection des modèles disponibles */}
       <div>
-        <h4>Select Models for Sensitivity Graph:</h4>
+        <h4>Select Models for Sensitivity Graph :</h4>
         {Object.keys(modelMap).map((model) => (
           <label className="wrapper" key={model}>
             <span>{modelMap[model]}</span>
@@ -200,7 +204,7 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
         ))}
       </div>
 
-      <button onClick={generateGraph}>Generate Sensitivity Graph</button>
+      <button onClick={generateGraph}>Generate</button>
 
       {/* Affichage du graphique */}
       {graphData && (

@@ -1,233 +1,314 @@
 .modeling-container {
-    display: flex;
-    flex-direction: row;
-    padding: 20px;
-    justify-content: space-between;
-  }
+  display: flex;
+  transition: all 0.3s ease; 
+  flex-direction: row;
+  padding: 20px;
+  justify-content: space-between;
+}
+
+/* Sidebar */
+.sidebar-visible {
+  width: 25%;
+  background-color: #1e2224;
+  padding: 20px;
+  border-radius: 10px; 
+  color: #E5EFC1;
+  transition: width 0.5s ease;
+}
+
+.sidebar-hidden {
+  width: 0; /* Shrink the sidebar width */
+  transition: width 0.5s ease; /* Transition for smooth retraction */
+  overflow: hidden; 
+}
+
+.toggle-button {
+  position: absolute;
+  top: 15%; 
+  left: 1%; 
+  background-color: #39AEA9;
+  color: white;
+  border: none;
+  padding: 5px 10px; /* Reduce padding for a smaller button */
+  border-radius: 0 5px 5px 0; /* Rounded corners on the right side */
+  cursor: pointer;
+  z-index: 1000;
+  transform: translateY(-50%); /* Center the button vertically relative to the sidebar */
+}
+
+.toggle-button:hover {
+  background-color: #45a049; 
+}
+
+.sidebar h3, .sidebar h4 {
+  color: #A2D5AB;
+}
+
+/* Sidebar input fields */
+.sidebar input:not([type="checkbox"]), .sidebar select {
+  width: 98%; 
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  background-color: #333;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+}
+
+/* Ensure checkboxes and labels are aligned properly */
+.sidebar form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Flexbox layout for checkbox and label text */
+
+.sidebar label {
+  display: flex;
   
-  /* Sidebar container */
-  .sidebar {
-    width: 25%;
-    background-color: #222729;
-    padding: 20px;
-    border-radius: 10px; /* Rounded borders */
-    color: #E5EFC1;
-  }
+  justify-content: flex-start; /* Align to the left */
+  align-items: center;  /* Align vertically */
+  margin-top: 10px;
+  font-weight: bold;
+  cursor: pointer;  /* Show pointer cursor when hovering */
+}
+
+/* Checkbox styling */
+.sidebar input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  appearance: none;
+  background-color: #333;
+  border: 2px solid #A2D5AB;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Checkbox tick */
+.sidebar input[type="checkbox"]:checked {
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+}
+
+.sidebar input[type="checkbox"]:checked::after {
+  content: "✓";
+  color: white;
+  font-size: 14px;
+  position: absolute;
+  top: 1px;
+  left: 4px;
+}
+
+.sidebar button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #39AEA9;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+}
+
+.sidebar button:hover {
+  background-color: #45a049;
+}
+
+.wrapper {
+  width: 100%; 
+  margin-bottom: 10px;
+}
+
+.wrapper span:first-child {
+  float: left;
+  width: 30%;
+}
+
+.wrapper span:last-child {
+  float: right;
+  width: 5%; /* La checkbox prend 20% de la largeur */
+  text-align: right; /* Aligne la checkbox à droite */
+}
+
+.clearboth {
+  clear: both;
+}
+
+
+/* When sidebar is hidden, expand the results to 100% width */
+.results-container.without-sidebar {
+  width: 100%; /* Full width when sidebar is hidden */
   
-  .sidebar h3, .sidebar h4 {
-    color: #A2D5AB;
-  }
-  
-  .sidebar input:not([type="checkbox"]), .sidebar select {
-    width: 98%; 
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    background-color: #333;
-    border: none;
-    border-radius: 5px; /* Rounded input fields */
-    color: #fff;
-  }
-  
-  /* Ensure checkboxes and labels are aligned properly */
-  .sidebar form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  /* Flexbox layout for checkbox and label text */
-  
-  .sidebar label {
-    display: flex;
-    
-    justify-content: flex-start; /* Align to the left */
-    align-items: center;  /* Align vertically */
-    margin-top: 10px;
-    font-weight: bold;
-    cursor: pointer;  /* Show pointer cursor when hovering */
-  }
-  
-  /* Style the checkbox */
-  .sidebar input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;  /* Space between checkbox and text */
-    appearance: none;  /* Remove default checkbox styling */
-    background-color: #333;
-    border: 2px solid #A2D5AB;
-    border-radius: 5px; /* Rounded checkbox */
-    cursor: pointer;  /* Pointer cursor on hover */
-    position: relative;
-  }
-  
-  /* Checkbox tick when checked */
-  .sidebar input[type="checkbox"]:checked {
-    background-color: #4CAF50;
-    border-color: #4CAF50;
-  }
-  
-  /* Checkbox tick styling */
-  .sidebar input[type="checkbox"]:checked::after {
-    content: "✓";  /* Display checkmark */
-    color: white;
-    font-size: 14px;
-    position: absolute;
-    top: 1px;
-    left: 4px;
-  }
-  
-  .sidebar button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    background-color: #39AEA9;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
-  }
-  
-  .sidebar button:hover {
-    background-color: #45a049;
-  }
-  
-  .wrapper {
-    float: left;
-    width: 100%; /* Assure que chaque label occupe 100% de la largeur */
-    margin-bottom: 10px; /* Espace entre chaque option */
-  }
-  
-  .wrapper span:first-child {
-    float: left;
-    width: 30%; 
-    text-align: left; /* Aligne le texte à gauche */
-  }
-  
-  .wrapper span:last-child {
-    float: right;
-    width: 5%; /* La checkbox prend 20% de la largeur */
-    text-align: right; /* Aligne la checkbox à droite */
-  }
-  
-  .clearboth {
-    clear: both;
-  }
-  
-  
-  .results-container {
-    width: 70%;
-  }
-  
-  .results-header {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .results-section {
-    width: 45%;
-    background-color: #2F2F2F;
-    padding: 20px;
-    border-radius: 8px; /* Rounded box */
-    text-align: center;
-  }
-  
-  .results-section h4 {
-    color: #A2D5AB;
-  }
-  
-  .greeks-section {
-    margin-top: 20px;
-    margin-bottom: 90px;
-    padding: 20px;
-    background-color: #2F2F2F;
-    border-radius: 8px; /* Rounded box */
-  }
-  
-  .greeks-section h4 {
-    color: #A2D5AB;
-  }
-  
-  .greek-values {
-    display: flex;
-    justify-content: space-between;
-    text-align: center;
-    padding: 10px;
-  }
-  
-  .tabs {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-    padding-bottom: 10px;
-  }
-  
-  .tabs button {
-    padding: 10px;
-    background-color: #39AEA9;
-    color: white;
-    border-radius: 5px;
-    border: none;
-  }
-  
-  .tabs button:hover {
-    background-color: #45a049;
-  }
-  
-  .graph-container {
-    padding: 20px;
-    background-color: #2F2F2F;
-    border-radius: 8px;
-    min-height: 500px;
-  }
-  
-  .graph-container input, .graph-container select {
-    padding: 10px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: #333;
-    color: white;
-  }
-  
-  .graph-container button {
-    background-color: #39AEA9;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    color: white;
-    border: none;
-    padding: 10px;
-  }
-  
-  .graph-container button:hover {
-    background-color: #45a049;
-  }
-  
-  /* Style the checkbox for Options Sensitivity */
-  .options-sensitivity input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;  /* Space between checkbox and text */
-    appearance: none;  /* Remove default checkbox styling */
-    background-color: #333;
-    border: 2px solid #A2D5AB;
-    border-radius: 5px; /* Rounded checkbox */
-    cursor: pointer;  /* Pointer cursor on hover */
-    position: relative;
-  }
-  
-  /* Checkbox tick when checked */
-  .options-sensitivity input[type="checkbox"]:checked {
-    background-color: #4CAF50;
-    border-color: #4CAF50;
-  }
-  
-  /* Checkbox tick styling */
-  .options-sensitivity input[type="checkbox"]:checked::after {
-    content: "✓";  /* Display checkmark */
-    color: white;
-    font-size: 14px;
-    position: absolute;
-    top: 1px;
-    left: 4px;
-  }
-  
+
+}
+
+/* Sidebar visible */
+.results-container.with-sidebar {
+  width: 70%; /* Default width when sidebar is visible */
+  transition: width 0.3s ease;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.results-section {
+  width: 45%;
+  background-color: #2F2F2F;
+  padding: 20px;
+  border-radius: 8px; /* Rounded box */
+  text-align: center;
+  transition: 0.3s ease;
+}
+
+.results-section:hover {
+  filter: drop-shadow(0px 0px 8px #39AEA9);
+}
+
+.results-section h4 {
+  color: #A2D5AB;
+}
+
+.greeks-section {
+  margin-top: 20px;
+  margin-bottom: 90px;
+  padding: 20px;
+  background-color: #2F2F2F;
+  border-radius: 8px;
+  transition: 0.3s ease;
+}
+
+.greeks-section:hover {
+  filter: drop-shadow(0px 0px 8px #39AEA9);
+}
+
+.greeks-section h4 {
+  color: #A2D5AB;
+}
+
+.greek-values {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  padding: 10px;
+}
+
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding-bottom: 10px;
+}
+
+.tabs button {
+  padding: 10px;
+  background-color: #39AEA9;
+  color: white;
+  border-radius: 5px;
+  border: none;
+}
+
+.tabs button:hover {
+  background-color: #45a049;
+}
+
+.graph-container {
+  padding: 20px;
+  background-color: #2F2F2F;
+  border-radius: 8px;
+  min-height: 500px;
+  position: relative;
+  transition: width 0.3s ease;
+}
+
+.graph-container input, .graph-container select {
+  padding: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #333;
+  color: white;
+}
+
+.graph-container button {
+  background-color: #39AEA9;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  color: white;
+  border: none;
+  padding: 10px;
+}
+
+.graph-container button:hover {
+  background-color: #45a049;
+}
+
+/* Style the checkbox for Options Sensitivity */
+.options-sensitivity input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;  /* Space between checkbox and text */
+  appearance: none;  /* Remove default checkbox styling */
+  background-color: #333;
+  border: 2px solid #A2D5AB;
+  border-radius: 5px; /* Rounded checkbox */
+  cursor: pointer;  /* Pointer cursor on hover */
+  position: relative;
+}
+
+/* Checkbox tick when checked */
+.options-sensitivity input[type="checkbox"]:checked {
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+}
+
+/* Checkbox tick styling */
+.options-sensitivity input[type="checkbox"]:checked::after {
+  content: "✓";  /* Display checkmark */
+  color: white;
+  font-size: 14px;
+  position: absolute;
+  top: 1px;
+  left: 4px;
+}
+
+
+/* Loader CSS */
+.loader {
+  position: absolute;
+  top: 355px; /* Positioned at the bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid; /* Use grid for the square layout */
+  grid-template-columns: repeat(3, 10px); /* 3x3 grid of squares */
+  grid-gap: 5px; /* Small gap between squares */
+  z-index: 10; /* Ensure loader is above the graph */
+}
+
+/* Individual square styling */
+.square {
+  background: #E5EFC1;
+  width: 10px;
+  height: 10px;
+  animation: loader_5191 675ms ease-in-out infinite alternate;
+}
+
+@keyframes loader_5191 {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Positioning the squares in the grid */
+#sq1 { animation-delay: 0ms; }
+#sq2 { animation-delay: 75ms; }
+#sq3 { animation-delay: 150ms; }
+#sq4 { animation-delay: 225ms; }
+#sq5 { animation-delay: 300ms; }
+#sq6 { animation-delay: 375ms; }
+#sq7 { animation-delay: 450ms; }
+#sq8 { animation-delay: 525ms; }
+#sq9 { animation-delay: 600ms; }

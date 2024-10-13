@@ -22,12 +22,18 @@ const Modeling = () => {
     interestRate: ''
   });
 
-  const [activeTab, setActiveTab] = useState('heatmap'); // Add state to track active tab
+  const [activeTab, setActiveTab] = useState('heatmap');
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [results, setResults] = useState(null);
   const [greeks, setGreeks] = useState(null); 
   const [modelNames, setModelNames] = useState([]);
-  const [pricesGenerated, setPricesGenerated] = useState(false); // State for tracking if prices are generated
+  const [pricesGenerated, setPricesGenerated] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(true); // Sidebar visibility state
+
+  const toggleSidebar = () => {
+    setSidebarVisible(!sidebarVisible); // Toggle sidebar visibility
+  };
 
   const validateForm = () => {
     let formErrors = {};
@@ -104,85 +110,81 @@ const Modeling = () => {
       setResults(responses);
       setGreeks(greeksData);
       setModelNames(models);
-      setPricesGenerated(true); // Set pricesGenerated to true after fetching prices
+      setPricesGenerated(true);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
-  const handleGraphButtonClick = (e, graphType) => {
-    if (!pricesGenerated) {
-      e.preventDefault();
-      alert("Please generate the option prices first before generating the graph.");
-    }
-  };
-  
-
   return (
-
     <div className="modeling-container">
+      {/* Sidebar Toggle Button */}
+      <button className="toggle-button" onClick={toggleSidebar}>
+        {sidebarVisible ? '←' : '→'}
+      </button>
+
       {/* Sidebar */}
-      <div className="sidebar">
-        <form onSubmit={handleSubmit}>
-          <h3 className="centered-title">Enter Parameters</h3>
+      {sidebarVisible && (
+        <div className={sidebarVisible ? 'sidebar sidebar-visible' : 'sidebar sidebar-hidden'}>
+          <form onSubmit={handleSubmit}>
+            <h3 className="centered-title">Enter Parameters</h3>
 
-          <label>Current Price ($) :</label>
-          <input type="number" name="currentPrice" value={formData.currentPrice} onChange={handleChange} required />
-          
-          <label>Strike Price ($) :</label>
-          <input type="number" name="strikePrice" value={formData.strikePrice} onChange={handleChange} required />
-          
-          <label>Time to Maturity (Years) :</label>
-          <input type="number" name="timeToMaturity" value={formData.timeToMaturity} onChange={handleChange} required />
-          
-          <label>Volatility (%) :</label>
-          <input type="number" name="volatility" value={formData.volatility} onChange={handleChange} required />
-          {errors.volatility && <p className="error">{errors.volatility}</p>}
-          
-          <label>Interest Rate (%) :</label>
-          <input type="number" name="interestRate" value={formData.interestRate} onChange={handleChange} required />
-          {errors.interestRate && <p className="error">{errors.interestRate}</p>}
+            <label>Current Price ($) :</label>
+            <input type="number" name="currentPrice" value={formData.currentPrice} onChange={handleChange} min="0" required />
+            
+            <label>Strike Price ($) :</label>
+            <input type="number" name="strikePrice" value={formData.strikePrice} onChange={handleChange} min="0" required />
+            
+            <label>Time to Maturity (Years) :</label>
+            <input type="number" name="timeToMaturity" value={formData.timeToMaturity} onChange={handleChange} min="0" required />
+            
+            <label>Volatility (%) :</label>
+            <input type="number" name="volatility" value={formData.volatility} onChange={handleChange} min="0" required />
+            {errors.volatility && <p className="error">{errors.volatility}</p>}
+            
+            <label>Interest Rate (%) :</label>
+            <input type="number" name="interestRate" value={formData.interestRate} onChange={handleChange} min="0" required />
+            {errors.interestRate && <p className="error">{errors.interestRate}</p>}
 
-          <h3>Select Models</h3>
-          <label className="wrapper">
-            <span>Black-Scholes</span>
-            <span><input type="checkbox" name="blackScholes" checked={selectedModels.blackScholes} onChange={handleModelChange} /></span>
-          </label>
+            <h3>Select Models</h3>
+            <label className="wrapper">
+              <span>Black-Scholes</span>
+              <span><input type="checkbox" name="blackScholes" checked={selectedModels.blackScholes} onChange={handleModelChange} /></span>
+            </label>
 
-          <label className="wrapper">
-            <span>Binomial</span>
-            <span><input type="checkbox" name="binomial" checked={selectedModels.binomial} onChange={handleModelChange} /></span>
-          </label>
+            <label className="wrapper">
+              <span>Binomial</span>
+              <span><input type="checkbox" name="binomial" checked={selectedModels.binomial} onChange={handleModelChange} /></span>
+            </label>
 
-          <label className="wrapper">
-            <span>Monte-Carlo</span>
-            <span><input type="checkbox" name="monteCarlo" checked={selectedModels.monteCarlo} onChange={handleModelChange} /></span>
-          </label>
+            <label className="wrapper">
+              <span>Monte-Carlo</span>
+              <span><input type="checkbox" name="monteCarlo" checked={selectedModels.monteCarlo} onChange={handleModelChange} /></span>
+            </label>
 
-          <label className="wrapper">
-            <span>Neural Network</span>
-            <span><input type="checkbox" name="neuralNetwork" checked={selectedModels.neuralNetwork} onChange={handleModelChange} /></span>
-          </label>
+            <label className="wrapper">
+              <span>Neural Network</span>
+              <span><input type="checkbox" name="neuralNetwork" checked={selectedModels.neuralNetwork} onChange={handleModelChange} /></span>
+            </label>
 
-          <div className="clearboth"></div>  {/* Clear floats */}
-
-          <button type="submit">Generate</button>
-        </form>
-      </div>
+            <button type="submit">Generate Options Prices</button>
+          </form>
+        </div>
+      )}
 
       {/* Results Section */}
-      <div className="results-container">
+      <div className={`results-container ${sidebarVisible ? 'with-sidebar' : 'without-sidebar'}`}>
         <div className="results-header">
           <div className="results-section">
             <h4 className="centered-title">Call Prices</h4>
             {results && results.map((result, index) => (
-              <div key={index}><p>{modelNames[index]} Call : {result.call_price.toFixed(2)} $</p></div>
+              <div key={index}><p>{modelNames[index]} Call : $ {result.call_price.toFixed(2)} </p></div>
             ))}
           </div>
           <div className="results-section">
             <h4 className="centered-title">Put Prices</h4>
             {results && results.map((result, index) => (
-              <div key={index}><p>{modelNames[index]} Put : {result.put_price.toFixed(2)} $</p></div>
+              <div key={index}><p>{modelNames[index]} Put : $ {result.put_price.toFixed(2)}</p></div>
             ))}
           </div>
         </div>
@@ -219,9 +221,24 @@ const Modeling = () => {
         </div>
 
         {/* Display selected tab */}
-        <div className="graph-container">
-          {activeTab === 'heatmap' && (
-            <HeatmapPnl
+        <div className={`graph-container ${sidebarVisible ? 'with-sidebar' : 'without-sidebar'}`}>
+          {/* Loader */}
+          {loading && (
+            <div className="loader">
+              <div className="square" id="sq1"></div>
+              <div className="square" id="sq2"></div>
+              <div className="square" id="sq3"></div>
+              <div className="square" id="sq4"></div>
+              <div className="square" id="sq5"></div>
+              <div className="square" id="sq6"></div>
+              <div className="square" id="sq7"></div>
+              <div className="square" id="sq8"></div>
+              <div className="square" id="sq9"></div>
+            </div>
+          )}
+
+          {activeTab === 'heatmap' &&  (
+            <HeatmapPnl setLoading={setLoading}
               strikePrice={formData.strikePrice}
               timeToMaturity={formData.timeToMaturity}
               interestRate={formData.interestRate}
@@ -230,7 +247,7 @@ const Modeling = () => {
           )}
 
           {activeTab === 'optionSensitivity' && (
-            <OptionSensitivityGraph
+            <OptionSensitivityGraph setLoading={setLoading}
               currentPrice={formData.currentPrice}
               strikePrice={formData.strikePrice}
               timeToMaturity={formData.timeToMaturity}
@@ -242,7 +259,7 @@ const Modeling = () => {
           )}
 
           {activeTab === 'greeksSensitivity' && (
-            <GreeksSensitivityGraph
+            <GreeksSensitivityGraph setLoading={setLoading}
               currentPrice={formData.currentPrice}
               strikePrice={formData.strikePrice}
               timeToMaturity={formData.timeToMaturity}
