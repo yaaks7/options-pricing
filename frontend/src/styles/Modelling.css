@@ -112,6 +112,11 @@
   color: #fff;
 }
 
+.sidebar button:active {
+  box-shadow: none;
+  transform: scale(0.95);
+}
+
 .sidebar button:hover {
   background-color: #45a049;
 }
@@ -211,6 +216,11 @@
   border: none;
 }
 
+.tabs button:active {
+  box-shadow: none;
+  transform: scale(0.95);
+}
+
 .tabs button:hover {
   background-color: #45a049;
 }
@@ -241,6 +251,11 @@
   color: white;
   border: none;
   padding: 10px;
+}
+
+.graph-container button:active {
+  box-shadow: none;
+  transform: scale(0.95);
 }
 
 .graph-container button:hover {

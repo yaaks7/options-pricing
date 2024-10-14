@@ -11,10 +11,12 @@ import MonteCarlo from './pages/docs/MonteCarlo';
 import NeuralNetwork from './pages/docs/NeuralNetwork';
 import Greeks from './pages/docs/Greeks';
 import Header from './components/Header';
+import Background from './components/Background'
 
 function App() {
   return (
     <Router>
+      {/*<Background />*/}
       <Header /> {/* Ensure Header appears on every page */}
       <Routes>
         <Route path="/" element={<Home />} />

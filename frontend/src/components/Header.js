@@ -1,23 +1,26 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import '../styles/Header.css';  
 import homeIcon from '../images/home-48.png'; 
 
 function Header() {
+  const location = useLocation();  // Get the current route path
+
   return (
     <div className="header">
       <div className="header-left">
         <Link to="/">
-          <img src={homeIcon} alt="Home" className="home-icon" />
+          <button className={`header-btn home-btn ${location.pathname === '/' ? 'active' : ''}`}>Home</button>
+          {/*<img src={homeIcon} alt="Home" className="home-icon" />*/}
         </Link>
         <Link to="/modeling">
-          <button className="header-btn model-btn">MODEL</button>
+          <button className={`header-btn model-btn ${location.pathname === '/modeling' ? 'active' : ''}`}>Options Pricing</button>
         </Link>
         <Link to="/history">
-          <button className="header-btn history-btn">HISTORIC</button>
+          <button className={`header-btn history-btn ${location.pathname === '/history' ? 'active' : ''}`}>Historic</button>
         </Link>
         <Link to="/documentation">
-          <button className="header-btn doc-btn">DOCUMENTATION</button>
+          <button className={`header-btn doc-btn ${location.pathname === '/documentation' ? 'active' : ''}`}>Documentations</button>
         </Link>
       </div>
       <div className="social-links">

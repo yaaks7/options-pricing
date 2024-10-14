@@ -18,37 +18,68 @@
 }
 
 .header-btn {
-    padding: 10px 15px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  background: none;
+  color: #ffffff;
+  font-weight: 600;
+  position: relative;
+  display: inline-block;
+  text-transform: uppercase; 
 }
 
-/* Model button specific color */
+.header-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  right: 50%;
+  height: 2px;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+/* When hovering, animate the underline */
+.header-btn:hover::after {
+  left: 0;
+  right: 0;
+}
+
+/* Active page underline */
+.header-btn.active::after {
+  left: 0;
+  right: 0;
+  background: white;
+}
+
+/* Spécifique à chaque bouton */
+.home-btn {
+  background-color: transparent;
+  color: #ffffff;  
+  margin-top: 5px;
+}
+
 .model-btn {
-    background-color: #39AEA9; 
-    color: #ffffff;
-    margin-top: 5px;
-}
-
-/* Documentation button specific color */
-.doc-btn {
-    background-color: #39AEA9; 
-    color: #ffffff;
-    margin-top: 5px;
+  background-color: transparent;
+  color: #ffffff;  
+  margin-top: 5px;
 }
 
 .history-btn {
-    background-color: #39AEA9; 
-    color: #ffffff;
-    margin-top: 5px;
+  background-color: transparent;
+  color: #ffffff;  
+  margin-top: 5px;
 }
 
-.header-btn:hover {
-    background-color: #555;
-    color: white;
+.doc-btn {
+  background-color: transparent;
+  color: #ffffff;  
+  margin-top: 5px;
 }
+
 
 /* Home icon styling */
 .home-icon {

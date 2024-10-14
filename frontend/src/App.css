@@ -14,24 +14,28 @@
 }
 
 button {
-  background-color: #4CAF50;
-  color: white;
   border: none;
   cursor: pointer;
-}
-
-button:hover {
-  background-color: #45a049;
 }
 
 button:disabled {
   background-color: #666;
 }
 
-body {
-  background-color: #121212;
-  color: #E5EFC1;
+.vanta-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -10; /* Keeps the background behind all content */
 }
+
+body {
+  color: #E5EFC1;
+  background-color: #121212;
+}
+
 
 .centered-title {
   text-align: center;
