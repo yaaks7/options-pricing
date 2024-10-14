@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { fetchBlackScholesPrice, fetchBinomialPrice, fetchMonteCarloPrice, fetchNeuralNetworkPrice, fetchGreeks } from '../services/api';
 import HeatmapPnl from '../components/HeatmapPnl';
 import OptionSensitivityGraph from '../components/OptionSensitivity';
@@ -6,7 +6,7 @@ import GreeksSensitivityGraph from '../components/GreeksSensitivity';
 import '../App.css'; 
 import '../styles/Modelling.css'; 
 
-const Modeling = () => {
+const Modeling = ({ historyRequest }) => {
   const [selectedModels, setSelectedModels] = useState({
     blackScholes: false,
     binomial: false,
@@ -21,6 +21,28 @@ const Modeling = () => {
     volatility: '',
     interestRate: ''
   });
+
+  // If a request is loaded from history, populate the form and model selection
+  useEffect(() => {
+    if (historyRequest) {
+      setFormData({
+        currentPrice: historyRequest.requestData.current_price,
+        strikePrice: historyRequest.requestData.strike,
+        timeToMaturity: historyRequest.requestData.time_to_maturity,
+        volatility: historyRequest.requestData.volatility * 100,  // Convert back to percentage
+        interestRate: historyRequest.requestData.interest_rate * 100  // Convert back to percentage
+      });
+  
+      const models = {
+        blackScholes: historyRequest.models.includes("Black-Scholes"),
+        binomial: historyRequest.models.includes("Binomial"),
+        monteCarlo: historyRequest.models.includes("Monte Carlo"),
+        neuralNetwork: historyRequest.models.includes("Neural Network")
+      };
+      setSelectedModels(models);
+    }
+  }, [historyRequest]);
+  
 
   const [activeTab, setActiveTab] = useState('heatmap');
   const [loading, setLoading] = useState(false);
@@ -46,6 +68,12 @@ const Modeling = () => {
 
     if (formData.interestRate < 0 || formData.interestRate > 100 || formData.interestRate === '') {
       formErrors.interestRate = 'Interest Rate must be between 0 and 100';
+      valid = false;
+    }
+
+    // Valider qu'au moins un modèle est sélectionné
+    if (!selectedModels.blackScholes && !selectedModels.binomial && !selectedModels.monteCarlo && !selectedModels.neuralNetwork) {
+      formErrors.models = 'You must select at least one model';
       valid = false;
     }
 
@@ -111,10 +139,27 @@ const Modeling = () => {
       setGreeks(greeksData);
       setModelNames(models);
       setPricesGenerated(true);
+
+      // Sauvegarder dans l'historique
+      const historyData = {
+        models,
+        requestData,
+        responses, 
+        greeksData
+      };
+      saveToHistory(historyData);
+
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
+
+  const saveToHistory = (newEntry) => {
+    const history = JSON.parse(localStorage.getItem('history')) || [];
+    history.push(newEntry);
+    localStorage.setItem('history', JSON.stringify(history));
+  };
+
 
   return (
     <div className="modeling-container">
@@ -130,20 +175,20 @@ const Modeling = () => {
             <h3 className="centered-title">Enter Parameters</h3>
 
             <label>Current Price ($) :</label>
-            <input type="number" name="currentPrice" value={formData.currentPrice} onChange={handleChange} min="0" required />
+            <input type="number" name="currentPrice" value={formData.currentPrice} onChange={handleChange} min="0" step="0.01" required />
             
             <label>Strike Price ($) :</label>
-            <input type="number" name="strikePrice" value={formData.strikePrice} onChange={handleChange} min="0" required />
+            <input type="number" name="strikePrice" value={formData.strikePrice} onChange={handleChange} min="0" step="0.01" required />
             
             <label>Time to Maturity (Years) :</label>
-            <input type="number" name="timeToMaturity" value={formData.timeToMaturity} onChange={handleChange} min="0" required />
+            <input type="number" name="timeToMaturity" value={formData.timeToMaturity} onChange={handleChange} min="0" step="0.01" required />
             
             <label>Volatility (%) :</label>
-            <input type="number" name="volatility" value={formData.volatility} onChange={handleChange} min="0" required />
+            <input type="number" name="volatility" value={formData.volatility} onChange={handleChange} min="0" step="0.01" required />
             {errors.volatility && <p className="error">{errors.volatility}</p>}
             
             <label>Interest Rate (%) :</label>
-            <input type="number" name="interestRate" value={formData.interestRate} onChange={handleChange} min="0" required />
+            <input type="number" name="interestRate" value={formData.interestRate} onChange={handleChange} min="0" step="0.01" required />
             {errors.interestRate && <p className="error">{errors.interestRate}</p>}
 
             <h3>Select Models</h3>
@@ -166,6 +211,9 @@ const Modeling = () => {
               <span>Neural Network</span>
               <span><input type="checkbox" name="neuralNetwork" checked={selectedModels.neuralNetwork} onChange={handleModelChange} /></span>
             </label>
+
+            {/* Message d'erreur si aucun modèle n'est sélectionné */}
+            {errors.models && <p className="error">{errors.models}</p>}
 
             <button type="submit">Generate Options Prices</button>
           </form>

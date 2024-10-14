@@ -17,7 +17,7 @@ function Header() {
           <button className={`header-btn model-btn ${location.pathname === '/modeling' ? 'active' : ''}`}>Options Pricing</button>
         </Link>
         <Link to="/history">
-          <button className={`header-btn history-btn ${location.pathname === '/history' ? 'active' : ''}`}>Historic</button>
+          <button className={`header-btn history-btn ${location.pathname === '/history' ? 'active' : ''}`}>History</button>
         </Link>
         <Link to="/documentation">
           <button className={`header-btn doc-btn ${location.pathname === '/documentation' ? 'active' : ''}`}>Documentations</button>
