@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';  // Import useLocation to detect route changes
 import { fetchBlackScholesPrice, fetchBinomialPrice, fetchMonteCarloPrice, fetchNeuralNetworkPrice, fetchGreeks } from '../services/api';
 import HeatmapPnl from '../components/HeatmapPnl';
 import OptionSensitivityGraph from '../components/OptionSensitivity';
@@ -6,7 +7,8 @@ import GreeksSensitivityGraph from '../components/GreeksSensitivity';
 import '../App.css'; 
 import '../styles/Modelling.css'; 
 
-const Modeling = ({ historyRequest }) => {
+const Modeling = ({ historyRequest, clearHistoryRequest }) => {
+  const location = useLocation();
   const [selectedModels, setSelectedModels] = useState({
     blackScholes: false,
     binomial: false,
@@ -22,27 +24,48 @@ const Modeling = ({ historyRequest }) => {
     interestRate: ''
   });
 
-  // If a request is loaded from history, populate the form and model selection
+  // Handle "Load Request" from history and clear it after loading
   useEffect(() => {
     if (historyRequest) {
       setFormData({
         currentPrice: historyRequest.requestData.current_price,
         strikePrice: historyRequest.requestData.strike,
         timeToMaturity: historyRequest.requestData.time_to_maturity,
-        volatility: historyRequest.requestData.volatility * 100,  // Convert back to percentage
-        interestRate: historyRequest.requestData.interest_rate * 100  // Convert back to percentage
+        volatility: (historyRequest.requestData.volatility * 100).toFixed(2),
+        interestRate: (historyRequest.requestData.interest_rate * 100).toFixed(2)
       });
-  
-      const models = {
-        blackScholes: historyRequest.models.includes("Black-Scholes"),
-        binomial: historyRequest.models.includes("Binomial"),
-        monteCarlo: historyRequest.models.includes("Monte Carlo"),
-        neuralNetwork: historyRequest.models.includes("Neural Network")
-      };
-      setSelectedModels(models);
+
+      setSelectedModels({
+        blackScholes: historyRequest.models.includes('Black-Scholes'),
+        binomial: historyRequest.models.includes('Binomial'),
+        monteCarlo: historyRequest.models.includes('Monte Carlo'),
+        neuralNetwork: historyRequest.models.includes('Neural Network')
+      });
+
+      // Clear the history request after loading it into the form
+      clearHistoryRequest();
     }
-  }, [historyRequest]);
-  
+  }, [historyRequest, clearHistoryRequest]);
+
+  // Reset form when navigating away from the modeling page
+  useEffect(() => {
+    if (location.pathname !== '/modeling') {
+      setFormData({
+        currentPrice: '',
+        strikePrice: '',
+        timeToMaturity: '',
+        volatility: '',
+        interestRate: ''
+      });
+      setSelectedModels({
+        blackScholes: false,
+        binomial: false,
+        monteCarlo: false,
+        neuralNetwork: false
+      });
+    }
+  }, [location.pathname]);
+
 
   const [activeTab, setActiveTab] = useState('heatmap');
   const [loading, setLoading] = useState(false);
@@ -156,10 +179,22 @@ const Modeling = ({ historyRequest }) => {
 
   const saveToHistory = (newEntry) => {
     const history = JSON.parse(localStorage.getItem('history')) || [];
-    history.push(newEntry);
-    localStorage.setItem('history', JSON.stringify(history));
+    // Check if the new entry already exists
+    const isDuplicate = history.some(entry =>
+      JSON.stringify(entry.requestData) === JSON.stringify(newEntry.requestData) &&
+      JSON.stringify(entry.models) === JSON.stringify(newEntry.models)
+    );
+  
+    if (!isDuplicate) {
+      const entryWithTimestamp = {
+        ...newEntry,
+        timestamp: new Date().toISOString(),  // Add timestamp to each entry
+      };
+      history.push(entryWithTimestamp);
+      localStorage.setItem('history', JSON.stringify(history));
+    }
   };
-
+  
 
   return (
     <div className="modeling-container">
