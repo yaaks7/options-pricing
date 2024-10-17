@@ -52,7 +52,7 @@ const History = ({ onLoadHistory }) => {
 
   return (
     <div>
-      <h2>Request History</h2>
+      <h1>Request History</h1>
 
       {/* Clear History Button */}
       <button className="clear-history-btn" onClick={handleClearHistory}>

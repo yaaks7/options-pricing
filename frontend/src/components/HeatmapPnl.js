@@ -88,7 +88,7 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
         <div style={{ justifyContent: 'space-between', marginBottom: '10px', marginTop: '10px' }}>
           <label>
             Purchase Price ($) :
-            <input type="number" name="purchasePrice" value={purchasePrice} onChange={handleInputChange} min="0" required />
+            <input type="number" name="purchasePrice" value={purchasePrice} onChange={handleInputChange} min="0" step="0.01" required />
           </label>
           <label>
             Volatility Min (%) :

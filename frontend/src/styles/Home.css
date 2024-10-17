@@ -1,0 +1,128 @@
+/* Container for the whole page */
+.homepage-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    color: #E5EFC1;
+  }
+
+  .home-title {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Section for the scrollable cards and image */
+  .content-container {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    margin-bottom: 40px;
+  }
+  
+  /* Scrollable section for "What", "Who", and "Why" */
+  .scroll-section {
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+    padding: 10px;
+    scroll-snap-type: x mandatory;
+    gap: 20px;
+    width: 45%; /* Takes half the page */
+    text-align: center;
+  }
+  
+  .scroll-section::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  .scroll-section::-webkit-scrollbar-thumb {
+    background-color: #39AEA9;
+    border-radius: 10px;
+  }
+  
+  .scroll-card {
+    min-width: 300px;
+    background-color: #2F2F2F;
+    padding: 20px;
+    border-radius: 10px;
+    scroll-snap-align: start;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .scroll-card h2 {
+    color: #A2D5AB;
+    margin-bottom: 10px;
+  }
+  
+  /* Image container for the trading image */
+  .image-container {
+    width: 45%;
+  }
+  
+  .image-container img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Button container and styling */
+  .button-container {
+    margin-top: 20px;
+  }
+  
+  .start-button {
+    background-color: #39AEA9;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  
+  .start-button:active {
+    box-shadow: none;
+    transform: scale(0.95);
+  }
+  
+  .start-button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Documentation section */
+  .documentation-section {
+    width: 80%;
+    margin-top: 40px;
+    background-color: #2F2F2F;
+    border-radius: 8px;
+    text-align: center
+  }
+  
+  .documentation-section h3 {
+    color: #A2D5AB;
+    margin-bottom: 10px;
+  }
+  
+  .documentation-section p {
+    margin-bottom: 20px;
+  }
+  
+  .doc-links {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+  }
+  
+  .doc-links a {
+    color: #39AEA9;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+  .doc-links a:hover {
+    text-decoration: underline;
+  }
+
+
+  
