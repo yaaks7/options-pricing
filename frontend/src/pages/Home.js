@@ -1,8 +1,8 @@
 // src/pages/Home.js
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/Home.css'; // Assuming you want to style it separately
-import stockTradingImage from '../images/stock-trading.jpg'; // Image import
+import '../styles/Home.css'; 
+import stockTradingImage from '../images/stock-trading.jpg';
 
 const Home = () => {
   return (

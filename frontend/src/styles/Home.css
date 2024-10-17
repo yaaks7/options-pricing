@@ -9,6 +9,7 @@
 
   .home-title {
     text-align: center;
+    color: #f5f5f5;
     margin-bottom: 20px;
   }
   
@@ -79,15 +80,16 @@
     font-size: 18px;
     border-radius: 10px;
     cursor: pointer;
+    transition: background-color 0.3s;
   }
   
   .start-button:active {
     box-shadow: none;
     transform: scale(0.95);
   }
-  
+
   .start-button:hover {
-    background-color: #45a049;
+    background-color: #349e99;
   }
   
   /* Documentation section */
@@ -122,6 +124,10 @@
   
   .doc-links a:hover {
     text-decoration: underline;
+  }
+
+  .homepage-container p {
+    color: #bfbfbf;
   }
 
 

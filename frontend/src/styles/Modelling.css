@@ -9,7 +9,7 @@
 /* Sidebar */
 .sidebar-visible {
   width: 25%;
-  background-color: #1e2224;
+  background-color: #26272b;
   padding: 20px;
   border-radius: 10px; 
   color: #E5EFC1;
@@ -34,10 +34,11 @@
   cursor: pointer;
   z-index: 1000;
   transform: translateY(-50%); /* Center the button vertically relative to the sidebar */
+  transition: background-color 0.3s;
 }
 
 .toggle-button:hover {
-  background-color: #45a049; 
+  background-color: #349e99; 
 }
 
 .sidebar h3, .sidebar h4 {
@@ -110,6 +111,7 @@
   border: none;
   border-radius: 5px;
   color: #fff;
+  transition: background-color 0.3s;
 }
 
 .sidebar button:active {
@@ -118,7 +120,7 @@
 }
 
 .sidebar button:hover {
-  background-color: #45a049;
+  background-color: #349e99;
 }
 
 .wrapper {
@@ -214,6 +216,7 @@
   color: white;
   border-radius: 5px;
   border: none;
+  transition: background-color 0.3s;
 }
 
 .tabs button:active {
@@ -222,7 +225,7 @@
 }
 
 .tabs button:hover {
-  background-color: #45a049;
+  background-color: #349e99;
 }
 
 .graph-container {
@@ -259,7 +262,7 @@
 }
 
 .graph-container button:hover {
-  background-color: #45a049;
+  background-color: #349e99;
 }
 
 /* Style the checkbox for Options Sensitivity */
