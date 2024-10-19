@@ -17,7 +17,7 @@ const BlackScholes = () => {
       </section>
 
       <section className="doc-section">
-        <h2>Assumptions of the Black-Scholes Model</h2>
+        <h2>Assumptions</h2>
         <ul>
           <li>Efficient Markets: Asset prices reflect all available information, ensuring markets are efficient.</li>
           <li>No Dividends: The underlying stocks do not pay dividends during the option's life.</li>
@@ -29,9 +29,10 @@ const BlackScholes = () => {
       </section>
 
       <section className="doc-section">
-        <h2>Model Formulas</h2>
-        <p>The formulas for calculating the prices of European call and put options are as follows:</p>
+        <h2>Formulas</h2>
+
         <div className="doc-equations">
+          <p>The formulas for calculating the prices of European call and put options are as follows:</p>
           <BlockMath math={`C = S_0 N(d_1) - X e^{-rT} N(d_2)`} />
           <BlockMath math={`P = X e^{-rT} N(-d_2) - S_0 N(-d_1)`} />
           <p>where:</p>
@@ -46,11 +47,38 @@ const BlackScholes = () => {
           <BlockMath math={`d_1 = \\frac{\\ln(\\frac{S_0}{X}) + (r + \\frac{\\sigma^2}{2})T}{\\sigma \\sqrt{T}}`} />
           <BlockMath math={`d_2 = d_1 - \\sigma \\sqrt{T}`} />
           <p>where <InlineMath>\sigma</InlineMath> represents the volatility of the underlying asset's returns.</p>
+          <p>
+              Intuitively, <strong>d₁</strong> measures the expected growth in the asset price, adjusted for volatility and time, while <strong>d₂</strong> accounts for the uncertainty. 
+              Higher values of <strong>d₁</strong> and <strong>d₂</strong> suggest a greater probability of the option finishing "in-the-money".
+          </p>
+          <h3>Behavior of the Formula Under Different Conditions</h3>
+          <p>
+            <ul>
+                <li><strong>As Time (T) Decreases:</strong> The value of the option approaches its intrinsic value (i.e., max(S₀ - X, 0)). Options lose their "time value" as expiration nears, making them less valuable. This is known as "time decay."</li>
+                <li><strong>When Volatility (σ) Increases:</strong> Higher volatility leads to a greater potential range for the underlying asset price, which can increase the call option's value. It reflects the higher chance of the asset reaching the strike price.</li>
+                <li><strong>Impact of Interest Rate (r):</strong> A higher risk-free rate reduces the present value of the strike price (X), making the call option more valuable. Conversely, a lower rate has the opposite effect.</li>
+            </ul>
+          </p>
         </div>
       </section>
 
+      <div className="doc-section">
+        <h2>Graphical Representation of the Black-Scholes Model</h2>
+        <p>
+            The figure below illustrates the theoretical pricing of a European call option using the Black-Scholes model. 
+            The graph shows how the call option price varies depending on the underlying asset's spot price and the time 
+            remaining until the option's expiry. As the spot price increases, the value of the call option also tends to 
+            rise, reflecting the higher likelihood of the option finishing "in-the-money". Additionally, the closer the 
+            option is to its expiry date, the steeper the price gradient becomes, highlighting the time-decay effect on 
+            the option's value.
+        </p>
+        <div className="doc-image">
+          <img src={BlackScholesImage} alt="Black-Scholes Option Pricing Graph"/>
+        </div>
+      </div>
+
       <section className="doc-section">
-        <h2>Model Limitations</h2>
+        <h2>Limitations</h2>
         <ul>
           <li>No Dividend Handling: The classical model does not account for dividends. Adjustments are needed for options on dividend-paying stocks.</li>
           <li>Assumption of Constant Volatility: In reality, market volatility can change over time, which the model does not account for.</li>
@@ -59,9 +87,6 @@ const BlackScholes = () => {
         </ul>
       </section>
 
-      <div className="doc-image">
-        <img src={BlackScholesImage} alt="Black-Scholes Graph" />
-      </div>
     </div>
   );
 };

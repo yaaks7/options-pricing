@@ -28,21 +28,19 @@
     text-align: center;
     margin-top: 10px;
   }
-
-  .doc-section h3 {
-    margin-bottom: 10px;
-    text-align: center;
-    margin-top: 10px;
-  }
-
-  
   
   .doc-equations {
-    background-color: #222;
-    padding: 15px;
-    border-radius: 8px;
-    font-family: 'Courier New', Courier, monospace;
-  }
+    text-align: center;
+    }
+
+    .doc-equations p {
+    text-align: left; 
+    }
+
+    .doc-equations .katex-display {
+    margin: 10px 0; 
+    }
+
   
   .doc-image {
     display: flex;

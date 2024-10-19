@@ -1,0 +1,54 @@
+/* Documentation.css */
+.documentation-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+  background-color: #141414;
+  color: #f5f5f5;
+  border-radius: 10px;
+}
+
+.doc-title {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.doc-section {
+  margin-bottom: 20px;
+}
+
+.doc-section p{
+  text-align: justify;
+}
+
+.doc-section h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.doc-equations {
+  text-align: center;
+  }
+
+  .doc-equations p {
+  text-align: left; 
+  }
+
+  .doc-equations .katex-display {
+  margin: 10px 0; 
+  }
+
+
+.doc-image {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.doc-image img {
+  max-width: 80%;
+  border-radius: 10px;
+}
