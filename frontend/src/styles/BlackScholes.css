@@ -1,0 +1,43 @@
+/* Documentation.css */
+.documentation-container {
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+    background-color: #141414;
+    color: #f5f5f5;
+    border-radius: 10px;
+  }
+  
+  .doc-title {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 20px;
+  }
+  
+  .doc-section {
+    margin-bottom: 20px;
+  }
+  
+  .doc-section h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .doc-equations {
+    background-color: #222;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  
+  .doc-image {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .doc-image img {
+    max-width: 80%;
+    border-radius: 10px;
+  }
+  
