@@ -45,8 +45,8 @@ const History = ({ onLoadHistory }) => {
           interest_rate: parseFloat((entry.requestData.interest_rate * 100).toFixed(2)) / 100
         }
       };
-      onLoadHistory(adjustedEntry);  // Transmit request data to parent
-      navigate('/modeling');  // Navigate to the modeling page
+      onLoadHistory(adjustedEntry);
+      navigate('/modeling');
     }
   };
 

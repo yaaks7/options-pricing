@@ -1,3 +1,5 @@
+/* src/styles/Documentations.css */
+
 .doc-container {
     text-align: center;
     padding: 50px 20px;
@@ -24,6 +26,10 @@
     max-width: 400px;
     text-align: center;
   }
+
+  .doc-item:hover {
+    filter: drop-shadow(0px 0px 5px #39AEA9);
+  }
   
   .doc-item h3 {
     color: #f5f5f5;
@@ -38,7 +44,7 @@
   }
   
   .doc-item-greeks {
-    grid-column: span 2; /* Takes full width for Greeks */
+    grid-column: span 2;
   }
   
   .doc-button {

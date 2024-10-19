@@ -1,10 +1,10 @@
+/* src/styles/History.css */
 
 h1 {
     text-align: center;
     margin-bottom: 20px;
     color: #f5f5f5;
 }
-
 
 .history-item {
     display: flex;
@@ -15,8 +15,8 @@ h1 {
     border-radius: 5px;
     justify-content: space-between;
     align-items: center;
-    width: 97%;  /* Réduction de la taille du conteneur */
-    margin: 10px auto; /* Centrer horizontalement */
+    width: 97%; 
+    margin: 10px auto;
 }
 
 .history-item:hover {
@@ -27,7 +27,6 @@ h1 {
     margin-right: 20px;
 }
 
-
 .load-request-btn {
     background-color: #39AEA9;
     color: white;
@@ -37,17 +36,14 @@ h1 {
     border-radius: 5px;
 }
 
-
 .load-request-btn:active {
     box-shadow: none;
     transform: scale(0.95);
 }
 
-
 .load-request-btn:hover {
     background-color: #45a049;
 }
-
 
 .clear-history-btn {
     position: absolute;

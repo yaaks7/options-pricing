@@ -1,10 +1,11 @@
 /* src/styles/Header.css */
+
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background-color: #333; /* Background color */
+    background-color: #333;
     color: white;
     border-radius: 15px;
     width: 97%;
@@ -42,20 +43,17 @@
   transition: all 0.3s ease;
 }
 
-/* When hovering, animate the underline */
 .header-btn:hover::after {
   left: 0;
   right: 0;
 }
 
-/* Active page underline */
 .header-btn.active::after {
   left: 0;
   right: 0;
   background: white;
 }
 
-/* Spécifique à chaque bouton */
 .home-btn {
   background-color: transparent;
   color: #ffffff;  
@@ -80,8 +78,6 @@
   margin-top: 5px;
 }
 
-
-/* Home icon styling */
 .home-icon {
     width: 48px;
     height: 48px;

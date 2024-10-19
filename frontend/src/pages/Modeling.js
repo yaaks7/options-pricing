@@ -1,5 +1,6 @@
+// src/pages/Modeling.js
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';  // Import useLocation to detect route changes
+import { useLocation } from 'react-router-dom';
 import { fetchBlackScholesPrice, fetchBinomialPrice, fetchMonteCarloPrice, fetchNeuralNetworkPrice, fetchGreeks } from '../services/api';
 import HeatmapPnl from '../components/HeatmapPnl';
 import OptionSensitivityGraph from '../components/OptionSensitivity';
@@ -94,7 +95,6 @@ const Modeling = ({ historyRequest, clearHistoryRequest }) => {
       valid = false;
     }
 
-    // Valider qu'au moins un modèle est sélectionné
     if (!selectedModels.blackScholes && !selectedModels.binomial && !selectedModels.monteCarlo && !selectedModels.neuralNetwork) {
       formErrors.models = 'You must select at least one model';
       valid = false;
@@ -163,7 +163,7 @@ const Modeling = ({ historyRequest, clearHistoryRequest }) => {
       setModelNames(models);
       setPricesGenerated(true);
 
-      // Sauvegarder dans l'historique
+      // Save in History
       const historyData = {
         models,
         requestData,
@@ -247,7 +247,6 @@ const Modeling = ({ historyRequest, clearHistoryRequest }) => {
               <span><input type="checkbox" name="neuralNetwork" checked={selectedModels.neuralNetwork} onChange={handleModelChange} /></span>
             </label>
 
-            {/* Message d'erreur si aucun modèle n'est sélectionné */}
             {errors.models && <p className="error">{errors.models}</p>}
 
             <button type="submit">Generate Options Prices</button>

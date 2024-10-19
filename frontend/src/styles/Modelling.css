@@ -1,3 +1,5 @@
+/* src/styles/Modelling.css */
+
 .modeling-container {
   display: flex;
   transition: all 0.3s ease; 
@@ -17,8 +19,8 @@
 }
 
 .sidebar-hidden {
-  width: 0; /* Shrink the sidebar width */
-  transition: width 0.5s ease; /* Transition for smooth retraction */
+  width: 0;
+  transition: width 0.5s ease;
   overflow: hidden; 
 }
 
@@ -29,11 +31,11 @@
   background-color: #39AEA9;
   color: white;
   border: none;
-  padding: 5px 10px; /* Reduce padding for a smaller button */
-  border-radius: 0 5px 5px 0; /* Rounded corners on the right side */
+  padding: 5px 10px;
+  border-radius: 0 5px 5px 0;
   cursor: pointer;
   z-index: 1000;
-  transform: translateY(-50%); /* Center the button vertically relative to the sidebar */
+  transform: translateY(-50%); 
   transition: background-color 0.3s;
 }
 
@@ -45,7 +47,6 @@
   color: #A2D5AB;
 }
 
-/* Sidebar input fields */
 .sidebar input:not([type="checkbox"]), .sidebar select {
   width: 98%; 
   padding: 10px;
@@ -57,25 +58,21 @@
   color: #fff;
 }
 
-/* Ensure checkboxes and labels are aligned properly */
 .sidebar form {
   display: flex;
   flex-direction: column;
 }
 
-/* Flexbox layout for checkbox and label text */
-
 .sidebar label {
   display: flex;
   
-  justify-content: flex-start; /* Align to the left */
-  align-items: center;  /* Align vertically */
+  justify-content: flex-start; 
+  align-items: center;  
   margin-top: 10px;
   font-weight: bold;
-  cursor: pointer;  /* Show pointer cursor when hovering */
+  cursor: pointer; 
 }
 
-/* Checkbox styling */
 .sidebar input[type="checkbox"] {
   width: 20px;
   height: 20px;
@@ -88,7 +85,6 @@
   position: relative;
 }
 
-/* Checkbox tick */
 .sidebar input[type="checkbox"]:checked {
   background-color: #4CAF50;
   border-color: #4CAF50;
@@ -135,25 +131,20 @@
 
 .wrapper span:last-child {
   float: right;
-  width: 5%; /* La checkbox prend 20% de la largeur */
-  text-align: right; /* Aligne la checkbox à droite */
+  width: 5%; 
+  text-align: right;
 }
 
 .clearboth {
   clear: both;
 }
 
-
-/* When sidebar is hidden, expand the results to 100% width */
 .results-container.without-sidebar {
-  width: 100%; /* Full width when sidebar is hidden */
-  
-
+  width: 100%; 
 }
 
-/* Sidebar visible */
 .results-container.with-sidebar {
-  width: 70%; /* Default width when sidebar is visible */
+  width: 70%;
   transition: width 0.3s ease;
 }
 
@@ -166,7 +157,7 @@
   width: 45%;
   background-color: #2F2F2F;
   padding: 20px;
-  border-radius: 8px; /* Rounded box */
+  border-radius: 8px;
   text-align: center;
   transition: 0.3s ease;
 }
@@ -265,28 +256,25 @@
   background-color: #349e99;
 }
 
-/* Style the checkbox for Options Sensitivity */
 .options-sensitivity input[type="checkbox"] {
   width: 20px;
   height: 20px;
-  margin-right: 10px;  /* Space between checkbox and text */
-  appearance: none;  /* Remove default checkbox styling */
+  margin-right: 10px; 
+  appearance: none;  
   background-color: #333;
   border: 2px solid #A2D5AB;
-  border-radius: 5px; /* Rounded checkbox */
-  cursor: pointer;  /* Pointer cursor on hover */
+  border-radius: 5px; 
+  cursor: pointer; 
   position: relative;
 }
 
-/* Checkbox tick when checked */
 .options-sensitivity input[type="checkbox"]:checked {
   background-color: #4CAF50;
   border-color: #4CAF50;
 }
 
-/* Checkbox tick styling */
 .options-sensitivity input[type="checkbox"]:checked::after {
-  content: "✓";  /* Display checkmark */
+  content: "✓";
   color: white;
   font-size: 14px;
   position: absolute;
@@ -294,20 +282,17 @@
   left: 4px;
 }
 
-
-/* Loader CSS */
 .loader {
   position: absolute;
-  top: 355px; /* Positioned at the bottom */
+  top: 355px;
   left: 50%;
   transform: translateX(-50%);
-  display: grid; /* Use grid for the square layout */
-  grid-template-columns: repeat(3, 10px); /* 3x3 grid of squares */
-  grid-gap: 5px; /* Small gap between squares */
-  z-index: 10; /* Ensure loader is above the graph */
+  display: grid; 
+  grid-template-columns: repeat(3, 10px);
+  grid-gap: 5px;
+  z-index: 10;
 }
 
-/* Individual square styling */
 .square {
   background: #E5EFC1;
   width: 10px;
@@ -320,7 +305,6 @@
   to { opacity: 1; }
 }
 
-/* Positioning the squares in the grid */
 #sq1 { animation-delay: 0ms; }
 #sq2 { animation-delay: 75ms; }
 #sq3 { animation-delay: 150ms; }

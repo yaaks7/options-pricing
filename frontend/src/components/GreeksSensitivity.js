@@ -1,3 +1,4 @@
+// src/components/GreeksSensitivity.js
 import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 import { fetchGreeksSensitivity } from '../services/api';
@@ -5,30 +6,29 @@ import '../App.css';
 import '../styles/Modelling.css'; 
 
 const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, volatility, interestRate, pricesGenerated, setLoading }) => {
-  const [parameter, setParameter] = useState('volatility');  // Paramètre à faire varier
-  const [greek, setGreek] = useState('delta');  // Greek à calculer
-  const [minParam, setMinParam] = useState(0.1);  // Valeur min
-  const [maxParam, setMaxParam] = useState(0.5);  // Valeur max
-  const [graphData, setGraphData] = useState(null);  // Données du graphique
-  const [optionType, setOptionType] = useState('call');  // Type d'option (Call ou Put)
+  const [parameter, setParameter] = useState('volatility');  
+  const [greek, setGreek] = useState('delta');  
+  const [minParam, setMinParam] = useState(0.1); 
+  const [maxParam, setMaxParam] = useState(0.5); 
+  const [graphData, setGraphData] = useState(null); 
+  const [optionType, setOptionType] = useState('call'); 
 
-  // Mettre à jour les valeurs par défaut selon le paramètre sélectionné
   useEffect(() => {
     switch (parameter) {
       case 'volatility':
-        setMinParam(10);  // Volatilité en %
+        setMinParam(10); 
         setMaxParam(50);
         break;
       case 'current_price':
-        setMinParam(10);  // Prix courant en $
+        setMinParam(10); 
         setMaxParam(100);
         break;
       case 'strike':
-        setMinParam(50);  // Strike en $
+        setMinParam(50);  
         setMaxParam(150);
         break;
       case 'time_to_maturity':
-        setMinParam(0.1);  // Temps à maturité en années
+        setMinParam(0.1);
         setMaxParam(5);
         break;
       default:
@@ -36,7 +36,6 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
     }
   }, [parameter]);
 
-  // Fonction pour générer le graphique
   const generateGraph = async () => {
     setLoading(true);
     const volatilityDecimal = parameter === 'volatility'
@@ -59,27 +58,26 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
     };
 
     const data = {
-      greek: greek,  // Greek sélectionné
-      parameter: parameter,  // Paramètre à faire varier
+      greek: greek, 
+      parameter: parameter, 
       fixed_params: fixedParams,
       steps: 50
     };
 
     try {
-      const response = await fetchGreeksSensitivity(data);  // Appel à l'API
+      const response = await fetchGreeksSensitivity(data); 
 
-      // Affichage des réponses dans la console pour déboguer
       console.log('API Response:', response);
 
       const plotData = {
         x: response.values,
-        y: response[optionType],  // Call ou Put
+        y: response[optionType], 
         type: 'scatter',
         mode: 'lines',
         name: `${greek.toUpperCase()} Sensitivity (${optionType})`
       };
 
-      setGraphData([plotData]);  // Mise à jour des données du graphique
+      setGraphData([plotData]); 
     } catch (error) {
       console.error('Error fetching sensitivity data:', error);
     }
@@ -91,7 +89,6 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
     setLoading(false);
   };
 
-  // Gérer l'affichage des labels min et max selon le paramètre sélectionné
   const getLabel = (param) => {
     switch (param) {
       case 'volatility':
@@ -107,13 +104,13 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
     }
   };
 
-  const [minLabel, maxLabel] = getLabel(parameter);  // Obtenir les labels appropriés
+  const [minLabel, maxLabel] = getLabel(parameter); 
 
   return (
     <div>
       <h3>Greeks Sensitivity Graph</h3>
 
-      {/* Sélection du greek à calculer */}
+      {/* Greek Selection */}
       <div style={{ justifyContent: 'space-between', marginBottom: '10px', marginTop: '10px' }}>
         <label>
           Greek to calculate :
@@ -126,7 +123,7 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
           </select>
         </label>
 
-        {/* Sélection du paramètre à faire varier */}
+        {/* Parameter to vary */}
         <label>
           Parameter to vary :
           <select value={parameter} onChange={(e) => setParameter(e.target.value)}>
@@ -138,7 +135,7 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
         </label>
       </div>
 
-      {/* Champs pour entrer les valeurs min et max */}
+      {/* Min & Max */}
       <div style={{ justifyContent: 'space-between', marginBottom: '10px'}}>
         <label>
           {minLabel}
@@ -149,7 +146,7 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
           <input type="number" value={maxParam} onChange={(e) => setMaxParam(e.target.value)} min="0" required />
         </label>
 
-        {/* Sélection entre Call et Put */}
+        {/* Call or Put */}
         <label>
           Option Type :
           <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
@@ -160,34 +157,33 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
       </div>
       <button onClick={generateGraph}>Generate</button>
 
-        {/* Affichage du graphique */}
+        {/* Plot */}
         {graphData && (
           <Plot
             data={graphData}
             layout={{
               title: {
                 text: `${greek.toUpperCase()} vs ${parameter.replace('_', ' ')}`,
-                font: { color: "#E5EFC1" }  // Text color for the title
+                font: { color: "#E5EFC1" } 
               },
               xaxis: { 
                 title: {
                   text: parameter.replace('_', ' '),
-                  font: { color: "#E5EFC1" }  // Text color for the x-axis
+                  font: { color: "#E5EFC1" } 
                 },
-                color: "#E5EFC1"  // Color for tick labels on the x-axis
+                color: "#E5EFC1"  
               },
               yaxis: { 
                 title: {
                   text: `${greek.toUpperCase()} Value`,
-                  font: { color: "#E5EFC1" }  // Text color for the y-axis
+                  font: { color: "#E5EFC1" } 
                 },
-                color: "#E5EFC1"  // Color for tick labels on the y-axis
+                color: "#E5EFC1"  
               },
               autosize: true,
-              paper_bgcolor: "#1E1E1E",  // Dark background for the entire chart
-              plot_bgcolor: "#121212",   // Dark background for the plot area
+              paper_bgcolor: "#1E1E1E",  
+              plot_bgcolor: "#121212", 
             }}
-            useResizeHandler={true}  // Gère automatiquement le redimensionnement
             style={{ width: "100%", height: "500px" }}
             className="plotly-graph"
           />

@@ -1,23 +1,24 @@
-/* Documentation.css */
+/* src/styles/NeuralNetwork.css */
+
 .documentation-containerN {
-  padding: 40px; /* Augmenter le padding pour donner plus d'espace */
+  padding: 40px; 
   max-width: 900px;
-  margin: 30px auto; /* Ajouter de l'espace autour du conteneur */
+  margin: 30px auto;
   background-color: #141414;
   color: #f5f5f5;
   border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Ajout d'un ombrage doux pour se démarquer */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
 
 .doc-titleN {
   text-align: center;
   font-size: 36px;
-  margin-bottom: 30px; /* Plus d'espace en dessous du titre */
+  margin-bottom: 30px;
 }
 
 .doc-sectionN {
-  margin-bottom: 40px; /* Plus d'espace entre les sections */
-  line-height: 1.6; /* Espacer les lignes pour faciliter la lecture */
+  margin-bottom: 40px;
+  line-height: 1.6;
 }
 
 .doc-sectionN p {
@@ -30,9 +31,9 @@
 }
 
 .doc-sectionN h2 {
-  font-size: 26px; /* Légèrement plus grand pour mieux ressortir */
+  font-size: 26px;
   margin-bottom: 15px;
   text-align: center;
-  margin-top: 30px; /* Plus d'espace avant chaque sous-titre */
+  margin-top: 30px;
 }
 

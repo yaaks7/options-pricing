@@ -1,3 +1,4 @@
+// src/components/HeatmapPnL.js
 import React, { useState } from 'react';
 import Plot from 'react-plotly.js';
 import { fetchHeatmapPnl } from '../services/api';
@@ -9,7 +10,7 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
   const [volatilityRange, setVolatilityRange] = useState({ min: '', max: '' });
   const [spotPriceRange, setSpotPriceRange] = useState({ min: '', max: '' });
   const [heatmapData, setHeatmapData] = useState(null);
-  const [optionType, setOptionType] = useState('call');  // Valeur par défaut : "call"
+  const [optionType, setOptionType] = useState('call');  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -23,7 +24,7 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
   };
 
   const handleOptionTypeChange = (e) => {
-    setOptionType(e.target.value);  // Met à jour l'option choisie (call ou put)
+    setOptionType(e.target.value); 
   };
 
   const generateHeatmap = async () => {
@@ -39,10 +40,10 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
       return;
     }
 
-    // Conversion des pourcentages en décimales pour la volatilité et le taux d'intérêt
-    const interestRateDecimal = parseFloat(interestRate) / 100;  // Convertir l'interest rate
-    const minVolatilityDecimal = parseFloat(volatilityRange.min) / 100;  // Convertir min volatility
-    const maxVolatilityDecimal = parseFloat(volatilityRange.max) / 100;  // Convertir max volatility
+    // Conversion %
+    const interestRateDecimal = parseFloat(interestRate) / 100;  
+    const minVolatilityDecimal = parseFloat(volatilityRange.min) / 100;  
+    const maxVolatilityDecimal = parseFloat(volatilityRange.max) / 100;  
 
     const data = {
       purchase_price: parseFloat(purchasePrice),
@@ -52,24 +53,23 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
       max_spot_price: parseFloat(spotPriceRange.max),
       strike: parseFloat(strikePrice),
       time_to_maturity: parseFloat(timeToMaturity),
-      interest_rate: interestRateDecimal  // Utilisation du taux d'intérêt converti
+      interest_rate: interestRateDecimal  
     };
 
     try {
       const response = await fetchHeatmapPnl(data);
 
-      // Utilise la matrice correspondante (call ou put) en fonction du choix de l'utilisateur
       const pnlMatrix = optionType === 'call' ? response.pnl_matrix_call : response.pnl_matrix_put;
 
       setHeatmapData({
         x: response.volatilities,
         y: response.spot_prices,
-        z: pnlMatrix,  // Sélectionner la bonne matrice en fonction du choix
+        z: pnlMatrix,  
         type: 'heatmap',
         colorscale: [
-          [0, 'rgb(165, 0, 38)'],    // Rouge profond pour le P&L négatif
-          [0.5, 'rgb(255, 255, 191)'],  // Jaune pour les valeurs neutres
-          [1, 'rgb(0, 104, 55)']    // Vert foncé pour le P&L positif
+          [0, 'rgb(165, 0, 38)'],    // Red negative P&L 
+          [0.5, 'rgb(255, 255, 191)'],  // Yellow neutral value
+          [1, 'rgb(0, 104, 55)']    // Green Positive P&L
         ],
         zmin: -50,
         zmax: 50
@@ -120,36 +120,36 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
       </form>
 
 
-      {/* Affichage de la Heatmap */}
+      {/* Heatmap */}
       {heatmapData && (
           <Plot
             data={[heatmapData]}
             layout={{
               title: {
                 text: `P&L Heatmap (${optionType.toUpperCase()})`,
-                font: { color: "#E5EFC1" }  // Text color for title
+                font: { color: "#E5EFC1" } 
               },
               xaxis: { 
                 title: {
                   text: 'Volatility',
-                  font: { color: "#E5EFC1" }  // Text color for axis
+                  font: { color: "#E5EFC1" } 
                 },
                 tickmode: 'linear',
                 dtick: 0.05,  // Ticks for volatility
-                color: "#E5EFC1"  // Tick labels color
+                color: "#E5EFC1"  
               },
               yaxis: { 
                 title: {
                   text: 'Spot Price',
-                  font: { color: "#E5EFC1" }  // Text color for axis
+                  font: { color: "#E5EFC1" }  
                 },
                 tickmode: 'linear',
-                dtick: 10,  // Ticks for spot price
-                color: "#E5EFC1"  // Tick labels color
+                dtick: 10,  
+                color: "#E5EFC1"  
               },
               autosize: true,
-              paper_bgcolor: "#1E1E1E",  // Background color of the entire chart
-              plot_bgcolor: "#121212",   // Background color of the plot area
+              paper_bgcolor: "#1E1E1E", 
+              plot_bgcolor: "#121212",   
             }}
             style={{ width: "100%", height: "500px" }}
           />

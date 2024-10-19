@@ -1,6 +1,7 @@
+// src/components/Background.js
 import React, { useEffect, useState, useRef } from "react";
-import FOG from "vanta/dist/vanta.fog.min"; // Import FOG effect
-import * as THREE from "three"; // Ensure "three" is installed
+import FOG from "vanta/dist/vanta.fog.min"; 
+import * as THREE from "three"; 
 import '../App.css'; 
 
 const Background = () => {
@@ -12,7 +13,7 @@ const Background = () => {
       setVantaEffect(
         FOG({
           el: vantaRef.current,
-          THREE: THREE,  // Make sure Vanta uses THREE.js
+          THREE: THREE,
           mouseControls: true,
           touchControls: true,
           gyroControls: false,

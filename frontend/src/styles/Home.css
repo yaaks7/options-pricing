@@ -1,4 +1,5 @@
-/* Container for the whole page */
+/* src/styles/Home.css */
+
 .homepage-container {
     display: flex;
     flex-direction: column;
@@ -13,7 +14,6 @@
     margin-bottom: 20px;
   }
   
-  /* Section for the scrollable cards and image */
   .content-container {
     display: flex;
     justify-content: space-between;
@@ -29,7 +29,7 @@
     padding: 10px;
     scroll-snap-type: x mandatory;
     gap: 20px;
-    width: 45%; /* Takes half the page */
+    width: 45%;
     text-align: center;
   }
   
@@ -92,7 +92,6 @@
     background-color: #349e99;
   }
   
-  /* Documentation section */
   .documentation-section {
     width: 80%;
     margin-top: 40px;

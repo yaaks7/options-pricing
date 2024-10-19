@@ -1,3 +1,4 @@
+// src/components/OptionSensitivity.js
 import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 import { fetchOptionSensitivity } from '../services/api';
@@ -5,14 +6,14 @@ import '../App.css';
 import '../styles/Modelling.css'; 
 
 const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, volatility, selectedModels, pricesGenerated, setLoading }) => {
-  const [parameter, setParameter] = useState('volatility');  // Paramètre à faire varier
-  const [minParam, setMinParam] = useState('0.1');  // Valeur min
-  const [maxParam, setMaxParam] = useState('0.5');  // Valeur max
-  const [selectedModelTypes, setSelectedModelTypes] = useState(selectedModels);  // Modèles sélectionnés pour le graphique
-  const [graphData, setGraphData] = useState(null);  // Données du graphique
-  const [optionType, setOptionType] = useState('call');  // Type d'option (Call ou Put)
+  const [parameter, setParameter] = useState('volatility');  
+  const [minParam, setMinParam] = useState('0.1');  
+  const [maxParam, setMaxParam] = useState('0.5'); 
+  const [selectedModelTypes, setSelectedModelTypes] = useState(selectedModels); 
+  const [graphData, setGraphData] = useState(null); 
+  const [optionType, setOptionType] = useState('call');  
 
-  // Correspondance des noms de modèles pour l'utilisateur et le backend
+  // Correspondance to Backend name
   const modelMap = {
     'BlackScholes': 'Black-Scholes',
     'Binomial': 'Binomial',
@@ -20,7 +21,6 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
     'NeuralNetwork': 'Neural Network',
   };
 
-  // Correspondance pour le backend
   const backendModelMap = {
     'Black-Scholes': 'BlackScholes',
     'Binomial': 'Binomial',
@@ -28,12 +28,12 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
     'Neural Network': 'NeuralNetwork',
   };
 
-  // Mettre à jour les valeurs par défaut selon le paramètre sélectionné
+
   useEffect(() => {
     switch (parameter) {
       case 'volatility':
-        setMinParam(10);  // Afficher 10% pour l'utilisateur
-        setMaxParam(50);  // Afficher 50% pour l'utilisateur
+        setMinParam(10);  
+        setMaxParam(50); 
         break;
       case 'current_price':
         setMinParam(10);
@@ -52,7 +52,7 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
     }
   }, [parameter]);
 
-  // Fonction pour générer le graphique
+
   const generateGraph = async () => {
     setLoading(true);
 
@@ -60,81 +60,74 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
       alert("Please generate the option prices first.");
       return;
     }
-    // Vérification que les modèles sont bien sélectionnés
+
     if (!selectedModelTypes || selectedModelTypes.length === 0) {
       alert("Please select at least one model.");
       return;
     }
 
-    // Créer la liste des modèles à envoyer au backend avec la bonne casse
     const backendModelTypes = selectedModelTypes.map(model => backendModelMap[model]);
 
-    // Conversion de la volatilité en décimal si sélectionnée
     const volatilityDecimal = parameter === 'volatility'
       ? { min_volatility: parseFloat(minParam) / 100, max_volatility: parseFloat(maxParam) / 100 }
       : {};
 
-    // Préparer les paramètres fixes
+
     const fixedParams = {
       current_price: parseFloat(currentPrice),
       strike: parseFloat(strikePrice),
       time_to_maturity: parseFloat(timeToMaturity),
-      ...volatilityDecimal,  // Utiliser la volatilité en décimal
+      ...volatilityDecimal,  
       min_strike: parameter === 'strike' ? parseFloat(minParam) : undefined,
       max_strike: parameter === 'strike' ? parseFloat(maxParam) : undefined,
       min_current_price: parameter === 'current_price' ? parseFloat(minParam) : undefined,
       max_current_price: parameter === 'current_price' ? parseFloat(maxParam) : undefined,
       min_time_to_maturity: parameter === 'time_to_maturity' ? parseFloat(minParam) : undefined,
       max_time_to_maturity: parameter === 'time_to_maturity' ? parseFloat(maxParam) : undefined,
-      steps: 50  // Nombre d'étapes fixé à 50
+      steps: 50 
     };
 
-    // Préparer les données pour la requête API
+    // Prepare Data for API request
     const data = {
-      model_type: backendModelTypes,  // Modèles sélectionnés
-      parameter: parameter,  // Paramètre à faire varier
+      model_type: backendModelTypes, 
+      parameter: parameter,  
       fixed_params: fixedParams,
-      steps: 50  // Nombre de pas (fixé à 50)
+      steps: 50 
     };
 
     try {
-      const response = await fetchOptionSensitivity(data);  // Appel à l'API
+      const response = await fetchOptionSensitivity(data);  
 
-      // Affichage des réponses dans la console pour déboguer
       console.log('API Response:', response);
 
-      // Assurer que des données sont retournées
       if (!response[optionType] || Object.keys(response[optionType]).length === 0) {
         console.error(`No data returned from API for ${optionType} prices`);
         return;
       }
 
-      // Préparer les données du graphique pour chaque modèle
       const plotData = Object.keys(response[optionType]).map((model) => ({
         x: response.values,
         y: response[optionType][model],
         type: 'scatter',
         mode: 'lines',
-        name: `${modelMap[model]} (${optionType === 'call' ? 'Call' : 'Put'})`  // Nom de la courbe selon le modèle
+        name: `${modelMap[model]} (${optionType === 'call' ? 'Call' : 'Put'})` 
       }));
 
-      setGraphData(plotData);  // Mise à jour des données du graphique
+      setGraphData(plotData);
     } catch (error) {
       console.error('Error fetching sensitivity data:', error);
     }
     setLoading(false);
   };
 
-  // Gérer la sélection des modèles pour le graphique
   const handleModelSelection = (model) => {
     setSelectedModelTypes((prevSelected) =>
       prevSelected.includes(model)
-        ? prevSelected.filter((m) => m !== model)  // Retirer le modèle si déjà sélectionné
-        : [...prevSelected, model]  // Ajouter le modèle si non sélectionné
+        ? prevSelected.filter((m) => m !== model)
+        : [...prevSelected, model]
     );
   };
 
-  // Gérer l'affichage des labels min et max selon le paramètre sélectionné
   const getLabel = (param) => {
     switch (param) {
       case 'volatility':
@@ -150,13 +143,13 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
     }
   };
 
-  const [minLabel, maxLabel] = getLabel(parameter);  // Obtenir les labels appropriés
+  const [minLabel, maxLabel] = getLabel(parameter);
 
   return (
     <div className="options-sensitivity">
       <h3>Option Sensitivity Graph</h3>
 
-      {/* Sélection du paramètre à faire varier */}
+      {/* Parameter to vary */}
       <label>
         Parameter to vary :
         <select value={parameter} onChange={(e) => setParameter(e.target.value)}>
@@ -167,7 +160,7 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
         </select>
       </label>
 
-      {/* Champs pour entrer les valeurs min et max */}
+      {/* Min & Max */}
       <label>
         {minLabel}
         <input type="number" value={minParam} onChange={(e) => setMinParam(e.target.value)} min="0" required />
@@ -177,7 +170,7 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
         <input type="number" value={maxParam} onChange={(e) => setMaxParam(e.target.value)} min="0" required />
       </label>
 
-      {/* Sélection entre Call et Put */}
+      {/* Call or Put */}
       <label>
         Option Type :
         <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
@@ -186,7 +179,7 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
         </select>
       </label>
 
-      {/* Sélection des modèles disponibles */}
+      {/* Select model */}
       <div>
         <h4>Select Models for Sensitivity Graph :</h4>
         {Object.keys(modelMap).map((model) => (
@@ -206,32 +199,32 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
 
       <button onClick={generateGraph}>Generate</button>
 
-      {/* Affichage du graphique */}
+      {/* Plot */}
       {graphData && (
         <Plot
           data={graphData}
           layout={{
             title: {
               text: `Option Price vs ${parameter.replace('_', ' ')}`,
-              font: { color: "#E5EFC1" }  // Text color for title
+              font: { color: "#E5EFC1" }  
             },
             xaxis: { 
               title: {
                 text: parameter.replace('_', ' '),
-                font: { color: "#E5EFC1" }  // Text color for axis
+                font: { color: "#E5EFC1" } 
               },
-              color: "#E5EFC1"  // Tick labels color
+              color: "#E5EFC1" 
             },
             yaxis: { 
               title: {
                 text: 'Option Price',
-                font: { color: "#E5EFC1" }  // Text color for axis
+                font: { color: "#E5EFC1" }
               },
-              color: "#E5EFC1"  // Tick labels color
+              color: "#E5EFC1" 
             },
             autosize: true,
-            paper_bgcolor: "#1E1E1E",  // Background color of the entire chart
-            plot_bgcolor: "#121212",   // Background color of the plot area
+            paper_bgcolor: "#1E1E1E",
+            plot_bgcolor: "#121212",
           }}
           style={{ width: "100%", height: "500px" }}
         />

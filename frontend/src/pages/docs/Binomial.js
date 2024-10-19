@@ -1,7 +1,7 @@
 // src/pages/docs/Binomial.js
 import React from 'react';
-import '../../styles/Binomial.css'; // Utiliser le même style que pour Black-Scholes
-import binomialImage from '../../images/binomial.png'; // Importer l'image binomiale
+import '../../styles/Binomial.css'; 
+import binomialImage from '../../images/binomial.png';
 import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
 

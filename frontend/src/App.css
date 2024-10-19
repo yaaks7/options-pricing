@@ -1,3 +1,5 @@
+/* src/App.css */
+
 .App {
   text-align: center;
 }
@@ -8,7 +10,7 @@
 }
 
 .App-header {
-  background-color: hwb(0 7% 93%); /* Dark Charcoal Gray */
+  background-color: hwb(0 7% 93%); 
   color: #E5EFC1;
   padding: 20px;
 }
@@ -28,7 +30,7 @@ button:disabled {
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -10; /* Keeps the background behind all content */
+  z-index: -10;
 }
 
 body {
