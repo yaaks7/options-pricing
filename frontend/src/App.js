@@ -10,6 +10,7 @@ import Binomial from './pages/docs/Binomial';
 import MonteCarlo from './pages/docs/MonteCarlo';
 import NeuralNetwork from './pages/docs/NeuralNetwork';
 import Greeks from './pages/docs/Greeks';
+import Contributions from './pages/Contributions'
 import Header from './components/Header';
 import Background from './components/Background';
 
@@ -38,6 +39,7 @@ function App() {
         <Route path="/documentation/monte-carlo" element={<MonteCarlo />} />
         <Route path="/documentation/neural-network" element={<NeuralNetwork />} />
         <Route path="/documentation/greeks" element={<Greeks />} />
+        <Route path="/contributions" element={<Contributions />} />
       </Routes>
     </Router>
   );

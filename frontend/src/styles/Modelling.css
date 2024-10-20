@@ -26,8 +26,8 @@
 
 .toggle-button {
   position: absolute;
-  top: 15%; 
-  left: 1%; 
+  top: 150px; 
+  left: 20px; 
   background-color: #39AEA9;
   color: white;
   border: none;

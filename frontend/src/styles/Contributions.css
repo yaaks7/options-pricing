@@ -1,0 +1,36 @@
+
+.contributions-container {
+    background-color: #1E1E1E;
+    padding: 40px;
+    border-radius: 10px;
+    color: #E5EFC1;
+    max-width: 800px;
+    margin: 0 auto;
+    }
+
+    .contributions-title {
+        font-size: 36px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .contributions-section {
+        margin-top: 20px;
+    }
+    .contributions-list {
+        list-style-type: none;
+        padding: 0;
+    }
+    .contributions-list li {
+        background-color: #333;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 5px;
+    }
+    .contributions-list a {
+        color: #39AEA9;
+        text-decoration: none;
+    }
+    .contributions-list a:hover {
+        text-decoration: underline;
+    }
+
