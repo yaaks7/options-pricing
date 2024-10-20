@@ -35,9 +35,7 @@ from greeks import Greeks
 app = FastAPI()
 
 # Configuration of middleware CORS
-origins = [
-    "https://optionspricing.vercel.app/",  
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
