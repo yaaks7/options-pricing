@@ -1,12 +1,49 @@
+"""
+plot.py
+
+This module contains functions to visualize option-related data including:
+1. Generating P&L heatmaps for call and put options based on volatility and spot price variations.
+2. Analyzing option sensitivity for different models (e.g., Black-Scholes, Binomial, Monte Carlo, Neural Network).
+3. Computing Greek sensitivities (delta, gamma, theta, vega, rho) for options using the Black-Scholes model.
+
+Each function aims to aid in understanding the behavior of options under various market conditions and input parameters.
+
+Functions:
+---------
+- pnl_heatmap: Creates a heatmap of profit and loss (P&L) values based on different volatilities and spot prices.
+- option_sensitivity: Analyzes how option prices change when key parameters (e.g., strike, volatility) are varied.
+- greeks_sensitivity: Evaluates the sensitivity of option Greeks based on varying parameters, such as strike or volatility.
+
+Author:
+---------
+- Yanis AKS
+- Project: Options Pricing Application
+- Date: October 2024
+"""
 import numpy as np
 from model import BlackScholes, Binomial, MonteCarlo
 from mlp_model import NeuralNetwork
 from greeks import Greeks
 
 def pnl_heatmap(purchase_price, min_volatility, max_volatility, min_spot_price, max_spot_price, strike, time_to_maturity, interest_rate):
+    """
+    Calculates the P&L (Profit and Loss) heatmap for call and put options using the Black-Scholes model.
+
+    :param purchase_price: The purchase price of the option.
+    :param min_volatility: The minimum volatility value for the range.
+    :param max_volatility: The maximum volatility value for the range.
+    :param min_spot_price: The minimum spot price value for the range.
+    :param max_spot_price: The maximum spot price value for the range.
+    :param strike: The strike price of the option.
+    :param time_to_maturity: The time to maturity of the option, in years.
+    :param interest_rate: The risk-free interest rate.
+
+    :return: A tuple containing two matrices (P&L for call and put options), the range of volatilities, and the range of spot prices.
+    """
+
     # Define the range of volatilities and spot prices
-    volatilities = np.linspace(min_volatility, max_volatility, 10)  # X-axis
-    spot_prices = np.linspace(min_spot_price, max_spot_price, 10)   # Y-axis
+    volatilities = np.linspace(min_volatility, max_volatility, 10)  
+    spot_prices = np.linspace(min_spot_price, max_spot_price, 10)  
 
     # Initialize P&L matrices for call and put options
     pnl_matrix_call = []
@@ -23,7 +60,7 @@ def pnl_heatmap(purchase_price, min_volatility, max_volatility, min_spot_price, 
                 current_price=spot,
                 volatility=volatility,
                 interest_rate=interest_rate,
-                option_type='call'  # For call option
+                option_type='call' 
             )
             black_scholes_call.calculate()
 
@@ -33,7 +70,7 @@ def pnl_heatmap(purchase_price, min_volatility, max_volatility, min_spot_price, 
                 current_price=spot,
                 volatility=volatility,
                 interest_rate=interest_rate,
-                option_type='put'  # For put option
+                option_type='put'  
             )
             black_scholes_put.calculate()
 
@@ -52,26 +89,26 @@ def pnl_heatmap(purchase_price, min_volatility, max_volatility, min_spot_price, 
 
 def option_sensitivity(model_type, parameter, fixed_params, steps=10):
     """
-    Calcule la sensibilité des options pour les types call et put, sur plusieurs modèles, et pour différents paramètres.
+    Calculates the sensitivity of options for call and put types across multiple models and varying parameters.
 
-    :param model_type: Modèles choisis (par exemple, ['BlackScholes', 'Binomial', 'MonteCarlo', 'NeuralNetwork']).
-    :param parameter: Le paramètre à faire varier (par exemple 'strike', 'time_to_maturity', 'volatility', etc.).
-    :param fixed_params: Dictionnaire contenant les paramètres fixes pour le calcul de l'option.
-    :param steps: Nombre de pas pour faire varier le paramètre.
-    :return: Dictionnaire des prix pour chaque modèle et type d'option (call et put).
+    :param model_type: Selected models (e.g., ['BlackScholes', 'Binomial', 'MonteCarlo', 'NeuralNetwork']).
+    :param parameter: The parameter to vary (e.g., 'strike', 'time_to_maturity', 'volatility', etc.).
+    :param fixed_params: Dictionary containing fixed parameters for the option calculation.
+    :param steps: Number of steps to vary the parameter.
+    :return: Dictionary of option prices for each model and option type (call and put).
     """
 
-    # Extraire les paramètres fixes
+    # Extract fixed parameters
     time_to_maturity = fixed_params.get('time_to_maturity', 1)
     strike = fixed_params.get('strike', 100)
     current_price = fixed_params.get('current_price', 100)
     volatility = fixed_params.get('volatility', 0.2)
     interest_rate = fixed_params.get('interest_rate', 0.05)
-    binomial_steps = fixed_params.get('steps', 100)  # Paramètre spécifique à Binomial
-    monte_carlo_num_simulations = fixed_params.get('num_simulations', 10000)  # Paramètres spécifiques à Monte Carlo
+    binomial_steps = fixed_params.get('steps', 100)  # Binomial-specific parameter
+    monte_carlo_num_simulations = fixed_params.get('num_simulations', 10000)  # Monte Carlo-specific parameter
     monte_carlo_num_steps = fixed_params.get('num_steps', 100)
 
-    # Définir la plage de valeurs pour le paramètre sélectionné
+    # Define the range of values for the selected parameter
     if parameter == 'strike':
         values = np.linspace(fixed_params['min_strike'], fixed_params['max_strike'], steps)
     elif parameter == 'time_to_maturity':
@@ -89,9 +126,9 @@ def option_sensitivity(model_type, parameter, fixed_params, steps=10):
         'values': values
     }
 
-    # Boucle pour faire varier le paramètre choisi
+    # Loop to vary the selected parameter
     for value in values:
-        # Modifier la valeur du paramètre sélectionné dans chaque modèle
+        # Modify the value of the selected parameter in each model
         for model in model_type:
             if model == 'BlackScholes':
                 BS_call = BlackScholes(
@@ -180,23 +217,23 @@ def option_sensitivity(model_type, parameter, fixed_params, steps=10):
 
 def greeks_sensitivity(greek, parameter, fixed_params, steps=10):
     """
-    Calcule la sensibilité des greeks (delta, gamma, theta, vega, rho) pour les options Call et Put.
+    Calculates the sensitivity of Greeks (delta, gamma, theta, vega, rho) for Call and Put options.
 
-    :param greek: Le greek à calculer (par exemple 'delta', 'gamma', 'theta', 'vega', 'rho').
-    :param parameter: Le paramètre à faire varier (par exemple 'strike', 'time_to_maturity', 'volatility', etc.).
-    :param fixed_params: Dictionnaire contenant les paramètres fixes pour le calcul des greeks.
-    :param steps: Nombre de pas pour faire varier le paramètre.
-    :return: Dictionnaire des valeurs des greeks pour les types d'options call et put.
+    :param greek: The Greek to calculate (e.g., 'delta', 'gamma', 'theta', 'vega', 'rho').
+    :param parameter: The parameter to vary (e.g., 'strike', 'time_to_maturity', 'volatility', etc.).
+    :param fixed_params: Dictionary containing fixed parameters for the calculation of Greeks.
+    :param steps: Number of steps to vary the parameter.
+    :return: Dictionary of Greek values for call and put option types.
     """
-
-    # Extraire les paramètres fixes
+    
+    # Extract fixed parameters
     time_to_maturity = fixed_params.get('time_to_maturity', 1)
     strike = fixed_params.get('strike', 100)
     current_price = fixed_params.get('current_price', 100)
     volatility = fixed_params.get('volatility', 0.2)
     interest_rate = fixed_params.get('interest_rate', 0.05)
 
-    # Définir la plage de valeurs pour le paramètre sélectionné
+    # Define the range of values for the selected parameter
     if parameter == 'strike':
         values = np.linspace(fixed_params['min_strike'], fixed_params['max_strike'], steps)
     elif parameter == 'time_to_maturity':
@@ -214,9 +251,9 @@ def greeks_sensitivity(greek, parameter, fixed_params, steps=10):
         'values': values
     }
 
-    # Boucle pour faire varier le paramètre choisi
+    # Loop to vary the selected parameter
     for value in values:
-        # Calcul des greeks pour les options Call et Put
+        # Calculation of greeks for Call and Put options
         bs_call = BlackScholes(
             time_to_maturity if parameter != 'time_to_maturity' else value,
             strike if parameter != 'strike' else value,
@@ -237,7 +274,7 @@ def greeks_sensitivity(greek, parameter, fixed_params, steps=10):
         greeks_call = Greeks(bs_call, 'call')
         greeks_put = Greeks(bs_put, 'put')
 
-        # Sélectionner le greek demandé
+        # Select the requested Greek
         sensitivity_results['call'].append(getattr(greeks_call, greek)())
         sensitivity_results['put'].append(getattr(greeks_put, greek)())
 
@@ -247,38 +284,37 @@ def greeks_sensitivity(greek, parameter, fixed_params, steps=10):
 
 
 if __name__ == "__main__":
-    # Exemple de paramètres fixes pour les tests
+
     fixed_params = {
-        "time_to_maturity": 1,  # Temps avant maturité (en années)
-        "strike": 100,          # Prix d'exercice
-        "current_price": 100,   # Prix actuel
-        "volatility": 0.2,      # Volatilité
-        "interest_rate": 0.05,  # Taux d'intérêt sans risque
-        "min_strike": 80,       # Prix d'exercice minimal (pour sensibilité)
-        "max_strike": 120,      # Prix d'exercice maximal (pour sensibilité)
+        "time_to_maturity": 1,  
+        "strike": 100,          
+        "current_price": 100,   
+        "volatility": 0.2,      
+        "interest_rate": 0.05,  
+        "min_strike": 80,       # for sensitivity
+        "max_strike": 120,      # for sensitivity
         "min_time_to_maturity": 0.5,
         "max_time_to_maturity": 2,
         "min_volatility": 0.1,
         "max_volatility": 0.5,
         "min_current_price": 90,
         "max_current_price": 110,
-        "steps": 100,           # Ajouté pour Binomial
-        "num_simulations": 10000,  # Ajouté pour Monte Carlo
-        "num_steps": 100        # Ajouté pour Monte Carlo
+        "steps": 100,           # For Binomial
+        "num_simulations": 10000,  # For Monte Carlo
+        "num_steps": 100        # For Monte Carlo
     }
 
-    # Test pour la sensibilité en fonction du strike pour BlackScholes et Binomial
+    # Test for strike-dependent sensitivity for BlackScholes and Binomial
     result = option_sensitivity(
-        model_type=['BlackScholes', 'Binomial'],  # Modèles à tester
-        parameter='volatility',  # Paramètre que l'on souhaite faire varier
-        fixed_params=fixed_params,  # Paramètres fixes
-        steps=10  # Nombre de pas pour faire varier le strike
+        model_type=['BlackScholes', 'Binomial'],  # Models to test
+        parameter='volatility',  # Parameter to be varied
+        fixed_params=fixed_params,  # Fixed parameters
+        steps=10  # Number of steps to vary strike
     )
     
     #result = greeks_sensitivity('delta', 'strike', fixed_params)
 
 
     # Affichage des résultats pour vérifier
-    print("Sensibilité des options en fonction du strike:")
     print(result)
 

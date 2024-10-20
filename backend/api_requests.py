@@ -1,11 +1,29 @@
+"""
+api_requests.py
+
+This script is designed to test the backend API endpoints for the option pricing models and other functionalities 
+(such as Greeks calculation). It sends requests to a local FastAPI server and outputs the results.
+
+Features:
+---------
+- Tests multiple option pricing models including Black-Scholes, Binomial, Monte Carlo, and Neural Network.
+- Sends requests to calculate Greeks (e.g., delta, gamma, theta, vega, rho).
+- Can be run directly to start testing the API functionality by automatically sending requests.
+
+Author:
+---------
+- Yanis AKS
+- Project: Options Pricing Application
+- Date: October 2024
+"""
 import requests
 import subprocess
 import time
 
-# URL de base de l'API
+# API URL
 BASE_URL = "http://127.0.0.1:8000"
 
-# Données de l'option pour les requêtes
+# Data for option requests
 option_data = {
     "time_to_maturity": 2,
     "strike": 130,
@@ -31,31 +49,31 @@ def start_api_server():
     time.sleep(3)
 
 def send_black_scholes():
-    """Envoie une requête pour tester le modèle Black-Scholes."""
+    """Send request for Black-Scholes."""
     url = f"{BASE_URL}/price/blackscholes"
     response = requests.post(url, json=option_data)
     print("Black-Scholes Prices:", response.json())
 
 def send_binomial():
-    """Envoie une requête pour tester le modèle Binomial."""
+    """Send request for Binomial."""
     url = f"{BASE_URL}/price/binomial"
     response = requests.post(url, json=binomial_data)
     print("Binomial Prices:", response.json())
 
 def send_montecarlo():
-    """Envoie une requête pour tester le modèle Monte Carlo."""
+    """Send request for Monte Carlo."""
     url = f"{BASE_URL}/price/montecarlo"
     response = requests.post(url, json=montecarlo_data)
     print("Monte Carlo Prices:", response.json())
 
 def send_neural_network():
-    """Envoie une requête pour tester le modèle Neural Network."""
+    """Send request for Neural Network."""
     url = f"{BASE_URL}/price/neuralnetwork"
     response = requests.post(url, json=option_data)
     print("Neural Network Prices:", response.json())
 
 def send_greeks():
-    """Envoie une requête pour calculer les Greeks."""
+    """Send request for Greeks."""
     url = f"{BASE_URL}/greeks"
     response = requests.post(url, json=option_data)
     print("Greeks:", response.json())
@@ -65,7 +83,7 @@ if __name__ == "__main__":
     start_api_server()
     time.sleep(2)  
 
-    # Test des 4 modèles de pricing
+    # Testing all 4 models
     print("---- Testing Black-Scholes ----")
     send_black_scholes()
 
@@ -78,6 +96,6 @@ if __name__ == "__main__":
     print("---- Testing Neural Network ----")
     send_neural_network()
 
-    # Test des Greeks
+    # Testing Greeks
     print("---- Testing Greeks ----")
     send_greeks()

@@ -1,3 +1,23 @@
+"""
+test_model.py
+
+This script contains unit tests for all option pricing models used in the application. It tests the following models:
+- Black-Scholes
+- Binomial
+- Monte Carlo
+- Neural Network
+
+The purpose of these tests is to verify the accuracy and functionality of each model by comparing the calculated option prices
+with expected theoretical values. Additionally, it includes tests for calculating option Greeks.
+
+The script uses pytest for testing and ensures that each model behaves correctly under different scenarios.
+
+Author:
+---------
+- Yanis AKS
+- Project: Options Pricing Application
+- Date: October 2024
+"""
 import pytest
 from model import BlackScholes, Binomial, MonteCarlo
 from mlp_model import NeuralNetwork  
@@ -6,11 +26,11 @@ from greeks import Greeks
 import pandas as pd
 
 #%%
-# Valeur théorique des options (Black-Scholes) sur : https://blackschole.streamlit.app/#black-scholes-pricing-model
-# Valeur théorique des Greeks sur : https://vindeep.com/Derivatives/OptionPriceCalc.aspx
+# Theoric Value of options (Black-Scholes) on : https://blackschole.streamlit.app/#black-scholes-pricing-model
+# Theoric Value of greeks (Black-Scholes) on : https://vindeep.com/Derivatives/OptionPriceCalc.aspx
 #%%
 def test_black_scholes():
-    # Paramètres de test pour le modèle Black-Scholes
+    # Test parameters for the Black-Scholes model
     test_cases = [
         # (time_to_maturity, strike, current_price, volatility, interest_rate, expected_call_price, expected_put_price)
         (1, 100, 100, 0.2, 0.05, 10.45, 5.57),
@@ -24,17 +44,17 @@ def test_black_scholes():
         time_to_maturity, strike, current_price, volatility, interest_rate, expected_call, expected_put = case
         model1 = BlackScholes(time_to_maturity, strike, current_price, volatility, interest_rate, option_type="call")
         model1.calculate()
-        # Tester le prix de l'option Call
+        # For Call
         assert pytest.approx(model1.get_option_price(), 0.01) == expected_call
 
         model2 = BlackScholes(time_to_maturity, strike, current_price, volatility, interest_rate, option_type="put")
         model2.calculate()
-        # Tester le prix de l'option Put
+        # For Put
         assert pytest.approx(model2.get_option_price(), 0.01) == expected_put
 
 
 def test_binomial():
-    # Paramètres de test pour le modèle Binomial
+    # Test parameters for the Binomial model
     test_cases = [
         # (time_to_maturity, strike, current_price, volatility, interest_rate, steps, option_type, is_american, expected_price)
         (1, 100, 100, 0.2, 0.05, 100, 'call', True, 10.45),
@@ -51,7 +71,7 @@ def test_binomial():
         assert pytest.approx(model.get_option_price(), 0.01) == expected_price
 
 def test_monte_carlo():
-    # Paramètres de test pour le modèle Monte Carlo
+    # Test parameters for the Monte Carlo model
     test_cases = [
         # (time_to_maturity, strike, current_price, volatility, interest_rate, num_simulations, num_steps, option_type, expected_price)
         (1, 100, 100, 0.2, 0.05, 10000, 100, 'call', 10.45),
@@ -68,7 +88,7 @@ def test_monte_carlo():
         assert pytest.approx(model.get_option_price(), 0.1) == expected_price
 
 def test_neural_network():
-    # Paramètres de test pour le modèle NeuralNetwork
+    # Test parameters for the Neural Network
     test_cases = [
         # (time_to_maturity, strike, current_price, volatility, interest_rate, option_type, expected_price)
         (1, 100, 100, 0.2, 0.05, 'call', 10.45),
@@ -82,33 +102,30 @@ def test_neural_network():
     for case in test_cases:
         time_to_maturity, strike, current_price, volatility, interest_rate, option_type, expected_price = case
 
-        # Charger le modèle pré-entraîné
+        # Load pre-trained model
         model = NeuralNetwork(time_to_maturity, strike, current_price, volatility, interest_rate, option_type)
-        model.load()  # Charger le modèle sauvegardé et le scaler
+        model.load()  # Load saved model and scaler
 
-        # Créer les données d'entrée sous forme de DataFrame pour correspondre au format utilisé pendant l'entraînement
+        # Create input data in DataFrame format to match the format used during training
         input_data = pd.DataFrame({
             'time_to_maturity': [time_to_maturity],
             'strike': [strike],
             'current_price': [current_price],
             'volatility': [volatility],
             'interest_rate': [interest_rate],
-            'option_type': [1 if option_type == 'call' else 0]  # Encodage binaire de l'option type
+            'option_type': [1 if option_type == 'call' else 0] 
         })
 
-        # Calculer le prix avec le modèle pré-entraîné
+        # Calculate price with pre-trained model
         predicted_price = model.calculate_with_dataframe(input_data)
 
-        # Debugging: Afficher les valeurs prévues et prédites pour chaque cas
-        print(f"Expected {option_type} price: {expected_price}, Predicted {option_type} price: {predicted_price}")
-
-        # Tester la précision avec une tolérance de 0.5 $
+        # Test accuracy with a tolerance of $0.5
         assert pytest.approx(predicted_price, 0.5) == expected_price
 
 
         
 def test_greeks():
-    # Paramètres de test pour les Greeks
+    # Test parameters for Greeks
     test_cases = [
     # (time_to_maturity, strike, current_price, volatility, interest_rate, option_type, expected_delta, expected_gamma, expected_vega, expected_theta, expected_rho)
     (2, 120, 110, 0.25, 0.03, 'call', 0.54, 0.010206444978343634, 0.617, -0.0142895, 0.904),  

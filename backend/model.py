@@ -1,3 +1,28 @@
+"""
+model.py
+
+This file contains implementations of various models for financial options pricing.
+The models include:
+
+1. Black-Scholes: An analytical model for European options.
+2. Binomial: A model based on a tree-structure approach that allows pricing of both European and American options.
+3. Monte Carlo: A stochastic model using simulations to calculate option prices.
+
+Each class defines methods required to calculate the price of a given option, as well as other useful metrics.
+The models consider parameters such as time to maturity, strike price, current price of the underlying asset, volatility, interest rate, and option type (call or put).
+
+Classes:
+----------
+- BlackScholes: Implements the analytical Black-Scholes model for European options.
+- Binomial: Implements a binomial model supporting both American and European options.
+- MonteCarlo: Implements a Monte Carlo simulation model for option pricing.
+
+Author:
+---------
+- Yanis AKS
+- Project: Options Pricing Application
+- Date: October 2024
+"""
 import numpy as np
 from numpy import exp, sqrt, log 
 from scipy.stats import norm 
@@ -11,7 +36,7 @@ class BlackScholes:
         current_price: float,
         volatility: float,
         interest_rate: float,
-        option_type: str = 'call',
+        option_type: str = 'call', # 'call' or 'put'
     ):
         self.time_to_maturity = time_to_maturity
         self.strike = strike
@@ -25,7 +50,7 @@ class BlackScholes:
         self.option_type = option_type
 
     def calculate(self):
-        # Calcul des variables d1 et d2
+        # Secondary Variables d1 and d2
         self.d1 = (
             log(self.current_price / self.strike) +
             (self.interest_rate + 0.5 * self.volatility ** 2) * self.time_to_maturity
@@ -33,7 +58,7 @@ class BlackScholes:
         
         self.d2 = self.d1 - self.volatility * sqrt(self.time_to_maturity)
 
-        # Calcul des prix d'options
+        # Options Price
         self.call_price = self.current_price * norm.cdf(self.d1) - (
             self.strike * exp(-self.interest_rate * self.time_to_maturity) * norm.cdf(self.d2)
         )
@@ -64,8 +89,8 @@ class Binomial:
         volatility: float,
         interest_rate: float,
         steps: int,
-        option_type: str = 'call',  # 'call' ou 'put'
-        is_american: bool = False  # True pour option américaine, False pour européenne
+        option_type: str = 'call',  # 'call' or 'put'
+        is_american: bool = False  # True for american option, False for european
     ):
         self.time_to_maturity = time_to_maturity
         self.strike = strike
@@ -84,10 +109,10 @@ class Binomial:
         p = (exp(self.interest_rate * dt) - d) / (u - d)
         discount_factor = exp(-self.interest_rate * dt)
 
-        # Initialiser l'arbre pour les prix de l'option
+        # Initialize tree for option prices
         option_prices = [0.0 for _ in range(self.steps + 1)]
 
-        # Calculer les prix à la maturité
+        # Calculate prices at maturity
         for i in range(self.steps + 1):
             stock_price_at_maturity = self.current_price * (u ** (self.steps - i)) * (d ** i)
             if self.option_type == 'call':
@@ -95,7 +120,7 @@ class Binomial:
             elif self.option_type == 'put':
                 option_prices[i] = max(0, self.strike - stock_price_at_maturity)
 
-        # Remonter l'arbre pour calculer les prix de l'option
+        #  Up the tree to calculate option prices
         for j in range(self.steps - 1, -1, -1):
             for i in range(j + 1):
                 option_prices[i] = discount_factor * (p * option_prices[i] + (1 - p) * option_prices[i + 1])
@@ -121,7 +146,7 @@ class MonteCarlo:
         interest_rate: float,
         num_simulations: int,
         num_steps: int,
-        option_type: str = 'call'  # 'call' ou 'put'
+        option_type: str = 'call'  # 'call' or 'put'
     ):
         self.time_to_maturity = time_to_maturity
         self.strike = strike
@@ -137,7 +162,7 @@ class MonteCarlo:
         dt = self.time_to_maturity / self.num_steps
         discount_factor = np.exp(-self.interest_rate * self.time_to_maturity)
 
-        # Générer des chemins simulés pour les prix de l'actif sous-jacent
+        # Generate simulated paths for underlying asset prices
         prices = np.zeros((self.num_simulations, self.num_steps + 1))
         prices[:, 0] = self.current_price
 
@@ -148,13 +173,13 @@ class MonteCarlo:
                 + self.volatility * np.sqrt(dt) * Z
             )
 
-        # Calcul des valeurs finales des options
+        # Calculation of final option values
         if self.option_type == 'call':
             option_values = np.maximum(prices[:, -1] - self.strike, 0)
         elif self.option_type == 'put':
             option_values = np.maximum(self.strike - prices[:, -1], 0)
 
-        # Calcul du prix de l'option
+        # Calculating the option price
         self.option_price = discount_factor * np.mean(option_values)
 
     def get_option_price(self):
@@ -162,19 +187,18 @@ class MonteCarlo:
 
 
 if __name__ == "__main__":
-    # Exemple d'utilisation du modèle Black Scholes
-    time_to_maturity = 1  # Temps jusqu'à maturité en années
-    strike = 100  # Prix d'exercice
-    current_price = 100  # Prix actuel de l'actif sous-jacent
-    volatility = 0.2  # Volatilité
-    interest_rate = 0.05  # Taux d'intérêt sans risque
+    time_to_maturity = 1  # Time to maturity in years
+    strike = 100  
+    current_price = 100  
+    volatility = 0.2  
+    interest_rate = 0.05  
 
-    # Exemple d'utilisation du modèle Binomiale
-    steps = 100  # Nombre de pas dans l'arbre binomial
-    option_type = 'call'  # 'call' ou 'put'
-    is_american = False  # True pour option américaine, False pour européenne
+    # For Binomial Model
+    steps = 100  # Number of steps in the binomial tree
+    option_type = 'call'  
+    is_american = False  
 
-    # Initialisation de la classe BlackScholes
+    #  Initializing the BlackScholes class
     BS = BlackScholes(
         time_to_maturity=time_to_maturity,
         strike=strike,
@@ -185,11 +209,11 @@ if __name__ == "__main__":
     )
     BS.calculate()
 
-    # Affichage des résultats
+    # Results display
     print(f"BS {option_type} Price: {BS.get_option_price()}")
 
 
-    # Initialisation de la classe Binomial
+    # Initialization of the Binomial class
     B = Binomial(
         time_to_maturity=time_to_maturity,
         strike=strike,
@@ -202,14 +226,14 @@ if __name__ == "__main__":
     )
     B.calculate()
 
-    # Affichage des résultats
+    # Results display
     print(f"B {option_type} Price: {B.get_option_price()}")
 
-    # Exemple d'utilisation du modèle Monte-Carlo
-    num_simulations = 10000  # Nombre de simulations
-    num_steps = 100  # Nombre de pas de temps
+    # For Monte Carlo Model
+    num_simulations = 10000  # Number of simulations
+    num_steps = 100  # Number of time steps
 
-    # Initialisation de la classe MonteCarlo
+    # Initialization of the MonteCarlo class
     MC = MonteCarlo(
         time_to_maturity=time_to_maturity,
         strike=strike,
@@ -222,10 +246,10 @@ if __name__ == "__main__":
     )
     MC.calculate()
 
-    # Affichage des résultats
+    # Results display
     print(f"MC {option_type} Price: {MC.get_option_price()}")
 
-    # NeuralNetwork Model (MLP)
+    # Initialization of the NeuralNetwork Class (MLP)
     MLP = NeuralNetwork(
         time_to_maturity=time_to_maturity,
         strike=strike,
@@ -236,5 +260,6 @@ if __name__ == "__main__":
     )
     #MLP.train()
     MLP.load()  # Load the trained model
-    # Affichage des résultats
+
+    # Results display
     print(f"Neural Network {option_type} Price: {MLP.get_option_price()}")

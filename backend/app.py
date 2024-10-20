@@ -1,3 +1,30 @@
+"""
+app.py
+
+This script serves as the backend API for the Options Pricing application. It is built using FastAPI and provides endpoints 
+to calculate option prices, greeks, profit & loss heatmaps, and sensitivities of option pricing and greeks for various models. 
+The supported models include Black-Scholes, Binomial, Monte Carlo, and a Neural Network. 
+
+The API facilitates communication between the frontend interface (built with React.js) and backend computation, allowing users 
+to input parameters and retrieve calculated results.
+
+Endpoints:
+---------
+- /price/blackscholes : Calculates Black-Scholes option prices.
+- /price/binomial : Calculates Binomial model option prices.
+- /price/montecarlo : Calculates Monte Carlo simulation-based option prices.
+- /price/neuralnetwork : Retrieves option prices from a trained neural network model.
+- /greeks : Calculates Greeks (delta, gamma, vega, theta, rho) for call and put options using Black-Scholes.
+- /heatmap_pnl/ : Generates a P&L heatmap for specified volatility and spot price ranges.
+- /option_sensitivity/ : Computes the sensitivity of option prices to a chosen parameter across different models.
+- /greeks_sensitivity/ : Computes the sensitivity of selected Greeks to a chosen parameter using Black-Scholes.
+
+Author:
+---------
+- Yanis AKS
+- Project: Options Pricing Application
+- Date: October 2024
+"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -7,13 +34,13 @@ from greeks import Greeks
 
 app = FastAPI()
 
-# Configuration du middleware CORS
+# Configuration of middleware CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Autorise seulement les requêtes venant de ton frontend
+    allow_origins=["http://localhost:3000"],  
     allow_credentials=True,
-    allow_methods=["*"],  # Autorise toutes les méthodes (GET, POST, etc.)
-    allow_headers=["*"],  # Autorise tous les headers (Content-Type, Authorization, etc.)
+    allow_methods=["*"],  
+    allow_headers=["*"],  
 )
 
 class OptionData(BaseModel):
@@ -150,7 +177,7 @@ def calculate_neural_network(option_data: OptionData):
 
 @app.post("/greeks")
 def calculate_greeks(option_data: OptionData):
-    # Calcul des Greeks pour l'option Call
+    # Calculation of Greeks for the Call option
     call_bs_model = BlackScholes(
         time_to_maturity=option_data.time_to_maturity,
         strike=option_data.strike,
@@ -162,7 +189,7 @@ def calculate_greeks(option_data: OptionData):
     call_bs_model.calculate()
     call_greeks = Greeks(call_bs_model, option_type='call')
 
-    # Calcul des Greeks pour l'option Put
+    # Calculation of Greeks for the Put option
     put_bs_model = BlackScholes(
         time_to_maturity=option_data.time_to_maturity,
         strike=option_data.strike,
@@ -174,7 +201,7 @@ def calculate_greeks(option_data: OptionData):
     put_bs_model.calculate()
     put_greeks = Greeks(put_bs_model, option_type='put')
 
-    # Retourner les deux ensembles de résultats pour Call et Put
+    # Return for Call & Put
     return {
         "call": {
             "delta": call_greeks.delta(),
@@ -233,7 +260,7 @@ class SensitivityOptionInput(BaseModel):
 
 @app.post("/option_sensitivity/")
 async def get_option_sensitivity(data: SensitivityOptionInput):
-    # Calcul des résultats
+
     results = option_sensitivity(
         model_type=data.model_type,
         parameter=data.parameter,
@@ -241,7 +268,7 @@ async def get_option_sensitivity(data: SensitivityOptionInput):
         steps=data.steps
     )
     
-    # Convertir les arrays Numpy en listes pour sérialisation JSON
+    # Convert Numpy arrays into lists for JSON serialization
     results['values'] = results['values'].tolist()
     for model in results['call']:
         results['call'][model] = [float(val) for val in results['call'][model]]
@@ -260,7 +287,7 @@ class GreeksSensitivityInput(BaseModel):
 
 @app.post("/greeks_sensitivity/")
 async def get_greeks_sensitivity(data: GreeksSensitivityInput):
-    # Calcul des résultats de la sensibilité des greeks
+
     results = greeks_sensitivity(
         greek=data.greek,
         parameter=data.parameter,
@@ -268,7 +295,7 @@ async def get_greeks_sensitivity(data: GreeksSensitivityInput):
         steps=data.steps
     )
 
-    # Convertir les arrays Numpy en listes pour sérialisation JSON
+    # Convert Numpy arrays into lists for JSON serialization
     results['values'] = results['values'].tolist()
     results['call'] = [float(val) for val in results['call']]
     results['put'] = [float(val) for val in results['put']]

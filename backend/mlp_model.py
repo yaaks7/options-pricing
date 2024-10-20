@@ -1,3 +1,25 @@
+"""
+mlp_model.py
+
+This module implements a neural network model for pricing options. The model is based on a Multi-Layer Perceptron (MLP) architecture and uses synthetic data generated from the Black-Scholes model for training. It can predict the price of both call and put options based on several input parameters.
+
+The primary functions include:
+- Generating synthetic training data using the Black-Scholes model
+- Defining and training an MLP model for option pricing
+- Saving and loading the trained model and data scaler
+- Using the trained model to predict option prices
+
+Classes:
+----------
+    NeuralNetwork: A class that encapsulates the MLP model, including methods for generating data, training, and prediction.
+
+
+Author:
+---------
+- Yanis AKS
+- Project: Options Pricing Application
+- Date: October 2024
+"""
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -78,21 +100,20 @@ class NeuralNetwork:
         X_train_scaled = self.scaler.fit_transform(X_train)
         X_test_scaled = self.scaler.transform(X_test)
 
-        # Création du modèle simplifié
+
         self.MLP(input_shape=X_train_scaled.shape[1])
 
-        # EarlyStopping avec une patience réduite
+        # EarlyStopping 
         early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)
 
-        # Entraînement avec un batch size de 64 pour un meilleur ajustement
         self.model.fit(X_train_scaled, y_train, epochs=50, batch_size=64, validation_data=(X_test_scaled, y_test),
                        callbacks=[early_stopping], verbose=1)
 
-        # Évaluation finale
+        # Final Evalutation
         test_loss = self.model.evaluate(X_test_scaled, y_test, verbose=1)
         print(f"Test set evaluation - Loss: {test_loss}")
 
-        # Sauvegarde du modèle
+        # Save
         self.model.save(os.path.join(self.save_dir, 'NeuralNetwork.h5'))
         joblib.dump(self.scaler, os.path.join(self.save_dir, 'scaler.pkl'))
         print("Modèle et scaler sauvegardés.")
