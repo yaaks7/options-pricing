@@ -1,7 +1,7 @@
 //src/services/api.js
 import axios from 'axios';
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const BASE_URL = process.env.REACT_APP_API_URL;
 // Function for Black-Scholes
 export const fetchBlackScholesPrice = async (data) => {
   const response = await axios.post(`${BASE_URL}/price/blackscholes`, data);
