@@ -37,7 +37,7 @@ import os
 import joblib  # For saving and loading the scaler
 
 class NeuralNetwork:
-    def __init__(self, time_to_maturity=None, strike=None, current_price=None, volatility=None, interest_rate=None, option_type='call'):
+    def __init__(self, time_to_maturity, strike, current_price, volatility, interest_rate, option_type='call'):
         self.time_to_maturity = time_to_maturity
         self.strike = strike
         self.current_price = current_price
@@ -120,17 +120,10 @@ class NeuralNetwork:
     
     @classmethod
     def preload_model(cls):
-        instance = cls()
-        instance.model = load_model(os.path.join(instance.save_dir, 'NeuralNetwork.h5'))
-        instance.scaler = joblib.load(os.path.join(instance.save_dir, 'scaler.pkl'))
+        # Static method to preload and return a neural network instance
+        instance = cls(0, 0, 0, 0, 0)  # Dummy initialization
+        instance.load()  # Load the model and scaler
         return instance
-    
-    def clone(self):
-        # Create a new instance without using the __init__ parameters
-        cloned_instance = NeuralNetwork()
-        cloned_instance.model = self.model
-        cloned_instance.scaler = self.scaler
-        return cloned_instance
     
     def load(self):
         # Modify this method to support global preloading

@@ -151,34 +151,37 @@ def calculate_monte_carlo(option_data: MonteCarloData):
 
 # Preload the model at startup
 PRELOADED_MODEL = NeuralNetwork.preload_model()
+@app.on_event("startup")
+async def load_model():
+    global PRELOADED_MODEL
+    if not PRELOADED_MODEL:
+        PRELOADED_MODEL = NeuralNetwork.preload_model()
 
 @app.post("/price/neuralnetwork")
 def calculate_neural_network(option_data: OptionData):
-    # Clone the preloaded model to avoid modifying the original instance
-    neural_network_instance = PRELOADED_MODEL.clone()
+    global PRELOADED_MODEL
 
     # Set parameters for call option
-    neural_network_instance.time_to_maturity = option_data.time_to_maturity
-    neural_network_instance.strike = option_data.strike
-    neural_network_instance.current_price = option_data.current_price
-    neural_network_instance.volatility = option_data.volatility
-    neural_network_instance.interest_rate = option_data.interest_rate
-    neural_network_instance.option_type = 'call'
+    PRELOADED_MODEL.time_to_maturity = option_data.time_to_maturity
+    PRELOADED_MODEL.strike = option_data.strike
+    PRELOADED_MODEL.current_price = option_data.current_price
+    PRELOADED_MODEL.volatility = option_data.volatility
+    PRELOADED_MODEL.interest_rate = option_data.interest_rate
+    PRELOADED_MODEL.option_type = 'call'
 
     # Get call option price
-    call_price = float(neural_network_instance.calculate())
+    call_price = float(PRELOADED_MODEL.calculate())
 
-    # Set parameters for put option (reuse the same cloned instance)
-    neural_network_instance.option_type = 'put'
+    # Set parameters for put option (reuse the same preloaded model)
+    PRELOADED_MODEL.option_type = 'put'
 
     # Get put option price
-    put_price = float(neural_network_instance.calculate())
+    put_price = float(PRELOADED_MODEL.calculate())
 
     return {
-        "call_pri": call_price,
+        "call_price": call_price,
         "put_price": put_price
     }
-
 
 
 @app.post("/greeks")

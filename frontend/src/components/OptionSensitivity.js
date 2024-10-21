@@ -92,7 +92,7 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
       model_type: backendModelTypes, 
       parameter: parameter,  
       fixed_params: fixedParams,
-      steps: 50 
+      steps: 15 
     };
 
     try {
