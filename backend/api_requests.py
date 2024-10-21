@@ -21,7 +21,7 @@ import subprocess
 import time
 
 # API URL
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "https://kind-linet-yanis-42a45c58.koyeb.app/"
 
 # Data for option requests
 option_data = {

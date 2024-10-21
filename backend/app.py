@@ -149,34 +149,40 @@ def calculate_monte_carlo(option_data: MonteCarloData):
         "put_price": put_model.get_option_price()
     }
 
+# Preload the model at startup
+PRELOADED_MODEL = NeuralNetwork.preload_model()
+@app.on_event("startup")
+async def load_model():
+    global PRELOADED_MODEL
+    if not PRELOADED_MODEL:
+        PRELOADED_MODEL = NeuralNetwork.preload_model()
+
 @app.post("/price/neuralnetwork")
 def calculate_neural_network(option_data: OptionData):
-    call_model = NeuralNetwork(
-        time_to_maturity=option_data.time_to_maturity,
-        strike=option_data.strike,
-        current_price=option_data.current_price,
-        volatility=option_data.volatility,
-        interest_rate=option_data.interest_rate,
-        option_type='call'
-    )
-    call_model.load()
-    call_price = float(call_model.get_option_price())
+    global PRELOADED_MODEL
 
-    put_model = NeuralNetwork(
-        time_to_maturity=option_data.time_to_maturity,
-        strike=option_data.strike,
-        current_price=option_data.current_price,
-        volatility=option_data.volatility,
-        interest_rate=option_data.interest_rate,
-        option_type='put'
-    )
-    put_model.load()
-    put_price = float(put_model.get_option_price())
+    # Set parameters for call option
+    PRELOADED_MODEL.time_to_maturity = option_data.time_to_maturity
+    PRELOADED_MODEL.strike = option_data.strike
+    PRELOADED_MODEL.current_price = option_data.current_price
+    PRELOADED_MODEL.volatility = option_data.volatility
+    PRELOADED_MODEL.interest_rate = option_data.interest_rate
+    PRELOADED_MODEL.option_type = 'call'
+
+    # Get call option price
+    call_price = float(PRELOADED_MODEL.calculate())
+
+    # Set parameters for put option (reuse the same preloaded model)
+    PRELOADED_MODEL.option_type = 'put'
+
+    # Get put option price
+    put_price = float(PRELOADED_MODEL.calculate())
 
     return {
         "call_price": call_price,
         "put_price": put_price
     }
+
 
 @app.post("/greeks")
 def calculate_greeks(option_data: OptionData):

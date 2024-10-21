@@ -118,13 +118,17 @@ class NeuralNetwork:
         joblib.dump(self.scaler, os.path.join(self.save_dir, 'scaler.pkl'))
         print("Modèle et scaler sauvegardés.")
     
+    @classmethod
+    def preload_model(cls):
+        # Static method to preload and return a neural network instance
+        instance = cls(0, 0, 0, 0, 0)  # Dummy initialization
+        instance.load()  # Load the model and scaler
+        return instance
+    
     def load(self):
-        # Check if the model and scaler exist, else train the model
-        if not os.path.exists(os.path.join(self.save_dir, 'NeuralNetwork.h5')):
-            self.train()
-        else:
-            self.model = load_model(os.path.join(self.save_dir, 'NeuralNetwork.h5'))
-            self.scaler = joblib.load(os.path.join(self.save_dir, 'scaler.pkl'))
+        # Modify this method to support global preloading
+        self.model = load_model(os.path.join(self.save_dir, 'NeuralNetwork.h5'))
+        self.scaler = joblib.load(os.path.join(self.save_dir, 'scaler.pkl'))
 
     def calculate(self):
         # Prepares the inputs for prediction, including the option_type
@@ -149,6 +153,9 @@ class NeuralNetwork:
         # Predict the price
         predicted_price = self.model.predict(inputs_scaled)
         return predicted_price[0][0]
+
+# Define a global variable to hold the preloaded model
+PRELOADED_MODEL = None
 
 
 
