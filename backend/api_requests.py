@@ -21,7 +21,7 @@ import subprocess
 import time
 
 # API URL
-BASE_URL = "https://kind-linet-yanis-42a45c58.koyeb.app/"
+BASE_URL = "REACT_APP_API_URL"
 
 # Data for option requests
 option_data = {
