@@ -8,7 +8,7 @@ import { InlineMath, BlockMath } from 'react-katex';
 const BlackScholes = () => {
   return (
     <div className="documentation-container">
-      <h1 className="doc-title">Black-Scholes Model</h1>
+      <h1 className="doc-title">Black-Scholes</h1>
       
       <section className="doc-section">
         <p>

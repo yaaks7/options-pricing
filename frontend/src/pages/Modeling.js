@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { fetchBlackScholesPrice, fetchBinomialPrice, fetchMonteCarloPrice, fetchNeuralNetworkPrice, fetchGreeks } from '../services/api';
+import { Calculator, BarChart2, Activity, RefreshCcw,Info,ChevronRight,Percent,Clock,DollarSign,TrendingUp,AlertTriangle} from 'lucide-react';
 import HeatmapPnl from '../components/HeatmapPnl';
 import OptionSensitivityGraph from '../components/OptionSensitivity';
 import GreeksSensitivityGraph from '../components/GreeksSensitivity';
@@ -10,12 +11,6 @@ import '../styles/Modelling.css';
 
 const Modeling = ({ historyRequest, clearHistoryRequest }) => {
   const location = useLocation();
-  const [selectedModels, setSelectedModels] = useState({
-    blackScholes: false,
-    binomial: false,
-    monteCarlo: false,
-    neuralNetwork: false,
-  });
 
   const [formData, setFormData] = useState({
     currentPrice: '',
@@ -25,110 +20,185 @@ const Modeling = ({ historyRequest, clearHistoryRequest }) => {
     interestRate: ''
   });
 
-  // Handle "Load Request" from history and clear it after loading
+  const [selectedModels, setSelectedModels] = useState({
+    blackScholes: false,
+    binomial: false,
+    monteCarlo: false,
+    neuralNetwork: false,
+  });
+
+  const [activeTab, setActiveTab] = useState('pricing'); 
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState(null);
+  const [greeks, setGreeks] = useState(null);
+  const [modelNames, setModelNames] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [lastCalculation, setLastCalculation] = useState(null);
+  const [calculationHistory, setCalculationHistory] = useState([]);
+  const [showErrorNotification, setShowErrorNotification] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [pricesGenerated, setPricesGenerated] = useState(false);
+  const [activeAnalysis, setActiveAnalysis] = useState('heatmap');
+
+  // Configuration Constants
+  const PARAMETER_RANGES = {
+    currentPrice: { min: 0.01, max: 10000, step: 0.01 },
+    strikePrice: { min: 0.01, max: 10000, step: 0.01 },
+    timeToMaturity: { min: 0.01, max: 50, step: 0.01 },
+    volatility: { min: 1, max: 100, step: 0.01 },
+    interestRate: { min: 0, max: 100, step: 0.01 }
+  };
+
+  const TOOLTIPS = {
+    currentPrice: "Current market price of the underlying asset",
+    strikePrice: "Exercise price of the option at maturity",
+    timeToMaturity: "Time until expiration in years (e.g., 0.5 for 6 months)",
+    volatility: "Annual volatility of the underlying asset in percentage",
+    interestRate: "Annual risk-free interest rate in percentage",
+  };
+
+  // Model Configuration
+const MODEL_CONFIG = {
+  monteCarlo: {
+    num_simulations: 10000,
+    num_steps: 100
+  },
+  binomial: {
+    steps: 100,
+    is_american: false
+  }
+  };
+
+  // History Load Effect
   useEffect(() => {
     if (historyRequest) {
-      setFormData({
-        currentPrice: historyRequest.requestData.current_price,
-        strikePrice: historyRequest.requestData.strike,
-        timeToMaturity: historyRequest.requestData.time_to_maturity,
-        volatility: (historyRequest.requestData.volatility * 100).toFixed(2),
-        interestRate: (historyRequest.requestData.interest_rate * 100).toFixed(2)
-      });
+      try {
+        setFormData({
+          currentPrice: historyRequest.requestData.current_price,
+          strikePrice: historyRequest.requestData.strike,
+          timeToMaturity: historyRequest.requestData.time_to_maturity,
+          volatility: (historyRequest.requestData.volatility * 100).toFixed(2),
+          interestRate: (historyRequest.requestData.interest_rate * 100).toFixed(2)
+        });
 
-      setSelectedModels({
-        blackScholes: historyRequest.models.includes('Black-Scholes'),
-        binomial: historyRequest.models.includes('Binomial'),
-        monteCarlo: historyRequest.models.includes('Monte Carlo'),
-        neuralNetwork: historyRequest.models.includes('Neural Network')
-      });
+        setSelectedModels({
+          blackScholes: historyRequest.models.includes('Black-Scholes'),
+          binomial: historyRequest.models.includes('Binomial'),
+          monteCarlo: historyRequest.models.includes('Monte Carlo'),
+          neuralNetwork: historyRequest.models.includes('Neural Network')
+        });
 
-      // Clear the history request after loading it into the form
-      clearHistoryRequest();
+        clearHistoryRequest();
+      } catch (error) {
+        showError('Error loading history request');
+      }
     }
   }, [historyRequest, clearHistoryRequest]);
 
-  // Reset form when navigating away from the modeling page
+  // Navigation Reset Effect
   useEffect(() => {
     if (location.pathname !== '/modeling') {
-      setFormData({
-        currentPrice: '',
-        strikePrice: '',
-        timeToMaturity: '',
-        volatility: '',
-        interestRate: ''
-      });
-      setSelectedModels({
-        blackScholes: false,
-        binomial: false,
-        monteCarlo: false,
-        neuralNetwork: false
-      });
+      resetForm();
     }
   }, [location.pathname]);
 
+  // Local Storage Effect
+  useEffect(() => {
+    try {
+      const savedHistory = JSON.parse(localStorage.getItem('calculationHistory'));
+      if (savedHistory) {
+        setCalculationHistory(savedHistory);
+      }
+    } catch (error) {
+      console.error('Error loading calculation history:', error);
+    }
+  }, []);
 
-  const [activeTab, setActiveTab] = useState('heatmap');
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [results, setResults] = useState(null);
-  const [greeks, setGreeks] = useState(null); 
-  const [modelNames, setModelNames] = useState([]);
-  const [pricesGenerated, setPricesGenerated] = useState(false);
-  const [sidebarVisible, setSidebarVisible] = useState(true); // Sidebar visibility state
-
-  const toggleSidebar = () => {
-    setSidebarVisible(!sidebarVisible); // Toggle sidebar visibility
+  // Error Handling Function
+  const showError = (message) => {
+    setErrorMessage(message);
+    setShowErrorNotification(true);
+    setTimeout(() => setShowErrorNotification(false), 5000);
   };
 
+  // Form Validation
   const validateForm = () => {
-    let formErrors = {};
-    let valid = true;
+    let newErrors = {};
+    let isValid = true;
 
-    if (formData.volatility < 0 || formData.volatility > 100 || formData.volatility === '') {
-      formErrors.volatility = 'Volatility must be between 0 and 100';
-      valid = false;
+    // Validate numeric inputs
+    Object.entries(formData).forEach(([key, value]) => {
+
+      const numValue = parseFloat(value);
+
+      if (!value || isNaN(numValue)) {
+        newErrors[key] = `${key.replace(/([A-Z])/g, ' $1').toLowerCase()} is required`;
+        isValid = false;
+      }
+    });
+
+    // Validate model selection
+    const selectedModelCount = Object.values(selectedModels).filter(Boolean).length;
+    if (selectedModelCount === 0) {
+      newErrors.models = 'Select at least one pricing model';
+      isValid = false;
     }
 
-    if (formData.interestRate < 0 || formData.interestRate > 100 || formData.interestRate === '') {
-      formErrors.interestRate = 'Interest Rate must be between 0 and 100';
-      valid = false;
-    }
-
-    if (!selectedModels.blackScholes && !selectedModels.binomial && !selectedModels.monteCarlo && !selectedModels.neuralNetwork) {
-      formErrors.models = 'You must select at least one model';
-      valid = false;
-    }
-
-    setErrors(formErrors);
-    return valid;
+    setErrors(newErrors);
+    return isValid;
   };
 
-  const handleModelChange = (e) => {
-    const { name, checked } = e.target;
-    setSelectedModels({ ...selectedModels, [name]: checked });
-  };
-
-  const handleChange = (e) => {
+  // Input Handling
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    // Format value based on step size
+    const range = PARAMETER_RANGES[name];
+    let formattedValue = value;
 
-    if (!validateForm()) {
-      return;
+    setFormData(prev => ({
+      ...prev,
+      [name]: formattedValue
+    }));
+
+    // Clear existing error
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
     }
 
-    const requestData = {
-      time_to_maturity: formData.timeToMaturity,
-      strike: formData.strikePrice,
-      current_price: formData.currentPrice,
-      volatility: formData.volatility / 100,
-      interest_rate: formData.interestRate / 100
-    };
+    // Real-time validation
+    const numValue = parseFloat(value);
+    if (value && (!isNaN(numValue))) {
+      if (numValue < range.min || numValue > range.max) {
+        setErrors(prev => ({
+          ...prev,
+          [name]: `Must be between ${range.min} and ${range.max}`
+        }));
+      }
+    }
+  };
 
+  // Model Selection
+  const handleModelSelection = (modelKey) => {
+    setSelectedModels(prev => ({
+      ...prev,
+      [modelKey]: !prev[modelKey]
+    }));
+
+    // Clear model selection error if present
+    if (errors.models) {
+      setErrors(prev => ({
+        ...prev,
+        models: ''
+      }));
+    }
+  };
+
+  // Calculation Functions
+  const calculatePrices = async (requestData) => {
     const promises = [];
     const models = [];
 
@@ -136,225 +206,529 @@ const Modeling = ({ historyRequest, clearHistoryRequest }) => {
       promises.push(fetchBlackScholesPrice(requestData));
       models.push("Black-Scholes");
     }
+    
+
+  if (selectedModels.binomial) {
+    const binomialData = {
+      ...requestData,
+      steps: 100,
+      is_american: false  
+    };
+    promises.push(fetchBinomialPrice(binomialData));
+    models.push("Binomial");
+  }
+
+  if (selectedModels.monteCarlo) {
+    const monteCarloData = {
+      ...requestData,
+      num_simulations: 10000, 
+      num_steps: 100          
+    };
+    promises.push(fetchMonteCarloPrice(monteCarloData));
+    models.push("Monte Carlo"); 
+  }
+    
     if (selectedModels.neuralNetwork) {
       promises.push(fetchNeuralNetworkPrice(requestData));
       models.push("Neural Network");
     }
-    if (selectedModels.monteCarlo) {
-      const monteCarloData = { ...requestData, num_simulations: 10000, num_steps: 100 };
-      promises.push(fetchMonteCarloPrice(monteCarloData));
-      models.push("Monte Carlo");
-    }
-    if (selectedModels.binomial) {
-      const binomialData = { ...requestData, steps: 100, is_american: false };
-      promises.push(fetchBinomialPrice(binomialData));
-      models.push("Binomial");
+
+    return { promises, models };
+  };
+
+  // Main Calculation Handler
+  const handleCalculation = async () => {
+    if (!validateForm()) {
+      showError('Please correct the errors before calculating');
+      return;
     }
 
-    const greeksPromise = fetchGreeks(requestData);
-    promises.push(greeksPromise);
+    setLoading(true);
 
     try {
-      const responses = await Promise.all(promises);
+      const requestData = {
+        current_price: parseFloat(formData.currentPrice),
+        strike: parseFloat(formData.strikePrice),
+        time_to_maturity: parseFloat(formData.timeToMaturity),
+        volatility: parseFloat(formData.volatility) / 100,
+        interest_rate: parseFloat(formData.interestRate) / 100
+      };
 
-      const greeksData = responses.pop();
-      setResults(responses);
+      const { promises, models } = await calculatePrices(requestData);
+      const greeksPromise = fetchGreeks(requestData);
+
+      // Wait for all calculations
+      const [priceResponses, greeksData] = await Promise.all([
+        Promise.all(promises),
+        greeksPromise
+      ]);
+
+      // Update state with results
+      setResults(priceResponses);
       setGreeks(greeksData);
       setModelNames(models);
       setPricesGenerated(true);
 
-      // Save in History
-      const historyData = {
+      // Save calculation
+      const calculationData = {
         models,
         requestData,
-        responses, 
-        greeksData
+        results: priceResponses,
+        greeks: greeksData,
+        timestamp: new Date().toISOString()
       };
-      saveToHistory(historyData);
+
+      saveToHistory(calculationData);
+      setLastCalculation(calculationData);
 
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Calculation error:', error);
+      showError('Error calculating option prices. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
+  // History Management
   const saveToHistory = (newEntry) => {
-    const history = JSON.parse(localStorage.getItem('history')) || [];
-    // Check if the new entry already exists
-    const isDuplicate = history.some(entry =>
-      JSON.stringify(entry.requestData) === JSON.stringify(newEntry.requestData) &&
-      JSON.stringify(entry.models) === JSON.stringify(newEntry.models)
-    );
-  
-    if (!isDuplicate) {
-      const entryWithTimestamp = {
-        ...newEntry,
-        timestamp: new Date().toISOString(),  // Add timestamp to each entry
-      };
-      history.push(entryWithTimestamp);
-      localStorage.setItem('history', JSON.stringify(history));
+    try {
+      const history = JSON.parse(localStorage.getItem('history')) || [];
+      const isDuplicate = history.some(entry =>
+        JSON.stringify(entry.requestData) === JSON.stringify(newEntry.requestData) &&
+        JSON.stringify(entry.models) === JSON.stringify(newEntry.models)
+      );
+
+      if (!isDuplicate) {
+        const updatedHistory = [...history, newEntry].slice(-50); // Keep last 50 calculations
+        localStorage.setItem('history', JSON.stringify(updatedHistory));
+        setCalculationHistory(updatedHistory);
+      }
+    } catch (error) {
+      console.error('Error saving to history:', error);
+      showError('Could not save calculation to history');
     }
   };
-  
+
+  // Form Reset
+  const resetForm = () => {
+    setFormData({
+      currentPrice: '',
+      strikePrice: '',
+      timeToMaturity: '',
+      volatility: '',
+      interestRate: ''
+    });
+    setSelectedModels({
+      blackScholes: false,
+      binomial: false,
+      monteCarlo: false,
+      neuralNetwork: false
+    });
+    setResults(null);
+    setGreeks(null);
+    setErrors({});
+    setActiveTab('pricing');
+    setPricesGenerated(false);
+  };
 
   return (
     <div className="modeling-container">
-      {/* Sidebar Toggle Button */}
-      <button className="toggle-button" onClick={toggleSidebar}>
-        {sidebarVisible ? '←' : '→'}
-      </button>
-
-      {/* Sidebar */}
-      {sidebarVisible && (
-        <div className={sidebarVisible ? 'sidebar sidebar-visible' : 'sidebar sidebar-hidden'}>
-          <form onSubmit={handleSubmit}>
-            <h3 className="centered-title">Enter Parameters</h3>
-
-            <label>Current Price ($) :</label>
-            <input type="number" name="currentPrice" value={formData.currentPrice} onChange={handleChange} min="0" step="0.01" required />
-            
-            <label>Strike Price ($) :</label>
-            <input type="number" name="strikePrice" value={formData.strikePrice} onChange={handleChange} min="0" step="0.01" required />
-            
-            <label>Time to Maturity (Years) :</label>
-            <input type="number" name="timeToMaturity" value={formData.timeToMaturity} onChange={handleChange} min="0" step="0.01" required />
-            
-            <label>Volatility (%) :</label>
-            <input type="number" name="volatility" value={formData.volatility} onChange={handleChange} min="0" step="0.01" required />
-            {errors.volatility && <p className="error">{errors.volatility}</p>}
-            
-            <label>Interest Rate (%) :</label>
-            <input type="number" name="interestRate" value={formData.interestRate} onChange={handleChange} min="0" step="0.01" required />
-            {errors.interestRate && <p className="error">{errors.interestRate}</p>}
-
-            <h3>Select Models</h3>
-            <label className="wrapper">
-              <span>Black-Scholes</span>
-              <span><input type="checkbox" name="blackScholes" checked={selectedModels.blackScholes} onChange={handleModelChange} /></span>
-            </label>
-
-            <label className="wrapper">
-              <span>Binomial</span>
-              <span><input type="checkbox" name="binomial" checked={selectedModels.binomial} onChange={handleModelChange} /></span>
-            </label>
-
-            <label className="wrapper">
-              <span>Monte-Carlo</span>
-              <span><input type="checkbox" name="monteCarlo" checked={selectedModels.monteCarlo} onChange={handleModelChange} /></span>
-            </label>
-
-            <label className="wrapper">
-              <span>Neural Network</span>
-              <span><input type="checkbox" name="neuralNetwork" checked={selectedModels.neuralNetwork} onChange={handleModelChange} /></span>
-            </label>
-
-            {errors.models && <p className="error">{errors.models}</p>}
-
-            <button type="submit">Generate Options Prices</button>
-          </form>
+      {/* Error Notification */}
+      {showErrorNotification && (
+        <div className="error-notification">
+          <AlertTriangle size={20} />
+          <span>{errorMessage}</span>
+          <button onClick={() => setShowErrorNotification(false)}>×</button>
         </div>
       )}
-
-      {/* Results Section */}
-      <div className={`results-container ${sidebarVisible ? 'with-sidebar' : 'without-sidebar'}`}>
-        <div className="results-header">
-          <div className="results-section">
-            <h4 className="centered-title">Call Prices</h4>
-            {results && results.map((result, index) => (
-              <div key={index}><p>{modelNames[index]} Call : $ {result.call_price.toFixed(2)} </p></div>
-            ))}
-          </div>
-          <div className="results-section">
-            <h4 className="centered-title">Put Prices</h4>
-            {results && results.map((result, index) => (
-              <div key={index}><p>{modelNames[index]} Put : $ {result.put_price.toFixed(2)}</p></div>
-            ))}
-          </div>
+  
+      {/* Configuration Panel (Left Side) */}
+      <div className="config-panel">
+        {/* Header */}
+        <div className="panel-header">
+          <Calculator className="header-icon" />
+          <h2>Options Calculator</h2>
+          <button 
+            className="reset-button"
+            onClick={resetForm}
+            title="Reset all fields"
+          >
+            <RefreshCcw size={16} />
+          </button>
         </div>
-
-        <div className="greeks-section boxed-container">
-          <h4 className="centered-title">Greeks</h4>
-          {greeks && (
-            <>
-              <div className="greek-values">
-                <h5>Call Greeks</h5>
-                <p>Delta: {greeks.call.delta.toFixed(2)}</p>
-                <p>Gamma: {greeks.call.gamma.toFixed(2)}</p>
-                <p>Vega: {greeks.call.vega.toFixed(2)}</p>
-                <p>Theta: {greeks.call.theta.toFixed(2)}</p>
-                <p>Rho: {greeks.call.rho.toFixed(2)}</p>
+  
+        <form onSubmit={(e) => { e.preventDefault(); handleCalculation(); }}>
+          {/* Parameters Section */}
+          <div className="parameters-section">
+            <h3>Parameters</h3>
+  
+            {/* Current Price Input */}
+            <div className="input-group">
+              <div className="input-wrapper">
+                <DollarSign className="input-icon" />
+                <input
+                  type="number"
+                  id="currentPrice"
+                  name="currentPrice"
+                  value={formData.currentPrice}
+                  onChange={handleInputChange}
+                  step={PARAMETER_RANGES.currentPrice.step}
+                  min={PARAMETER_RANGES.currentPrice.min}
+                  max={PARAMETER_RANGES.currentPrice.max}
+                  required
+                />
+                <label htmlFor="currentPrice">Current Price ($)</label>
+                <div className="tooltip-icon" data-tooltip={TOOLTIPS.currentPrice}>
+                  <Info size={16} />
+                </div>
               </div>
-              <div className="greek-values">
-                <h5>Put Greeks</h5>
-                <p>Delta: {greeks.put.delta.toFixed(2)}</p>
-                <p>Gamma: {greeks.put.gamma.toFixed(2)}</p>
-                <p>Vega: {greeks.put.vega.toFixed(2)}</p>
-                <p>Theta: {greeks.put.theta.toFixed(2)}</p>
-                <p>Rho: {greeks.put.rho.toFixed(2)}</p>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Tabs for switching between graphs */}
-        <div className="tabs">
-          <button onClick={() => setActiveTab('heatmap')}>Heatmap P&L</button>
-          <button onClick={() => setActiveTab('optionSensitivity')}>Options Sensitivity</button>
-          <button onClick={() => setActiveTab('greeksSensitivity')}>Greeks Sensitivity</button>
-        </div>
-
-        {/* Display selected tab */}
-        <div className={`graph-container ${sidebarVisible ? 'with-sidebar' : 'without-sidebar'}`}>
-          {/* Loader */}
-          {loading && (
-            <div className="loader">
-              <div className="square" id="sq1"></div>
-              <div className="square" id="sq2"></div>
-              <div className="square" id="sq3"></div>
-              <div className="square" id="sq4"></div>
-              <div className="square" id="sq5"></div>
-              <div className="square" id="sq6"></div>
-              <div className="square" id="sq7"></div>
-              <div className="square" id="sq8"></div>
-              <div className="square" id="sq9"></div>
+              {errors.currentPrice && (
+                <span className="error-message">{errors.currentPrice}</span>
+              )}
             </div>
-          )}
-
-          {activeTab === 'heatmap' &&  (
-            <HeatmapPnl setLoading={setLoading}
-              strikePrice={formData.strikePrice}
-              timeToMaturity={formData.timeToMaturity}
-              interestRate={formData.interestRate}
-              pricesGenerated={pricesGenerated}
-            />
-          )}
-
-          {activeTab === 'optionSensitivity' && (
-            <OptionSensitivityGraph setLoading={setLoading}
-              currentPrice={formData.currentPrice}
-              strikePrice={formData.strikePrice}
-              timeToMaturity={formData.timeToMaturity}
-              volatility={formData.volatility}
-              interestRate={formData.interestRate}
-              selectedModels={Object.keys(selectedModels).filter((model) => selectedModels[model])}
-              pricesGenerated={pricesGenerated}
-            />
-          )}
-
-          {activeTab === 'greeksSensitivity' && (
-            <GreeksSensitivityGraph setLoading={setLoading}
-              currentPrice={formData.currentPrice}
-              strikePrice={formData.strikePrice}
-              timeToMaturity={formData.timeToMaturity}
-              volatility={formData.volatility}
-              interestRate={formData.interestRate}
-              pricesGenerated={pricesGenerated}
-            />
-          )}
-        </div>
+  
+            {/* Strike Price Input */}
+            <div className="input-group">
+              <div className="input-wrapper">
+                <DollarSign className="input-icon" />
+                <input
+                  type="number"
+                  id="strikePrice"
+                  name="strikePrice"
+                  value={formData.strikePrice}
+                  onChange={handleInputChange}
+                  step={PARAMETER_RANGES.strikePrice.step}
+                  min={PARAMETER_RANGES.strikePrice.min}
+                  max={PARAMETER_RANGES.strikePrice.max}
+                  required
+                />
+                <label htmlFor="strikePrice">Strike Price ($)</label>
+                <div className="tooltip-icon" data-tooltip={TOOLTIPS.strikePrice}>
+                  <Info size={16} />
+                </div>
+              </div>
+              {errors.strikePrice && (
+                <span className="error-message">{errors.strikePrice}</span>
+              )}
+            </div>
+  
+            {/* Time to Maturity Input */}
+            <div className="input-group">
+              <div className="input-wrapper">
+                <Clock className="input-icon" />
+                <input
+                  type="number"
+                  id="timeToMaturity"
+                  name="timeToMaturity"
+                  value={formData.timeToMaturity}
+                  onChange={handleInputChange}
+                  step={PARAMETER_RANGES.timeToMaturity.step}
+                  min={PARAMETER_RANGES.timeToMaturity.min}
+                  max={PARAMETER_RANGES.timeToMaturity.max}
+                  required
+                />
+                <label htmlFor="timeToMaturity">Time to Maturity (Years)</label>
+                <div className="tooltip-icon" data-tooltip={TOOLTIPS.timeToMaturity}>
+                  <Info size={16} />
+                </div>
+              </div>
+              {errors.timeToMaturity && (
+                <span className="error-message">{errors.timeToMaturity}</span>
+              )}
+            </div>
+  
+            {/* Volatility Input */}
+            <div className="input-group">
+              <div className="input-wrapper">
+                <TrendingUp className="input-icon" />
+                <input
+                  type="number"
+                  id="volatility"
+                  name="volatility"
+                  value={formData.volatility}
+                  onChange={handleInputChange}
+                  step={PARAMETER_RANGES.volatility.step}
+                  min={PARAMETER_RANGES.volatility.min}
+                  max={PARAMETER_RANGES.volatility.max}
+                  required
+                />
+                <label htmlFor="volatility">Volatility (%)</label>
+                <div className="tooltip-icon" data-tooltip={TOOLTIPS.volatility}>
+                  <Info size={16} />
+                </div>
+              </div>
+              {errors.volatility && (
+                <span className="error-message">{errors.volatility}</span>
+              )}
+            </div>
+  
+            {/* Interest Rate Input */}
+            <div className="input-group">
+              <div className="input-wrapper">
+                <Percent className="input-icon" />
+                <input
+                  type="number"
+                  id="interestRate"
+                  name="interestRate"
+                  value={formData.interestRate}
+                  onChange={handleInputChange}
+                  step={PARAMETER_RANGES.interestRate.step}
+                  min={PARAMETER_RANGES.interestRate.min}
+                  max={PARAMETER_RANGES.interestRate.max}
+                  required
+                />
+                <label htmlFor="interestRate">Interest Rate (%)</label>
+                <div className="tooltip-icon" data-tooltip={TOOLTIPS.interestRate}>
+                  <Info size={16} />
+                </div>
+              </div>
+              {errors.interestRate && (
+                <span className="error-message">{errors.interestRate}</span>
+              )}
+            </div>
+          </div>
+  
+          {/* Models Selection */}
+          <div className="models-section">
+            <h3>Pricing Models</h3>
+            <div className="models-grid">
+              {[
+                { key: 'blackScholes', label: 'Black-Scholes' },
+                { key: 'binomial', label: 'Binomial' },
+                { key: 'monteCarlo', label: 'Monte-Carlo' },
+                { key: 'neuralNetwork', label: 'Neural Network' }
+              ].map(({ key, label }) => (
+                <div 
+                  key={key}
+                  className={`model-card ${selectedModels[key] ? 'selected' : ''}`}
+                  onClick={() => handleModelSelection(key)}
+                >
+                  <BarChart2 className="model-icon" />
+                  <span>{label}</span>
+                  {selectedModels[key] && <div className="selected-indicator" />}
+                </div>
+              ))}
+            </div>
+            {errors.models && (
+              <span className="error-message models-error">{errors.models}</span>
+            )}
+          </div>
+  
+          {/* Calculate Button */}
+          <button 
+            type="submit" 
+            className={`calculate-button ${loading ? 'loading' : ''}`}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <RefreshCcw className="spin" />
+                <span>Calculating...</span>
+              </>
+            ) : (
+              <>
+                <span>Calculate Prices</span>
+                <ChevronRight size={16} />
+              </>
+            )}
+          </button>
+        </form>
       </div>
-    </div>
 
+        {/* Results Panel (Right Side) */}
+        <div className="results-panel">
+            {/* Results Navigation */}
+            <div className="results-nav">
+                <div className="nav-tabs">
+                <button 
+                    className={`tab-button ${activeTab === 'pricing' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('pricing')}
+                >
+                    <Activity className="tab-icon" />
+                    <span>Pricing Results</span>
+                </button>
+                <button 
+                    className={`tab-button ${activeTab === 'greeks' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('greeks')}
+                >
+                    <BarChart2 className="tab-icon" />
+                    <span>Greeks Analysis</span>
+                </button>
+                <button 
+                    className={`tab-button ${activeTab === 'analysis' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('analysis')}
+                >
+                    <TrendingUp className="tab-icon" />
+                    <span>Sensitivity Analysis</span>
+                </button>
+                </div>
+            </div>
+
+            {/* Results Content */}
+            <div className="results-content">
+                {loading && (
+                <div className="loading-overlay">
+                    <RefreshCcw className="spin" />
+                    <span>Calculating results...</span>
+                </div>
+                )}
+
+                {!results ? (
+                <div className="no-results">
+                    <Calculator size={48} />
+                    <h3>No calculations yet</h3>
+                    <p>Enter parameters and select models to calculate option prices</p>
+                </div>
+                ) : (
+                <>
+                    {/* Pricing Results Tab */}
+                    {activeTab === 'pricing' && (
+                    <div className="pricing-results">
+                        <div className="results-grid">
+                        {modelNames.map((model, index) => (
+                            <div key={model} className="result-card">
+                            <div className="card-header">
+                                <h4>{model}</h4>
+                            </div>
+                            <div className="price-details">
+                                <div className="price-item">
+                                <span className="price-label">Call Option</span>
+                                <strong className="price-value">
+                                    ${results[index].call_price.toFixed(4)}
+                                </strong>
+                                </div>
+                                <div className="price-item">
+                                <span className="price-label">Put Option</span>
+                                <strong className="price-value">
+                                    ${results[index].put_price.toFixed(4)}
+                                </strong>
+                                </div>
+                            </div>
+                            </div>
+                        ))}
+                        </div>
+                    </div>
+                    )}
+
+                    {/* Greeks Analysis Tab */}
+                    {activeTab === 'greeks' && greeks && (
+                    <div className="greeks-analysis">
+                        <div className="greeks-cards">
+                        <div className="greeks-section">
+                            <h3>Call Option Greeks</h3>
+                            <div className="greeks-grid">
+                            {Object.entries(greeks.call).map(([greek, value]) => (
+                                <div key={greek} className="greek-card">
+                                <h4>{greek.toUpperCase()}</h4>
+                                <strong>{value.toFixed(4)}</strong>
+                                <div 
+                                    className="greek-indicator"
+                                    style={{ 
+                                    backgroundColor: value > 0 ? 'var(--success)' : 'var(--error)',
+                                    width: `${Math.min(Math.abs(value * 100), 100)}%`
+                                    }}
+                                />
+                                </div>
+                            ))}
+                            </div>
+                        </div>
+
+                        <div className="greeks-section">
+                            <h3>Put Option Greeks</h3>
+                            <div className="greeks-grid">
+                            {Object.entries(greeks.put).map(([greek, value]) => (
+                                <div key={greek} className="greek-card">
+                                <h4>{greek.toUpperCase()}</h4>
+                                <strong>{value.toFixed(4)}</strong>
+                                <div 
+                                    className="greek-indicator"
+                                    style={{ 
+                                    backgroundColor: value > 0 ? 'var(--success)' : 'var(--error)',
+                                    width: `${Math.min(Math.abs(value * 100), 100)}%`
+                                    }}
+                                />
+                                </div>
+                            ))}
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    )}
+
+                    {/* Sensitivity Analysis Tab */}
+                    {activeTab === 'analysis' && (
+                    <div className="sensitivity-analysis">
+                        <div className="analysis-controls">
+                        <button 
+                            className={`analysis-tab ${activeAnalysis === 'heatmap' ? 'active' : ''}`}
+                            onClick={() => setActiveAnalysis('heatmap')}
+                        >
+                            Heatmap P&L
+                        </button>
+                        <button 
+                            className={`analysis-tab ${activeAnalysis === 'optionSensitivity' ? 'active' : ''}`}
+                            onClick={() => setActiveAnalysis('optionSensitivity')}
+                        >
+                            Price Sensitivity
+                        </button>
+                        <button 
+                            className={`analysis-tab ${activeAnalysis === 'greeksSensitivity' ? 'active' : ''}`}
+                            onClick={() => setActiveAnalysis('greeksSensitivity')}
+                        >
+                            Greeks Sensitivity
+                        </button>
+                        </div>
+
+                        <div className="graph-container">
+                        {loading && (
+                            <div className="loader">
+                            <RefreshCcw className="spin" />
+                            <span>Generating graph...</span>
+                            </div>
+                        )}
+
+                        {activeAnalysis === 'heatmap' && (
+                            <HeatmapPnl
+                            setLoading={setLoading}
+                            strikePrice={formData.strikePrice}
+                            timeToMaturity={formData.timeToMaturity}
+                            interestRate={formData.interestRate}
+                            pricesGenerated={pricesGenerated}
+                            />
+                        )}
+
+                        {activeAnalysis === 'optionSensitivity' && (
+                            <OptionSensitivityGraph
+                            setLoading={setLoading}
+                            currentPrice={formData.currentPrice}
+                            strikePrice={formData.strikePrice}
+                            timeToMaturity={formData.timeToMaturity}
+                            volatility={formData.volatility}
+                            interestRate={formData.interestRate}
+                            selectedModels={modelNames}
+                            pricesGenerated={pricesGenerated}
+                            />
+                        )}
+
+                        {activeAnalysis === 'greeksSensitivity' && (
+                            <GreeksSensitivityGraph
+                            setLoading={setLoading}
+                            currentPrice={formData.currentPrice}
+                            strikePrice={formData.strikePrice}
+                            timeToMaturity={formData.timeToMaturity}
+                            volatility={formData.volatility}
+                            interestRate={formData.interestRate}
+                            pricesGenerated={pricesGenerated}
+                            />
+                        )}
+                        </div>
+                    </div>
+                    )}
+                </>
+                )}
+            </div>
+        </div>
+    </div>
   );
 };
-
 export default Modeling;

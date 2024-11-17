@@ -8,7 +8,7 @@ import { BlockMath, InlineMath } from 'react-katex';
 const Binomial = () => {
     return (
         <div className="documentation-container">
-            <h1 className="doc-title">Binomial Model Documentation</h1>
+            <h1 className="doc-title">Binomial</h1>
             
             <div className="doc-section">
                 <p>

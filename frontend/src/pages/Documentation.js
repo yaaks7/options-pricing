@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 const Documentation = () => {
   return (
     <div>
-      <h1 className="doc-title">Options Pricing Models Documentation</h1>
       <div className="doc-container">
 
         <div className="doc-grid">
@@ -36,7 +35,7 @@ const Documentation = () => {
 
           <div className="doc-item">
             <h3>Neural Network</h3>
-            <p>A machine learning model to predict option prices based on historical data.</p>
+            <p>A machine learning model to predict option prices based on historical data of options.</p>
             <Link to="/documentation/neural-network">
               <button className="doc-button">Learn More</button>
             </Link>
@@ -44,7 +43,7 @@ const Documentation = () => {
 
           <div className="doc-item doc-item-greeks">
             <h3>The Greeks</h3>
-            <p>Metrics that measure the sensitivity of the option price to different factors such as volatility, time, and the underlying asset’s price.</p>
+            <p>Metrics that measure the sensitivity of the option price to different factors such as volatility and time to expiration.</p>
             <Link to="/documentation/greeks">
               <button className="doc-button">Learn More</button>
             </Link>

@@ -107,23 +107,26 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
   const [minLabel, maxLabel] = getLabel(parameter); 
 
   return (
-    <div>
+    <div className="sensitivity-graph">
       <h3>Greeks Sensitivity Graph</h3>
 
       {/* Greek Selection */}
-      <div style={{ justifyContent: 'space-between', marginBottom: '10px', marginTop: '10px' }}>
-        <label>
-          Greek to calculate :
-          <select value={greek} onChange={(e) => setGreek(e.target.value)}>
-            <option value="delta">Delta</option>
-            <option value="gamma">Gamma</option>
-            <option value="theta">Theta</option>
-            <option value="vega">Vega</option>
-            <option value="rho">Rho</option>
-          </select>
-        </label>
+      <div className="controls-grid">
+        <div className="input-field">
+          <label>
+            Greek to calculate :
+            <select value={greek} onChange={(e) => setGreek(e.target.value)}>
+              <option value="delta">Delta</option>
+              <option value="gamma">Gamma</option>
+              <option value="theta">Theta</option>
+              <option value="vega">Vega</option>
+              <option value="rho">Rho</option>
+            </select>
+          </label>
+        </div>
 
         {/* Parameter to vary */}
+        <div className="input-field">
         <label>
           Parameter to vary :
           <select value={parameter} onChange={(e) => setParameter(e.target.value)}>
@@ -133,29 +136,35 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
             <option value="time_to_maturity">Time to Maturity</option>
           </select>
         </label>
-      </div>
+        </div>
+      
 
-      {/* Min & Max */}
-      <div style={{ justifyContent: 'space-between', marginBottom: '10px'}}>
-        <label>
-          {minLabel}
-          <input type="number" value={minParam} onChange={(e) => setMinParam(e.target.value)} min="0" required />
-        </label>
-        <label>
-          {maxLabel}
-          <input type="number" value={maxParam} onChange={(e) => setMaxParam(e.target.value)} min="0" required />
-        </label>
+        {/* Min & Max */}
+        <div className="input-field">
+          <label>
+            {minLabel}
+            <input type="number" value={minParam} onChange={(e) => setMinParam(e.target.value)} min="0" required />
+          </label>
+          </div>
+          <div className="input-field">
+          <label>
+            {maxLabel}
+            <input type="number" value={maxParam} onChange={(e) => setMaxParam(e.target.value)} min="0" required />
+          </label>
+        </div>
 
         {/* Call or Put */}
+        <div className="input-field">
         <label>
           Option Type :
           <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
             <option value="call">Call</option>
             <option value="put">Put</option>
           </select>
-        </label>      
+        </label> 
+        </div>
       </div>
-      <button onClick={generateGraph}>Generate</button>
+      <button onClick={generateGraph} className="generate-button">Generate</button>
 
         {/* Plot */}
         {graphData && (
@@ -164,21 +173,21 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
             layout={{
               title: {
                 text: `${greek.toUpperCase()} vs ${parameter.replace('_', ' ')}`,
-                font: { color: "#E5EFC1" } 
+                font: { color: "#7C3AED" } 
               },
               xaxis: { 
                 title: {
                   text: parameter.replace('_', ' '),
-                  font: { color: "#E5EFC1" } 
+                  font: { color: "#7C3AED" } 
                 },
-                color: "#E5EFC1"  
+                color: "#7C3AED"  
               },
               yaxis: { 
                 title: {
                   text: `${greek.toUpperCase()} Value`,
-                  font: { color: "#E5EFC1" } 
+                  font: { color: "#7C3AED" } 
                 },
-                color: "#E5EFC1"  
+                color: "#7C3AED"  
               },
               autosize: true,
               paper_bgcolor: "#1E1E1E",  

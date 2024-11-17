@@ -1,49 +1,193 @@
 /* src/App.css */
 
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-.App-header {
-  background-color: hwb(0 7% 93%); 
-  color: #E5EFC1;
-  padding: 20px;
-}
-
-button {
-  border: none;
+/* Global color variables */
+:root {
+  --bg-primary: #13111C;
+  --bg-secondary: #1E1B2E;
+  --bg-elements: #2A2735;
+  --accent-primary: #7C3AED;
+  --accent-secondary: #9F67FF;
+  --text-primary: #F2F2F3;
+  --text-secondary: #A1A1AA;
+  --error: #EF4444;
+  --success: #10B981;
+  --warning: #F59E0B;
+ }
+ 
+ /* Base styles */
+ * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+ }
+ 
+ body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+ }
+ 
+ .App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+ }
+ 
+ /* Buttons */
+ button {
   cursor: pointer;
-}
-
-button:disabled {
-  background-color: #666;
-}
-
-.vanta-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -10;
-}
-
-body {
-  color: #E5EFC1;
-  background-color: #121212;
-}
-
-
-.centered-title {
-  text-align: center;
-}
-
-
-
-
-
+  border: none;
+  font-family: inherit;
+  transition: all 0.3s ease;
+ }
+ 
+ .button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+ }
+ 
+ .button-primary {
+  background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+  color: var(--text-primary);
+ }
+ 
+ .button-secondary {
+  background-color: transparent;
+  border: 1px solid var(--accent-primary);
+  color: var(--accent-primary);
+ }
+ 
+ .button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.2);
+ }
+ 
+ .button:active {
+  transform: translateY(0);
+ }
+ 
+ /* Form elements */
+ input, select, textarea {
+  background-color: var(--bg-secondary);
+  border: 1px solid rgba(124, 58, 237, 0.1);
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+ }
+ 
+ input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+ }
+ 
+ /* Cards */
+ .card {
+  background-color: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 1.5rem;
+  border: 1px solid rgba(124, 58, 237, 0.1);
+  transition: all 0.3s ease;
+ }
+ 
+ .card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+ }
+ 
+ /* Text utilities */
+ .text-gradient {
+  background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+ }
+ 
+ .text-accent {
+  color: var(--accent-primary);
+ }
+ 
+ .text-secondary {
+  color: var(--text-secondary);
+ }
+ 
+ /* Layout */
+ .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+ }
+ 
+ /* Status messages */
+ .error-message {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--error);
+  color: var(--error);
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+ }
+ 
+ .success-message {
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid var(--success);
+  color: var(--success);
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+ }
+ 
+ /* Links */
+ a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  transition: color 0.3s ease;
+ }
+ 
+ a:hover {
+  color: var(--accent-secondary);
+ }
+ 
+ /* Sections */
+ .section {
+  padding: 4rem 0;
+ }
+ 
+ /* Responsive */
+ @media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .section {
+    padding: 2rem 0;
+  }
+ }
+ 
+ /* Scrollbar */
+ ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+ }
+ 
+ ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+ }
+ 
+ ::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 4px;
+ }
+ 
+ ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+ }

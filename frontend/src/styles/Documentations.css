@@ -1,79 +1,84 @@
 /* src/styles/Documentations.css */
 
 .doc-container {
-    text-align: center;
-    padding: 50px 20px;
-    background-color: #141414;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+.doc-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 3rem;
+}
+
+.doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-gap: 2rem;
+}
+
+.doc-item {
+  background-color: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 2rem;
+  border: 1px solid rgba(124, 58, 237, 0.1);
+  transition: all 0.3s ease;
+}
+
+.doc-item:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
+.doc-item h3 {
+  color: var(--accent-primary);
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.doc-item p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+.doc-button {
+  background-color: var(--accent-primary);
+  color: var(--bg-primary);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.doc-button:hover {
+  background-color: var(--accent-secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.2);
+}
+
+.doc-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .doc-container {
+    padding: 2rem 1rem;
   }
-  
+
   .doc-title {
-    color: #f5f5f5;
-    margin-bottom: 40px;
+    font-size: 2rem;
   }
-  
+
   .doc-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 20px;
-    justify-items: center;
+    grid-template-columns: 1fr;
   }
-  
-  .doc-item {
-    background-color: #2c2c2c;
-    padding: 20px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-  }
-
-  .doc-item:hover {
-    filter: drop-shadow(0px 0px 5px #39AEA9);
-  }
-  
-  .doc-item h3 {
-    color: #f5f5f5;
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-  }
-  
-  .doc-item p {
-    color: #bfbfbf;
-    font-size: 1rem;
-    margin-bottom: 20px;
-  }
-  
-  .doc-item-greeks {
-    grid-column: span 2;
-  }
-  
-  .doc-button {
-    background-color: #39AEA9;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 1rem;
-    transition: background-color 0.3s;
-  }
-
-  .doc-button:active {
-    box-shadow: none;
-    transform: scale(0.95);
-  }
-  
-  .doc-button:hover {
-    background-color: #349e99;
-  }
-  
-  @media (max-width: 768px) {
-    .doc-grid {
-      grid-template-columns: 1fr;
-    }
-  
-    .doc-item {
-      width: 100%;
-    }
-  }
-  
+}

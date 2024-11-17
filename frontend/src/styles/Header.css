@@ -1,35 +1,35 @@
 /* src/styles/Header.css */
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #333;
-    color: white;
-    border-radius: 15px;
-    width: 97%;
-    margin: 10px auto; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: 15px;
+  width: 97%;
+  margin: 1rem auto;
 }
 
-
 .header-left {
-    display: flex;
-    gap: 15px;
+  display: flex;
+  gap: 1.5rem;
 }
 
 .header-btn {
-  padding: 10px 15px;
+  padding: 0.75rem 1.25rem;
   border: none;
   cursor: pointer;
-  font-size: 16px;
-  border-radius: 5px;
-  background: none;
-  color: #ffffff;
+  font-size: 1rem;
+  border-radius: 8px;
+  background-color: transparent;
+  color: var(--text-primary);
   font-weight: 600;
   position: relative;
   display: inline-block;
-  text-transform: uppercase; 
+  text-transform: uppercase;
+  transition: all 0.3s ease;
 }
 
 .header-btn::after {
@@ -39,7 +39,7 @@
   left: 50%;
   right: 50%;
   height: 2px;
-  background: white;
+  background: var(--accent-primary);
   transition: all 0.3s ease;
 }
 
@@ -51,91 +51,66 @@
 .header-btn.active::after {
   left: 0;
   right: 0;
-  background: white;
+  background: var(--accent-primary);
 }
 
-.home-btn {
-  background-color: transparent;
-  color: #ffffff;  
-  margin-top: 5px;
-}
-
-.model-btn {
-  background-color: transparent;
-  color: #ffffff;  
-  margin-top: 5px;
-}
-
-.history-btn {
-  background-color: transparent;
-  color: #ffffff;  
-  margin-top: 5px;
-}
-
-.doc-btn {
-  background-color: transparent;
-  color: #ffffff;  
-  margin-top: 5px;
-}
-
-.home-icon {
-    width: 48px;
-    height: 48px;
+.header-btn:hover {
+  color: var(--accent-primary);
 }
 
 .header-right {
-    padding-right: 15px;
+  display: flex;
+  align-items: center;
 }
 
-.social-links,.flex-center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .social-btn {
-    cursor: pointer;
-    height: 50px;
-    width: 50px;
-    font-family: 'Titillium Web', sans-serif;
-    color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0px 10px 10px rgba(0,0,0,0.1);
-    background: #222729;
-    margin: 5px;
-    transition: 0.3s;
-    justify-content: center;
-  }
-  
-  .social-btn svg {
-    height: 24px;
-    width: 24px;
-  }
-  
-  .social-btn span {
-    width: 0px;
-    overflow: hidden;
-    transition: 0.3s;
-    text-align: center;
-    margin-left: 5px;
-  }
-  
-  .social-btn:hover {
-    width: 150px;
-    border-radius: 5px;
-  }
-  
-  .social-btn:hover span {
-    padding: 2px;
-    width: 80px;
-  }
-  
-  
-  #linkedin svg {
-    fill: #0e76a8;
-  }
-  
-  #github {
-    fill: #333;
-  }
-  
+.social-links,
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.social-btn {
+  cursor: pointer;
+  height: 40px;
+  width: 40px;
+  color: var(--text-primary);
+  border-radius: 8px;
+  background-color: var(--bg-elements);
+  margin: 0 0.5rem;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.social-btn svg {
+  height: 20px;
+  width: 20px;
+}
+
+.social-btn span {
+  width: 0px;
+  overflow: hidden;
+  transition: 0.3s;
+  text-align: center;
+  margin-left: 5px;
+}
+
+.social-btn:hover {
+  width: 130px;
+  background-color: var(--accent-primary);
+  color: var(--bg-primary);
+}
+
+.social-btn:hover span {
+  width: 80px;
+}
+
+#linkedin svg {
+  fill: #0e76a8;
+}
+
+#github svg {
+  fill: #333;
+}

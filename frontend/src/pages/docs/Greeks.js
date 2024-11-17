@@ -43,7 +43,7 @@ const Greeks = () => {
                     </p>
                 </div>
 
-                <h3>Theta (<InlineMath>\Theta</InlineMath>):</h3>
+                <h2>Theta (<InlineMath>\Theta</InlineMath>):</h2>
                 <p>
                     <strong>Theta</strong> measures the sensitivity of the option price to the passage of time, 
                     in other words, the "decay" of the option price. Theta is generally negative as the passage of time decreases the value of an option.
@@ -56,7 +56,7 @@ const Greeks = () => {
                     <BlockMath>{`\\Theta_{put} = -\\frac{S_0 N'(d_1) \\sigma}{2\\sqrt{T}} + r Xe^{-rT}N(-d_2)`}</BlockMath>
                 </div>
 
-                <h3>Vega (<InlineMath>\nu</InlineMath>):</h3>
+                <h2>Vega (<InlineMath>\nu</InlineMath>):</h2>
                 <p>
                     <strong>Vega</strong> measures the sensitivity of the option price to the volatility of the underlying asset. 
                     Vega is identical for both call and put options and is always positive.
@@ -66,7 +66,7 @@ const Greeks = () => {
                     <BlockMath>{`\\nu = S_0 N'(d_1) \\sqrt{T}`}</BlockMath>
                 </div>
 
-                <h3>Rho (<InlineMath>\rho</InlineMath>):</h3>
+                <h2>Rho (<InlineMath>\rho</InlineMath>):</h2>
                 <p>
                     <strong>Rho</strong> measures the sensitivity of the option price to the risk-free interest rate. 
                     For call options, Rho is generally positive, while for put options, it is negative.

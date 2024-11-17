@@ -7,7 +7,7 @@ import { BlockMath, InlineMath } from 'react-katex';
 const MonteCarlo = () => {
     return (
         <div className="documentation-container">
-            <h1 className="doc-title">Monte Carlo Model Documentation</h1>
+            <h1 className="doc-title">Monte Carlo</h1>
             
             <div className="doc-section">
                 <p>

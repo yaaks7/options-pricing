@@ -7,7 +7,7 @@ import { BlockMath, InlineMath } from 'react-katex';
 const NeuralNetwork = () => {
   return (
     <div className="documentation-containerN">
-      <h1 className="doc-titleN">Neural Network Model Documentation</h1>
+      <h1 className="doc-title">Neural Network</h1>
       
       <div className="doc-sectionN">
         <p>
@@ -40,10 +40,6 @@ const NeuralNetwork = () => {
               <li>32 units in the fourth layer,</li>
               <li>and a single output unit predicting the option price.</li>
             </ul>
-            The network uses the ReLU activation function and is trained with the Adam gradient descent algorithm.
-          </li>
-          <li>
-            <strong>Training and Validation:</strong> The model is trained on a large dataset (up to 1 million samples). Early stopping is implemented to avoid overfitting, with the process halting automatically if the loss on the validation set does not improve after 15 consecutive epochs. The data are normalized using a MinMaxScaler to help the network learn more effectively.
           </li>
         </ul>
       </div>

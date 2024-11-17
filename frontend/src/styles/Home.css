@@ -1,133 +1,186 @@
 /* src/styles/Home.css */
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
 
-.homepage-container {
-    display: flex;
+/* Hero Section */
+.hero-section {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+  margin: 4rem 0;
+  position: relative;
+}
+
+.hero-content {
+  flex: 1;
+  z-index: 2;
+}
+
+.gradient-text {
+  font-size: 4.5rem;
+  font-weight: 800;
+  background: linear-gradient(45deg, var(--accent-primary), #fff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 1.5rem;
+}
+
+.hero-description {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  max-width: 600px;
+}
+
+/* Image avec effet de superposition */
+.hero-image-container {
+  flex: 1;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.hero-image {
+  width: 100%;
+  border-radius: 10px;
+  transform: scale(1.01);
+  transition: transform 0.5s ease;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(100, 255, 218, 0.1), transparent);
+  z-index: 1;
+}
+
+/* Bouton CTA amélioré */
+.cta-button {
+  background: linear-gradient(45deg, var(--accent-primary), #4FFFD9);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  color: var(--bg-primary);
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(100, 255, 218, 0.2);
+}
+
+.arrow {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.cta-button:hover .arrow {
+  transform: translateX(5px);
+}
+
+/* Features Section */
+.features-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin: 6rem 0;
+}
+
+.feature-card {
+  background-color: var(--bg-secondary);
+  padding: 2rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(100, 255, 218, 0.1);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent-primary);
+}
+
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.feature-card h2 {
+  color: var(--accent-primary);
+  margin-bottom: 1rem;
+}
+
+.feature-card p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Documentation Section */
+.docs-section {
+  padding: 4rem 0;
+}
+
+.docs-section h2 {
+  text-align: center;
+  margin-bottom: 3rem;
+  font-size: 2.5rem;
+  color: var(--text-primary);
+}
+
+.docs-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+}
+
+.doc-link {
+  text-align: center;
+  padding: 1rem;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(100, 255, 218, 0.1);
+}
+
+.doc-link:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+  .hero-section {
     flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    color: #E5EFC1;
-  }
-
-  .home-title {
     text-align: center;
-    color: #f5f5f5;
-    margin-bottom: 20px;
-  }
-  
-  .content-container {
-    display: flex;
-    justify-content: space-between;
-    width: 80%;
-    margin-bottom: 40px;
-  }
-  
-  /* Scrollable section for "What", "Who", and "Why" */
-  .scroll-section {
-    display: flex;
-    flex-direction: row;
-    overflow-x: scroll;
-    padding: 10px;
-    scroll-snap-type: x mandatory;
-    gap: 20px;
-    width: 45%;
-    text-align: center;
-  }
-  
-  .scroll-section::-webkit-scrollbar {
-    height: 8px;
-  }
-  
-  .scroll-section::-webkit-scrollbar-thumb {
-    background-color: #39AEA9;
-    border-radius: 10px;
-  }
-  
-  .scroll-card {
-    min-width: 300px;
-    background-color: #2F2F2F;
-    padding: 20px;
-    border-radius: 10px;
-    scroll-snap-align: start;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .scroll-card h2 {
-    color: #A2D5AB;
-    margin-bottom: 10px;
-  }
-  
-  /* Image container for the trading image */
-  .image-container {
-    width: 45%;
-  }
-  
-  .image-container img {
-    width: 100%;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Button container and styling */
-  .button-container {
-    margin-top: 20px;
-  }
-  
-  .start-button {
-    background-color: #39AEA9;
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    font-size: 18px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .start-button:active {
-    box-shadow: none;
-    transform: scale(0.95);
+    gap: 2rem;
   }
 
-  .start-button:hover {
-    background-color: #349e99;
-  }
-  
-  .documentation-section {
-    width: 80%;
-    margin-top: 40px;
-    background-color: #2F2F2F;
-    border-radius: 8px;
-    text-align: center
-  }
-  
-  .documentation-section h3 {
-    color: #A2D5AB;
-    margin-bottom: 10px;
-  }
-  
-  .documentation-section p {
-    margin-bottom: 20px;
-  }
-  
-  .doc-links {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 10px;
-  }
-  
-  .doc-links a {
-    color: #39AEA9;
-    text-decoration: none;
-    font-size: 16px;
-  }
-  
-  .doc-links a:hover {
-    text-decoration: underline;
+  .gradient-text {
+    font-size: 3rem;
   }
 
-  .homepage-container p {
-    color: #bfbfbf;
+  .features-section {
+    grid-template-columns: 1fr;
   }
 
-
-  
+  .docs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

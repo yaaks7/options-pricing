@@ -145,91 +145,116 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
 
   const [minLabel, maxLabel] = getLabel(parameter);
 
+
   return (
-    <div className="options-sensitivity">
-      <h3>Option Sensitivity Graph</h3>
+    <div className="sensitivity-graph">
+      <div className="controls-grid">
+        <div className="input-field">
+          <label>Parameter to vary:</label>
+          <select 
+            value={parameter} 
+            onChange={(e) => setParameter(e.target.value)}
+          >
+            <option value="volatility">Volatility</option>
+            <option value="strike">Strike Price</option>
+            <option value="current_price">Current Price</option>
+            <option value="time_to_maturity">Time to Maturity</option>
+          </select>
+        </div>
 
-      {/* Parameter to vary */}
-      <label>
-        Parameter to vary :
-        <select value={parameter} onChange={(e) => setParameter(e.target.value)}>
-          <option value="volatility">Volatility</option>
-          <option value="strike">Strike Price</option>
-          <option value="current_price">Current Price</option>
-          <option value="time_to_maturity">Time to Maturity</option>
-        </select>
-      </label>
+        <div className="input-field">
+          <label>Minimum value:</label>
+          <input
+            type="number"
+            value={minParam}
+            onChange={(e) => setMinParam(e.target.value)}
+            min="0"
+            required
+          />
+        </div>
 
-      {/* Min & Max */}
-      <label>
-        {minLabel}
-        <input type="number" value={minParam} onChange={(e) => setMinParam(e.target.value)} min="0" required />
-      </label>
-      <label>
-        {maxLabel}
-        <input type="number" value={maxParam} onChange={(e) => setMaxParam(e.target.value)} min="0" required />
-      </label>
+        <div className="input-field">
+          <label>Maximum value:</label>
+          <input
+            type="number"
+            value={maxParam}
+            onChange={(e) => setMaxParam(e.target.value)}
+            min="0"
+            required
+          />
+        </div>
 
-      {/* Call or Put */}
-      <label>
-        Option Type :
-        <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
-          <option value="call">Call</option>
-          <option value="put">Put</option>
-        </select>
-      </label>
+        <div className="input-field">
+          <label>Option Type:</label>
+          <select
+            value={optionType}
+            onChange={(e) => setOptionType(e.target.value)}
+          >
+            <option value="call">Call</option>
+            <option value="put">Put</option>
+          </select>
+        </div>
+      </div>
 
-      {/* Select model */}
-      <div>
-        <h4>Select Models for Sensitivity Graph :</h4>
+      {/* Model Selection */}
+      <div className="model-selection">
+        <h4>Select Models for Sensitivity Graph:</h4>
         {Object.keys(modelMap).map((model) => (
-          <label className="wrapper" key={model}>
+          <label key={model} className="checkbox-group">
+            <input
+              type="checkbox"
+              checked={selectedModelTypes.includes(modelMap[model])}
+              onChange={() => handleModelSelection(modelMap[model])}
+            />
             <span>{modelMap[model]}</span>
-            <span>
-              <input
-                type="checkbox"
-                checked={selectedModelTypes.includes(modelMap[model])}
-                onChange={() => handleModelSelection(modelMap[model])}
-              />
-            </span>
-            <div className="clearboth"></div> {/* Clear floats */}
           </label>
         ))}
       </div>
 
-      <button onClick={generateGraph}>Generate</button>
+      <button onClick={generateGraph} className="generate-button">
+        Generate
+      </button>
 
-      {/* Plot */}
       {graphData && (
         <Plot
           data={graphData}
           layout={{
             title: {
               text: `Option Price vs ${parameter.replace('_', ' ')}`,
-              font: { color: "#E5EFC1" }  
+              font: { color: "#7C3AED" }
             },
-            xaxis: { 
+            xaxis: {
               title: {
                 text: parameter.replace('_', ' '),
-                font: { color: "#E5EFC1" } 
+                font: { color: "#7C3AED" }
               },
-              color: "#E5EFC1" 
+              color: "#7C3AED",
             },
-            yaxis: { 
+            yaxis: {
               title: {
                 text: 'Option Price',
-                font: { color: "#E5EFC1" }
+                font: { color: "#7C3AED" }
               },
-              color: "#E5EFC1" 
+              color: "#7C3AED",
             },
-            autosize: true,
             paper_bgcolor: "#1E1E1E",
             plot_bgcolor: "#121212",
+            autosize: true,
+            margin: { t: 50, r: 50, b: 50, l: 50 },
+            showlegend: true,
+            legend: {
+              font: { color: "#E5EFC1" },
+              bgcolor: "rgba(30, 27, 46, 0.7)"
+            }
           }}
-          style={{ width: "100%", height: "500px" }}
+          className="plotly-graph"
+          config={{ 
+            responsive: true,
+            displayModeBar: true,
+            displaylogo: false
+          }}
         />
       )}
-
     </div>
   );
 };

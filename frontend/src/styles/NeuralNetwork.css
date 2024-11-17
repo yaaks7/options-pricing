@@ -31,9 +31,10 @@
 }
 
 .doc-sectionN h2 {
-  font-size: 26px;
-  margin-bottom: 15px;
+  color: var(--accent-primary);
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
   text-align: center;
-  margin-top: 30px;
 }
 

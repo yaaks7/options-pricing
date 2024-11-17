@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Plot from 'react-plotly.js';
 import { fetchHeatmapPnl } from '../services/api';
 import '../App.css'; 
-import '../styles/Modelling.css'; 
+import '../styles/Graph.css'; 
 
 const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated, setLoading }) => {
   const [purchasePrice, setPurchasePrice] = useState('');
@@ -81,80 +81,124 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
     setLoading(false);
   };
 
+
   return (
-    <div>
-      <h3>Heatmap P&L</h3>
-      <form onSubmit={(e) => { e.preventDefault(); generateHeatmap(); }}>
-        <div style={{ justifyContent: 'space-between', marginBottom: '10px', marginTop: '10px' }}>
-          <label>
-            Purchase Price ($) :
-            <input type="number" name="purchasePrice" value={purchasePrice} onChange={handleInputChange} min="0" step="0.01" required />
-          </label>
-          <label>
-            Volatility Min (%) :
-            <input type="number" name="volatilityMin" value={volatilityRange.min} onChange={handleInputChange} min="0" required />
-          </label>
-          <label>
-            Volatility Max (%) :
-            <input type="number" name="volatilityMax" value={volatilityRange.max} onChange={handleInputChange} min="0" required />
-          </label>
-        </div>
-        <div style={{ justifyContent: 'space-between', marginBottom: '10px'}}>
-          <label>
-            Spot Price Min ($) :
-            <input type="number" name="spotPriceMin" value={spotPriceRange.min} onChange={handleInputChange} min="0" required />
-          </label>
-          <label>
-            Spot Price Max ($) :
-            <input type="number" name="spotPriceMax" value={spotPriceRange.max} onChange={handleInputChange} min="0" required />
-          </label>
-          <label>
-            Option Type :
-            <select value={optionType} onChange={(e) => setOptionType(e.target.value)}>
-              <option value="call">Call</option>
-              <option value="put">Put</option>
-            </select>
-          </label>
-        </div>
-        <button type="submit">Generate</button>
-      </form>
-
-
-      {/* Heatmap */}
-      {heatmapData && (
-          <Plot
-            data={[heatmapData]}
-            layout={{
-              title: {
-                text: `P&L Heatmap (${optionType.toUpperCase()})`,
-                font: { color: "#E5EFC1" } 
-              },
-              xaxis: { 
-                title: {
-                  text: 'Volatility',
-                  font: { color: "#E5EFC1" } 
-                },
-                tickmode: 'linear',
-                dtick: 0.05,  // Ticks for volatility
-                color: "#E5EFC1"  
-              },
-              yaxis: { 
-                title: {
-                  text: 'Spot Price',
-                  font: { color: "#E5EFC1" }  
-                },
-                tickmode: 'linear',
-                dtick: 10,  
-                color: "#E5EFC1"  
-              },
-              autosize: true,
-              paper_bgcolor: "#1E1E1E", 
-              plot_bgcolor: "#121212",   
-            }}
-            style={{ width: "100%", height: "500px" }}
+    <div className="sensitivity-graph">
+      
+      <div className="controls-grid">
+        <div className="input-field">
+          <label>Purchase Price ($):</label>
+          <input
+            type="number"
+            name="purchasePrice"
+            value={purchasePrice}
+            onChange={handleInputChange}
+            min="0"
+            step="0.01"
+            required
           />
-      )}
+        </div>
 
+        <div className="input-field">
+          <label>Volatility Min (%):</label>
+          <input
+            type="number"
+            name="volatilityMin"
+            value={volatilityRange.min}
+            onChange={handleInputChange}
+            min="0"
+            required
+          />
+        </div>
+
+        <div className="input-field">
+          <label>Volatility Max (%):</label>
+          <input
+            type="number"
+            name="volatilityMax"
+            value={volatilityRange.max}
+            onChange={handleInputChange}
+            min="0"
+            required
+          />
+        </div>
+
+        <div className="input-field">
+          <label>Spot Price Min ($):</label>
+          <input
+            type="number"
+            name="spotPriceMin"
+            value={spotPriceRange.min}
+            onChange={handleInputChange}
+            min="0"
+            required
+          />
+        </div>
+
+        <div className="input-field">
+          <label>Spot Price Max ($):</label>
+          <input
+            type="number"
+            name="spotPriceMax"
+            value={spotPriceRange.max}
+            onChange={handleInputChange}
+            min="0"
+            required
+          />
+        </div>
+
+        <div className="input-field">
+          <label>Option Type:</label>
+          <select
+            value={optionType}
+            onChange={(e) => setOptionType(e.target.value)}
+          >
+            <option value="call">Call</option>
+            <option value="put">Put</option>
+          </select>
+        </div>
+      </div>
+
+      <button onClick={generateHeatmap} className="generate-button">
+        Generate
+      </button>
+
+      {heatmapData && (
+        <Plot
+          data={[heatmapData]}
+          layout={{
+            title: {
+              text: `P&L Heatmap (${optionType.toUpperCase()})`,
+              font: { color: "#7C3AED" }
+            },
+            xaxis: {
+              title: {
+                text: 'Volatility',
+                font: { color: "#7C3AED" }
+              },
+              tickmode: 'linear',
+              dtick: 0.05,
+              color: "#7C3AED"
+            },
+            yaxis: {
+              color : "#7C3AED",
+              title: {
+                text: 'Spot Price',
+                font: { color: "#7C3AED" }
+              },
+              tickmode: 'linear',
+              dtick: 10,
+              color: "#7C3AED",
+            },
+            paper_bgcolor: "#1E1E1E",
+            plot_bgcolor: "#121212",
+            autosize: true,
+            margin: { t: 50, r: 50, b: 50, l: 50 }
+          }}
+          className="plotly-graph"
+          config={{ responsive: true }}
+        />
+      )}
     </div>
   );
 };

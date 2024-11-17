@@ -24,10 +24,11 @@
 }
 
 .doc-section h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
+  color: var(--accent-primary);
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
   text-align: center;
-  margin-top: 10px;
 }
 
 .doc-equations {
