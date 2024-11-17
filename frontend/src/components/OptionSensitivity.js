@@ -219,6 +219,8 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
         <Plot
           data={graphData}
           layout={{
+            responsive: true,
+            useResizeHandler: true,
             title: {
               text: `Option Price vs ${parameter.replace('_', ' ')}`,
               font: { color: "#7C3AED" }

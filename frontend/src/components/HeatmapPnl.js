@@ -167,6 +167,8 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
         <Plot
           data={[heatmapData]}
           layout={{
+            responsive: true,
+            useResizeHandler: true,
             title: {
               text: `P&L Heatmap (${optionType.toUpperCase()})`,
               font: { color: "#7C3AED" }

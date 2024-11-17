@@ -198,3 +198,90 @@
     border-radius: 0.25rem !important;
     padding: 0.5rem !important;
   }
+
+  @media screen and (max-width: 768px) {
+    .sensitivity-graph {
+      padding: 1rem;
+    }
+  
+    .controls-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  
+    .input-field {
+      margin-bottom: 0.5rem;
+    }
+  
+    .input-field label {
+      font-size: 0.9rem;
+    }
+  
+    .input-field input,
+    .input-field select {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+    }
+  
+    .generate-button {
+      width: 100%;
+      margin: 1rem 0;
+    }
+  
+    /* Ajustements pour le graphique Plotly */
+    .plotly-graph {
+      height: 400px !important;
+      margin: 0 -1rem;
+    }
+  }
+  
+  /* Styles spécifiques pour les très petits écrans */
+  @media screen and (max-width: 480px) {
+    .sensitivity-graph {
+      padding: 0.75rem;
+    }
+  
+    .plotly-graph {
+      height: 350px !important;
+    }
+  
+    /* Ajustements spécifiques pour le graphique Plotly sur mobile */
+    .js-plotly-plot .plotly .main-svg {
+      width: 100% !important;
+    }
+  
+    /* Ajuster la taille du texte dans les graphiques */
+    .js-plotly-plot .plotly text {
+      font-size: 10px !important;
+    }
+  
+    /* Ajuster l'espacement des ticks */
+    .js-plotly-plot .plotly .xtick text,
+    .js-plotly-plot .plotly .ytick text {
+      font-size: 9px !important;
+    }
+  
+    /* Ajuster la taille du titre */
+    .js-plotly-plot .plotly .gtitle {
+      font-size: 12px !important;
+    }
+  }
+  
+  /* Optimisations supplémentaires pour une meilleure expérience mobile */
+  .js-plotly-plot .plotly .modebar {
+    transform: scale(0.8);
+    transform-origin: right top;
+  }
+  
+  .js-plotly-plot .plotly .modebar-group {
+    margin-left: 0;
+  }
+  
+  /* Améliorer la lisibilité de la légende sur mobile */
+  .js-plotly-plot .plotly .legend text {
+    font-size: 10px !important;
+  }
+  
+  .js-plotly-plot .plotly .legend {
+    padding: 5px !important;
+  }
