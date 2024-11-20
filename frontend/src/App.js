@@ -13,6 +13,7 @@ import Greeks from './pages/docs/Greeks';
 import Contributions from './pages/Contributions'
 import Header from './components/Header';
 import Background from './components/Background';
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   const [historyRequest, setHistoryRequest] = useState(null);
@@ -41,6 +42,7 @@ function App() {
         <Route path="/documentation/greeks" element={<Greeks />} />
         <Route path="/contributions" element={<Contributions />} />
       </Routes>
+      <Analytics />
     </Router>
   );
 }
