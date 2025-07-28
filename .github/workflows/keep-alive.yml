@@ -1,0 +1,218 @@
+name: Keep Options Pricing API Alive
+
+on:
+  schedule:
+    # Ping l'application toutes les 12 heures (à 00:00 et 12:00 UTC)
+    - cron: '0 */12 * * *'
+  workflow_dispatch: # Permet de lancer manuellement le workflow
+
+jobs:
+  ping-api:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🏓 Ping Options Pricing API
+      env:
+        API_URL: ${{ secrets.REACT_APP_API_URL }}
+      run: |
+        echo "🚀 Démarrage du ping de l'API Options Pricing..."
+        echo "📅 Heure actuelle: $(date)"
+        echo "🎯 URL cible: $API_URL"
+        
+        if [ -z "$API_URL" ]; then
+          echo "❌ ERREUR: Variable d'environnement API_URL non définie"
+          echo "🔧 Veuillez configurer le secret REACT_APP_API_URL dans GitHub"
+          exit 1
+        fi
+        
+        # Test de l'endpoint principal (GET)
+        echo "🔄 Test de connectivité de base..."
+        
+        response=$(curl -s -o /dev/null -w "%{http_code}" \
+          --max-time 60 \
+          --retry 3 \
+          --retry-delay 10 \
+          --user-agent "GitHub-Actions-KeepAlive/1.0" \
+          "$API_URL")
+        
+        echo "📊 Code de réponse GET reçu: $response"
+        
+        if [ "$response" = "200" ] || [ "$response" = "404" ] || [ "$response" = "422" ]; then
+          echo "✅ API accessible (réponse: $response)"
+        elif [ "$response" = "000" ]; then
+          echo "❌ TIMEOUT: Impossible de joindre l'API"
+          echo "🔧 L'API pourrait être en cours de démarrage..."
+          exit 1
+        else
+          echo "⚠️  WARNING: Réponse inattendue"
+          echo "📊 Status HTTP reçu: $response"
+        fi
+        
+    - name: 🧮 Test endpoint Black-Scholes
+      env:
+        API_URL: ${{ secrets.REACT_APP_API_URL }}
+      run: |
+        echo "🧮 Test de l'endpoint /price/blackscholes..."
+        
+        if [ -z "$API_URL" ]; then
+          echo "❌ ERREUR: Variable d'environnement API_URL non définie"
+          exit 1
+        fi
+        
+        ENDPOINT_URL="$API_URL/price/blackscholes"
+        
+        # Données de test pour l'endpoint Black-Scholes
+        TEST_DATA='{
+          "time_to_maturity": 0.25,
+          "strike": 100.0,
+          "current_price": 105.0,
+          "volatility": 0.2,
+          "interest_rate": 0.05
+        }'
+        
+        echo "📊 Données de test envoyées:"
+        echo "$TEST_DATA" | jq .
+        
+        # Requête POST vers l'endpoint Black-Scholes
+        response=$(curl -s -w "HTTPSTATUS:%{http_code}" \
+          --max-time 60 \
+          --retry 2 \
+          --retry-delay 5 \
+          --user-agent "GitHub-Actions-KeepAlive/1.0" \
+          -H "Content-Type: application/json" \
+          -H "Accept: application/json" \
+          -d "$TEST_DATA" \
+          "$ENDPOINT_URL")
+        
+        # Extraction du code de statut et du body
+        http_code=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+        body=$(echo $response | sed -E 's/HTTPSTATUS:[0-9]{3}$//')
+        
+        echo "📊 Code de réponse POST: $http_code"
+        
+        if [ "$http_code" = "200" ]; then
+          echo "✅ SUCCESS: Endpoint Black-Scholes fonctionnel!"
+          echo "📈 Réponse de l'API:"
+          echo "$body" | jq . 2>/dev/null || echo "$body"
+          
+          # Validation basique de la réponse
+          if echo "$body" | grep -q "call_price" && echo "$body" | grep -q "put_price"; then
+            echo "✅ Réponse contient les prix call et put attendus"
+          else
+            echo "⚠️  Réponse inattendue mais API accessible"
+          fi
+          
+        elif [ "$http_code" = "422" ]; then
+          echo "⚠️  Erreur de validation (422) - Format de données incorrect"
+          echo "📝 Réponse: $body"
+          echo "🔧 L'API est accessible mais les données de test peuvent être incorrectes"
+          
+        elif [ "$http_code" = "500" ]; then
+          echo "❌ Erreur serveur interne (500)"
+          echo "📝 Réponse: $body"
+          echo "🔧 L'API est accessible mais il y a un problème interne"
+          exit 1
+          
+        elif [ "$http_code" = "000" ]; then
+          echo "❌ TIMEOUT: Impossible de joindre l'endpoint"
+          echo "🔧 L'API pourrait être en cours de démarrage..."
+          exit 1
+          
+        else
+          echo "⚠️  Code de réponse inattendu: $http_code"
+          echo "📝 Réponse: $body"
+          echo "🔧 Vérification manuelle recommandée"
+          exit 1
+        fi
+        
+    - name: 📊 Ping détaillé avec informations
+      if: always()
+      env:
+        API_URL: ${{ secrets.REACT_APP_API_URL }}
+      run: |
+        echo "═══════════════════════════════════════"
+        echo "📋 RAPPORT DE PING DÉTAILLÉ"
+        echo "═══════════════════════════════════════"
+        echo "🎯 Application: Options Pricing API"
+        echo "🌐 URL: $API_URL"
+        echo "🧮 Endpoint testé: /price/blackscholes"
+        echo "📅 Date/Heure: $(date)"
+        echo "🏗️  Workflow: GitHub Actions Keep-Alive"
+        echo "⏰ Fréquence: Toutes les 12 heures"
+        echo "🚀 Hébergement: Koyeb"
+        echo "═══════════════════════════════════════"
+        
+        # Test de connectivité détaillé
+        echo "🔍 Test de connectivité détaillé:"
+        
+        if [ -n "$API_URL" ]; then
+          curl -s -I --max-time 30 "$API_URL" | head -5 || echo "❌ Échec de récupération des headers"
+        else
+          echo "❌ URL non disponible pour le test détaillé"
+        fi
+        
+        echo "═══════════════════════════════════════"
+        echo "✅ Ping terminé avec succès"
+        
+    - name: 🎯 Test des autres endpoints principaux
+      env:
+        API_URL: ${{ secrets.REACT_APP_API_URL }}
+      run: |
+        echo "🧪 Test des autres endpoints de l'API..."
+        
+        if [ -z "$API_URL" ]; then
+          echo "❌ ERREUR: Variable d'environnement API_URL non définie"
+          exit 1
+        fi
+        
+        # Test de l'endpoint docs (FastAPI)
+        echo "📚 Test de l'endpoint /docs..."
+        docs_response=$(curl -s -o /dev/null -w "%{http_code}" \
+          --max-time 30 \
+          "$API_URL/docs")
+        
+        if [ "$docs_response" = "200" ]; then
+          echo "✅ Endpoint /docs accessible (FastAPI Swagger UI)"
+        else
+          echo "⚠️  Endpoint /docs: $docs_response"
+        fi
+        
+        # Test de l'endpoint redoc
+        echo "📖 Test de l'endpoint /redoc..."
+        redoc_response=$(curl -s -o /dev/null -w "%{http_code}" \
+          --max-time 30 \
+          "$API_URL/redoc")
+        
+        if [ "$redoc_response" = "200" ]; then
+          echo "✅ Endpoint /redoc accessible (ReDoc)"
+        else
+          echo "⚠️  Endpoint /redoc: $redoc_response"
+        fi
+        
+        # Test de l'endpoint openapi.json
+        echo "🔧 Test de l'endpoint /openapi.json..."
+        openapi_response=$(curl -s -o /dev/null -w "%{http_code}" \
+          --max-time 30 \
+          "$API_URL/openapi.json")
+        
+        if [ "$openapi_response" = "200" ]; then
+          echo "✅ Endpoint /openapi.json accessible (API Schema)"
+        else
+          echo "⚠️  Endpoint /openapi.json: $openapi_response"
+        fi
+        
+    - name: 📈 Statistiques du workflow
+      if: always()
+      run: |
+        echo "📊 STATISTIQUES DU WORKFLOW"
+        echo "════════════════════════════"
+        echo "🏃 Runner: ubuntu-latest"
+        echo "🔄 Fréquence: Cron '0 */12 * * *' (toutes les 12h)"
+        echo "🎯 Objectif: Maintenir l'API Options Pricing active"
+        echo "🛠️  Méthode: HTTP GET + POST /price/blackscholes"
+        echo "⏱️  Timeout: 60 secondes avec retry"
+        echo "📝 Logs: Détaillés pour debugging"
+        echo "🧮 Tests: Endpoint principal + validation réponse"
+        echo "🚀 Plateforme: Koyeb"
+        echo "════════════════════════════"
+        echo "✅ Workflow keep-alive terminé!"
