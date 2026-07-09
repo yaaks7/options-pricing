@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import Plot from 'react-plotly.js';
 import { fetchHeatmapPnl } from '../services/api';
-import '../App.css'; 
-import '../styles/Graph.css'; 
+import { baseLayout, axisStyle, titleStyle, PNL_COLORSCALE } from '../styles/plotlyTheme';
+import '../App.css';
+import '../styles/Graph.css';
 
 const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated, setLoading }) => {
   const [purchasePrice, setPurchasePrice] = useState('');
@@ -66,11 +67,7 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
         y: response.spot_prices,
         z: pnlMatrix,  
         type: 'heatmap',
-        colorscale: [
-          [0, 'rgb(165, 0, 38)'],    // Red negative P&L 
-          [0.5, 'rgb(255, 255, 191)'],  // Yellow neutral value
-          [1, 'rgb(0, 104, 55)']    // Green Positive P&L
-        ],
+        colorscale: PNL_COLORSCALE,
         zmin: -50,
         zmax: 50
       });
@@ -167,33 +164,12 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
         <Plot
           data={[heatmapData]}
           layout={{
+            ...baseLayout,
             responsive: true,
             useResizeHandler: true,
-            title: {
-              text: `P&L Heatmap (${optionType.toUpperCase()})`,
-              font: { color: "#7C3AED" }
-            },
-            xaxis: {
-              title: {
-                text: 'Volatility',
-                font: { color: "#7C3AED" }
-              },
-              tickmode: 'linear',
-              dtick: 0.05,
-              color: "#7C3AED"
-            },
-            yaxis: {
-              color : "#7C3AED",
-              title: {
-                text: 'Spot Price',
-                font: { color: "#7C3AED" }
-              },
-              tickmode: 'linear',
-              dtick: 10,
-              color: "#7C3AED",
-            },
-            paper_bgcolor: "#1E1E1E",
-            plot_bgcolor: "#121212",
+            title: titleStyle(`P&L Heatmap (${optionType.toUpperCase()})`),
+            xaxis: { ...axisStyle('Volatility'), tickmode: 'linear', dtick: 0.05 },
+            yaxis: { ...axisStyle('Spot Price'), tickmode: 'linear', dtick: 10 },
             autosize: true,
             margin: { t: 50, r: 50, b: 50, l: 50 }
           }}

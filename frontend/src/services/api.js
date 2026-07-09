@@ -1,7 +1,10 @@
 //src/services/api.js
 import axios from 'axios';
 
-const BASE_URL = process.env.REACT_APP_API_URL;
+// Trim whitespace and a trailing slash so `${BASE_URL}/price/...` never
+// collapses into a double slash if the env var was set with one (e.g.
+// "https://example.koyeb.app/").
+const BASE_URL = (process.env.REACT_APP_API_URL || '').trim().replace(/\/+$/, '');
 // Function for Black-Scholes
 export const fetchBlackScholesPrice = async (data) => {
   const response = await axios.post(`${BASE_URL}/price/blackscholes`, data);

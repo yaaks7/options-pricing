@@ -22,7 +22,7 @@ Author:
 """
 import numpy as np
 from model import BlackScholes, Binomial, MonteCarlo
-from mlp_model import NeuralNetwork
+from mlp_model import NeuralNetwork, predict_batch
 from greeks import Greeks
 
 def pnl_heatmap(purchase_price, min_volatility, max_volatility, min_spot_price, max_spot_price, strike, time_to_maturity, interest_rate):
@@ -126,8 +126,30 @@ def option_sensitivity(model_type, parameter, fixed_params, steps=10):
         'values': values
     }
 
+    # NeuralNetwork predictions are computed once, up front, as a single
+    # batched call over every grid step (call and put rows together) instead
+    # of reloading the model from disk and predicting one row at a time
+    # inside the loop below - that per-step reload is what used to make this
+    # sweep take 1-2 minutes; batching brings it under a second.
+    nn_call_prices = nn_put_prices = None
+    if 'NeuralNetwork' in model_type:
+        call_rows = []
+        put_rows = []
+        for value in values:
+            base_row = [
+                time_to_maturity if parameter != 'time_to_maturity' else value,
+                strike if parameter != 'strike' else value,
+                current_price if parameter != 'current_price' else value,
+                volatility if parameter != 'volatility' else value,
+                interest_rate,
+            ]
+            call_rows.append(base_row + [1])  # option_type=1 -> call
+            put_rows.append(base_row + [0])    # option_type=0 -> put
+        nn_call_prices = predict_batch(call_rows)
+        nn_put_prices = predict_batch(put_rows)
+
     # Loop to vary the selected parameter
-    for value in values:
+    for i, value in enumerate(values):
         # Modify the value of the selected parameter in each model
         for model in model_type:
             if model == 'BlackScholes':
@@ -191,26 +213,8 @@ def option_sensitivity(model_type, parameter, fixed_params, steps=10):
                 sensitivity_results['put'][model].append(mc_put.get_option_price())
 
             elif model == 'NeuralNetwork':
-                nn_call = NeuralNetwork(
-                    time_to_maturity if parameter != 'time_to_maturity' else value,
-                    strike if parameter != 'strike' else value,
-                    current_price if parameter != 'current_price' else value,
-                    volatility if parameter != 'volatility' else value,
-                    interest_rate, 'call'
-                )
-                nn_put = NeuralNetwork(
-                    time_to_maturity if parameter != 'time_to_maturity' else value,
-                    strike if parameter != 'strike' else value,
-                    current_price if parameter != 'current_price' else value,
-                    volatility if parameter != 'volatility' else value,
-                    interest_rate, 'put'
-                )
-                nn_call.load()
-                nn_put.load()
-                nn_call.calculate()
-                nn_put.calculate()
-                sensitivity_results['call'][model].append(nn_call.get_option_price())
-                sensitivity_results['put'][model].append(nn_put.get_option_price())
+                sensitivity_results['call'][model].append(float(nn_call_prices[i]))
+                sensitivity_results['put'][model].append(float(nn_put_prices[i]))
 
     return sensitivity_results
 

@@ -1,18 +1,39 @@
 // src/components/Header.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import '../styles/Header.css';  
-import homeIcon from '../images/home-48.png'; 
+import '../styles/Header.css';
+
+const API_BASE_URL = (process.env.REACT_APP_API_URL || '').trim().replace(/\/+$/, '');
 
 function Header() {
   const location = useLocation();  // Get the current route path
+  const [apiStatus, setApiStatus] = useState('checking'); // 'checking' | 'live' | 'offline'
+
+  // Ping the backend once on load so the nav reflects whether the pricing
+  // engine is actually reachable, not just whether the page rendered.
+  useEffect(() => {
+    if (!API_BASE_URL) {
+      setApiStatus('offline');
+      return;
+    }
+    let cancelled = false;
+    fetch(`${API_BASE_URL}/health`)
+      .then((res) => {
+        if (!cancelled) setApiStatus(res.ok ? 'live' : 'offline');
+      })
+      .catch(() => {
+        if (!cancelled) setApiStatus('offline');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="header">
       <div className="header-left">
         <Link to="/">
           <button className={`header-btn home-btn ${location.pathname === '/' ? 'active' : ''}`}>Home</button>
-          {/*<img src={homeIcon} alt="Home" className="home-icon" />*/}
         </Link>
         <Link to="/modeling">
           <button className={`header-btn model-btn ${location.pathname === '/modeling' ? 'active' : ''}`}>Options Pricing</button>
@@ -23,6 +44,12 @@ function Header() {
         <Link to="/documentation">
           <button className={`header-btn doc-btn ${location.pathname === '/documentation' ? 'active' : ''}`}>Documentations</button>
         </Link>
+      </div>
+      <div className="header-right">
+        <div className="api-status" title={`API ${apiStatus}`}>
+          <span className={`status-dot status-dot--${apiStatus}`} />
+          <span className="status-label">{apiStatus === 'checking' ? 'checking…' : apiStatus}</span>
+        </div>
       </div>
       <div className="social-links">
         {/* LinkedIn Link */}

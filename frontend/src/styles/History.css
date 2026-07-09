@@ -15,11 +15,8 @@
 
 .history-header h1 {
   font-size: 2.5rem;
-  font-weight: 800;
-  background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .clear-history-btn {
@@ -29,15 +26,15 @@
   gap: 0.5rem;
   background-color: transparent;
   color: var(--text-primary);
-  border: 1px solid var(--accent-primary);
+  border: 1px solid var(--border-strong);
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .clear-history-btn:hover {
-  background-color: var(--accent-primary);
+  background-color: var(--accent);
   color: var(--bg-primary);
 }
 
@@ -55,20 +52,19 @@
 
 .history-item {
   background-color: var(--bg-secondary);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 1.5rem;
-  border: 1px solid rgba(124, 58, 237, 0.1);
+  border: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin: 10px auto;
   width: 97%;
-  transition: all 0.3s ease;
+  transition: border-color 0.15s ease;
 }
 
 .history-item:hover {
-  border-color: var(--accent-primary);
-  transform: translateY(-2px);
+  border-color: var(--border-strong);
 }
 
 .history-item-details {
@@ -77,24 +73,22 @@
 }
 
 .load-request-btn {
-  background-color: var(--accent-primary);
+  background-color: var(--accent);
   color: var(--bg-primary);
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  border-radius: 6px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.15s ease;
 }
 
 .load-request-btn:hover {
-  background-color: var(--accent-secondary);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.2);
+  background-color: #75BFCB;
 }
 
 .load-request-btn:active {
-  transform: translateY(0);
-  box-shadow: none;
+  transform: translateY(1px);
 }
 
 @media (max-width: 768px) {

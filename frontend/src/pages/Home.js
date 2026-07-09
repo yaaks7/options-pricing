@@ -1,60 +1,67 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Layers, MousePointerClick, LineChart, ArrowRight } from 'lucide-react';
 import '../styles/Home.css';
 import tradingImage from '../images/stock-trading.jpg';
+
+const MODELS = ['Black-Scholes', 'Binomial', 'Monte Carlo', 'Neural Network'];
 
 const Home = () => {
   return (
     <div className="home-container">
-      {/* Hero Section avec effet de gradient */}
+      {/* Hero */}
       <section className="hero-section">
         <div className="hero-content">
-          <h1 className="gradient-text">Options Price Calculator</h1>
+          <span className="hero-eyebrow">Pricing engine</span>
+          <h1 className="hero-title">Four models. One engine.</h1>
           <p className="hero-description">
-            A simple and intuitive tool to calculate options prices using different models: 
-            Black-Scholes, Monte-Carlo, Binomial, and Neural Network approaches.
+            Price options with Black-Scholes, Binomial, Monte Carlo, and a trained neural
+            network, then inspect the Greeks and sensitivity across every parameter.
           </p>
+          <div className="hero-model-list">
+            {MODELS.map((model) => (
+              <span className="hero-model-chip" key={model}>{model}</span>
+            ))}
+          </div>
           <Link to="/modeling">
             <button className="cta-button">
-              <span>Start Pricing</span>
-              <svg className="arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <span>Start pricing</span>
+              <ArrowRight size={18} strokeWidth={2} />
             </button>
           </Link>
         </div>
         <div className="hero-image-container">
           <div className="image-overlay"></div>
-          <img src={tradingImage} alt="Trading Dashboard" className="hero-image" />
+          <img src={tradingImage} alt="Trading dashboard" className="hero-image" />
         </div>
       </section>
 
-      {/* Features Section avec meilleure mise en page */}
+      {/* Features */}
       <section className="features-section">
         <div className="feature-card">
-          <div className="feature-icon">📊</div>
-          <h2>Multiple Models</h2>
-          <p>Compare results between different pricing models to get a better understanding of option values.</p>
+          <Layers className="feature-icon" size={28} strokeWidth={1.5} />
+          <h2>Multiple models</h2>
+          <p>Compare results across pricing models to understand how each one values an option.</p>
         </div>
         <div className="feature-card">
-          <div className="feature-icon">🎯</div>
-          <h2>Easy to Use</h2>
-          <p>Simple interface to input your parameters and get instant pricing results.</p>
+          <MousePointerClick className="feature-icon" size={28} strokeWidth={1.5} />
+          <h2>Straightforward inputs</h2>
+          <p>Set your parameters once and get pricing results back instantly.</p>
         </div>
         <div className="feature-card">
-          <div className="feature-icon">📈</div>
-          <h2>Visual Results</h2>
-          <p>View option prices and Greeks through interactive charts and graphs.</p>
+          <LineChart className="feature-icon" size={28} strokeWidth={1.5} />
+          <h2>Visual results</h2>
+          <p>Read prices and Greeks through interactive charts, heatmaps, and sensitivity curves.</p>
         </div>
       </section>
 
-      {/* Documentation Section avec style amélioré */}
+      {/* Documentation */}
       <section className="docs-section">
-        <h2>Learn More</h2>
+        <h2>Learn more</h2>
         <div className="docs-grid">
           {['Black-Scholes', 'Binomial', 'Monte-Carlo', 'Neural Network', 'Greeks'].map((doc) => (
-            <Link 
-              to={`/documentation/${doc.toLowerCase().replace(' ', '-')}`} 
+            <Link
+              to={`/documentation/${doc.toLowerCase().replace(' ', '-')}`}
               className="doc-link"
               key={doc}
             >

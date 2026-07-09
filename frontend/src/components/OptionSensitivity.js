@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 import { fetchOptionSensitivity } from '../services/api';
-import '../App.css'; 
-import '../styles/Modelling.css'; 
+import { baseLayout, axisStyle, titleStyle } from '../styles/plotlyTheme';
+import '../App.css';
+import '../styles/Modelling.css';
 
 const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, volatility, selectedModels, pricesGenerated, setLoading }) => {
   const [parameter, setParameter] = useState('volatility');  
@@ -219,35 +220,15 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
         <Plot
           data={graphData}
           layout={{
+            ...baseLayout,
             responsive: true,
             useResizeHandler: true,
-            title: {
-              text: `Option Price vs ${parameter.replace('_', ' ')}`,
-              font: { color: "#7C3AED" }
-            },
-            xaxis: {
-              title: {
-                text: parameter.replace('_', ' '),
-                font: { color: "#7C3AED" }
-              },
-              color: "#7C3AED",
-            },
-            yaxis: {
-              title: {
-                text: 'Option Price',
-                font: { color: "#7C3AED" }
-              },
-              color: "#7C3AED",
-            },
-            paper_bgcolor: "#1E1E1E",
-            plot_bgcolor: "#121212",
+            title: titleStyle(`Option Price vs ${parameter.replace('_', ' ')}`),
+            xaxis: axisStyle(parameter.replace('_', ' ')),
+            yaxis: axisStyle('Option Price'),
             autosize: true,
             margin: { t: 50, r: 50, b: 50, l: 50 },
             showlegend: true,
-            legend: {
-              font: { color: "#E5EFC1" },
-              bgcolor: "rgba(30, 27, 46, 0.7)"
-            }
           }}
           className="plotly-graph"
           config={{ 

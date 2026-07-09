@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 import { fetchGreeksSensitivity } from '../services/api';
-import '../App.css'; 
-import '../styles/Modelling.css'; 
+import { baseLayout, axisStyle, titleStyle } from '../styles/plotlyTheme';
+import '../App.css';
+import '../styles/Modelling.css';
 
 const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, volatility, interestRate, pricesGenerated, setLoading }) => {
   const [parameter, setParameter] = useState('volatility');  
@@ -171,29 +172,13 @@ const GreeksSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
           <Plot
             data={graphData}
             layout={{
+              ...baseLayout,
               responsive: true,
               useResizeHandler: true,
-              title: {
-                text: `${greek.toUpperCase()} vs ${parameter.replace('_', ' ')}`,
-                font: { color: "#7C3AED" } 
-              },
-              xaxis: { 
-                title: {
-                  text: parameter.replace('_', ' '),
-                  font: { color: "#7C3AED" } 
-                },
-                color: "#7C3AED"  
-              },
-              yaxis: { 
-                title: {
-                  text: `${greek.toUpperCase()} Value`,
-                  font: { color: "#7C3AED" } 
-                },
-                color: "#7C3AED"  
-              },
+              title: titleStyle(`${greek.toUpperCase()} vs ${parameter.replace('_', ' ')}`),
+              xaxis: axisStyle(parameter.replace('_', ' ')),
+              yaxis: axisStyle(`${greek.toUpperCase()} Value`),
               autosize: true,
-              paper_bgcolor: "#1E1E1E",  
-              plot_bgcolor: "#121212", 
             }}
             style={{ width: "100%", height: "500px" }}
             className="plotly-graph"

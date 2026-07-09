@@ -3,52 +3,50 @@
 .contributions-container {
     background-color: var(--bg-secondary);
     padding: 3rem;
-    border-radius: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
     max-width: 800px;
     margin: 4rem auto;
   }
-  
+
   .contributions-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
     margin-bottom: 2rem;
     text-align: center;
   }
-  
+
   .contributions-section {
     margin-top: 2rem;
   }
-  
+
   .contributions-list {
     list-style-type: none;
     padding: 0;
   }
-  
+
   .contributions-list li {
     background-color: var(--bg-elements);
     padding: 1.5rem;
     margin: 1rem 0;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    transition: border-color 0.15s ease;
   }
-  
+
   .contributions-list li:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.2);
+    border-color: var(--border-strong);
   }
-  
+
   .contributions-list a {
-    color: var(--accent-primary);
+    color: var(--accent);
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: color 0.15s ease;
   }
-  
+
   .contributions-list a:hover {
-    color: var(--accent-secondary);
+    color: #75BFCB;
   }
   
   @media (max-width: 768px) {

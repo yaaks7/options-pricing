@@ -19,13 +19,21 @@
   z-index: 2;
 }
 
-.gradient-text {
-  font-size: 4.5rem;
-  font-weight: 800;
-  background: linear-gradient(45deg, var(--accent-primary), #fff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.hero-eyebrow {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.hero-title {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
 }
 
@@ -33,64 +41,74 @@
   font-size: 1.2rem;
   color: var(--text-secondary);
   line-height: 1.8;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   max-width: 600px;
 }
 
-/* Image avec effet de superposition */
+.hero-model-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.hero-model-chip {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+}
+
+/* Hero image */
 .hero-image-container {
   flex: 1;
   position: relative;
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
+  border: 1px solid var(--border);
 }
 
 .hero-image {
   width: 100%;
-  border-radius: 10px;
-  transform: scale(1.01);
-  transition: transform 0.5s ease;
+  display: block;
+  filter: grayscale(0.3) contrast(1.05);
 }
 
 .image-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, rgba(100, 255, 218, 0.1), transparent);
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, var(--bg-primary) 100%);
   z-index: 1;
 }
 
-/* Bouton CTA amélioré */
+/* CTA button */
 .cta-button {
-  background: linear-gradient(45deg, var(--accent-primary), #4FFFD9);
+  background: var(--accent);
   border: none;
   padding: 1rem 2rem;
-  border-radius: 8px;
+  border-radius: 6px;
   color: var(--bg-primary);
   font-weight: 600;
   font-size: 1.1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.15s ease;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
 .cta-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(100, 255, 218, 0.2);
+  background: #75BFCB;
 }
 
-.arrow {
-  width: 20px;
-  height: 20px;
-  transition: transform 0.3s ease;
+.cta-button svg {
+  transition: transform 0.15s ease;
 }
 
-.cta-button:hover .arrow {
-  transform: translateX(5px);
+.cta-button:hover svg {
+  transform: translateX(3px);
 }
 
 /* Features Section */
@@ -104,24 +122,24 @@
 .feature-card {
   background-color: var(--bg-secondary);
   padding: 2rem;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(100, 255, 218, 0.1);
+  border-radius: 8px;
+  transition: border-color 0.15s ease;
+  border: 1px solid var(--border);
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--accent-primary);
+  border-color: var(--border-strong);
 }
 
 .feature-icon {
-  font-size: 2rem;
+  color: var(--accent);
   margin-bottom: 1rem;
 }
 
 .feature-card h2 {
-  color: var(--accent-primary);
-  margin-bottom: 1rem;
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
 }
 
 .feature-card p {
@@ -137,7 +155,7 @@
 .docs-section h2 {
   text-align: center;
   margin-bottom: 3rem;
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: var(--text-primary);
 }
 
@@ -151,17 +169,18 @@
   text-align: center;
   padding: 1rem;
   background-color: var(--bg-secondary);
-  border-radius: 8px;
+  border-radius: 6px;
   color: var(--text-primary);
   text-decoration: none;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(100, 255, 218, 0.1);
+  transition: border-color 0.15s ease, color 0.15s ease;
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
 }
 
 .doc-link:hover {
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-  transform: translateY(-2px);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* Responsive Design */
@@ -172,8 +191,12 @@
     gap: 2rem;
   }
 
-  .gradient-text {
-    font-size: 3rem;
+  .hero-model-list {
+    justify-content: center;
+  }
+
+  .hero-title {
+    font-size: 2.75rem;
   }
 
   .features-section {

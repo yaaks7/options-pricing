@@ -126,9 +126,11 @@ class NeuralNetwork:
         return instance
     
     def load(self):
-        # Modify this method to support global preloading
-        self.model = load_model(os.path.join(self.save_dir, 'NeuralNetwork.h5'))
-        self.scaler = joblib.load(os.path.join(self.save_dir, 'scaler.pkl'))
+        # Reuse the shared, already-loaded model/scaler instead of hitting disk
+        # again. Historically this hit `load_model()` (a heavy Keras deserialize)
+        # on every call, which is what made repeated sweeps (e.g. sensitivity
+        # curves) take 1-2 minutes.
+        self.model, self.scaler = get_shared_model_and_scaler(self.save_dir)
 
     def calculate(self):
         # Prepares the inputs for prediction, including the option_type
@@ -153,6 +155,37 @@ class NeuralNetwork:
         # Predict the price
         predicted_price = self.model.predict(inputs_scaled)
         return predicted_price[0][0]
+
+# Process-wide cache so the Keras model + scaler are read from disk once,
+# no matter how many NeuralNetwork instances/`.load()` calls are created.
+_SHARED_MODEL = None
+_SHARED_SCALER = None
+
+
+def get_shared_model_and_scaler(save_dir="mlp"):
+    global _SHARED_MODEL, _SHARED_SCALER
+    if _SHARED_MODEL is None or _SHARED_SCALER is None:
+        _SHARED_MODEL = load_model(os.path.join(save_dir, 'NeuralNetwork.h5'))
+        # scaler.pkl is a trusted artifact produced by this project's own
+        # train() method and committed to the repo, not user-supplied data,
+        # so joblib.load() here isn't deserializing untrusted input.
+        _SHARED_SCALER = joblib.load(os.path.join(save_dir, 'scaler.pkl'))
+    return _SHARED_MODEL, _SHARED_SCALER
+
+
+def predict_batch(rows, save_dir="mlp"):
+    """
+    Batched prediction for a sweep of inputs. `rows` is an iterable of
+    [time_to_maturity, strike, current_price, volatility, interest_rate, option_type_binary].
+    Runs a single scale + single model.predict() over all rows, instead of one
+    predict() per row - this is what makes multi-step sensitivity sweeps fast.
+    """
+    model, scaler = get_shared_model_and_scaler(save_dir)
+    inputs = np.asarray(rows, dtype=float)
+    inputs_scaled = scaler.transform(inputs)
+    predicted_prices = model.predict(inputs_scaled, verbose=0)
+    return predicted_prices.reshape(-1)
+
 
 # Define a global variable to hold the preloaded model
 PRELOADED_MODEL = None

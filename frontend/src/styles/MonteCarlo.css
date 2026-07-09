@@ -4,9 +4,10 @@
   padding: 20px;
   max-width: 900px;
   margin: auto;
-  background-color: #141414;
-  color: #f5f5f5;
-  border-radius: 10px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
 }
 
 .doc-title {
@@ -24,7 +25,7 @@
 }
 
 .doc-section h2 {
-  color: var(--accent-primary);
+  color: var(--accent);
   font-size: 1.8rem;
   margin-bottom: 1rem;
   margin-top: 1rem;

@@ -7,7 +7,8 @@
   padding: 1rem 2rem;
   background-color: var(--bg-secondary);
   color: var(--text-primary);
-  border-radius: 15px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   width: 97%;
   margin: 1rem auto;
 }
@@ -21,15 +22,14 @@
   padding: 0.75rem 1.25rem;
   border: none;
   cursor: pointer;
-  font-size: 1rem;
-  border-radius: 8px;
+  font-size: 0.95rem;
+  border-radius: 6px;
   background-color: transparent;
-  color: var(--text-primary);
-  font-weight: 600;
+  color: var(--text-secondary);
+  font-weight: 500;
   position: relative;
   display: inline-block;
-  text-transform: uppercase;
-  transition: all 0.3s ease;
+  transition: color 0.15s ease;
 }
 
 .header-btn::after {
@@ -39,8 +39,8 @@
   left: 50%;
   right: 50%;
   height: 2px;
-  background: var(--accent-primary);
-  transition: all 0.3s ease;
+  background: var(--accent);
+  transition: left 0.15s ease, right 0.15s ease;
 }
 
 .header-btn:hover::after {
@@ -48,19 +48,55 @@
   right: 0;
 }
 
+.header-btn.active {
+  color: var(--text-primary);
+}
+
 .header-btn.active::after {
   left: 0;
   right: 0;
-  background: var(--accent-primary);
+  background: var(--accent);
 }
 
 .header-btn:hover {
-  color: var(--accent-primary);
+  color: var(--text-primary);
 }
 
 .header-right {
   display: flex;
   align-items: center;
+}
+
+.api-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+}
+
+.status-dot--live {
+  background: var(--pos);
+  box-shadow: 0 0 0 3px rgba(63, 185, 80, 0.15);
+}
+
+.status-dot--offline {
+  background: var(--neg);
+}
+
+.status-dot--checking {
+  background: var(--warning);
 }
 
 .social-links,
@@ -75,10 +111,10 @@
   height: 40px;
   width: 40px;
   color: var(--text-primary);
-  border-radius: 8px;
+  border-radius: 6px;
   background-color: var(--bg-elements);
   margin: 0 0.5rem;
-  transition: all 0.3s ease;
+  transition: width 0.2s ease, background-color 0.15s ease, color 0.15s ease;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -87,32 +123,30 @@
 .social-btn svg {
   height: 20px;
   width: 20px;
+  fill: var(--text-primary);
+  flex-shrink: 0;
 }
 
 .social-btn span {
   width: 0px;
   overflow: hidden;
-  transition: 0.3s;
+  transition: 0.2s;
   text-align: center;
   margin-left: 5px;
 }
 
 .social-btn:hover {
   width: 130px;
-  background-color: var(--accent-primary);
+  background-color: var(--accent);
   color: var(--bg-primary);
+}
+
+.social-btn:hover svg {
+  fill: var(--bg-primary);
 }
 
 .social-btn:hover span {
   width: 80px;
-}
-
-#linkedin svg {
-  fill: #0e76a8;
-}
-
-#github svg {
-  fill: #333;
 }
 
 @media screen and (max-width: 768px) {

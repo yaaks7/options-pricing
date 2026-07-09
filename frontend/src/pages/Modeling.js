@@ -6,8 +6,10 @@ import { Calculator, BarChart2, Activity, RefreshCcw,Info,ChevronRight,Percent,C
 import HeatmapPnl from '../components/HeatmapPnl';
 import OptionSensitivityGraph from '../components/OptionSensitivity';
 import GreeksSensitivityGraph from '../components/GreeksSensitivity';
-import '../App.css'; 
-import '../styles/Modelling.css'; 
+import '../App.css';
+import '../styles/Modelling.css';
+
+const GREEK_SYMBOLS = { delta: 'Δ', gamma: 'Γ', theta: 'Θ', vega: 'ν', rho: 'ρ' };
 
 const Modeling = ({ historyRequest, clearHistoryRequest }) => {
   const location = useLocation();
@@ -619,8 +621,8 @@ const MODEL_CONFIG = {
                             <div className="greeks-grid">
                             {Object.entries(greeks.call).map(([greek, value]) => (
                                 <div key={greek} className="greek-card">
-                                <h4>{greek.toUpperCase()}</h4>
-                                <strong>{value.toFixed(4)}</strong>
+                                <h4><span className="greek-symbol">{GREEK_SYMBOLS[greek]}</span> {greek}</h4>
+                                <strong className="greek-value">{value.toFixed(4)}</strong>
                                 <div 
                                     className="greek-indicator"
                                     style={{ 
@@ -638,8 +640,8 @@ const MODEL_CONFIG = {
                             <div className="greeks-grid">
                             {Object.entries(greeks.put).map(([greek, value]) => (
                                 <div key={greek} className="greek-card">
-                                <h4>{greek.toUpperCase()}</h4>
-                                <strong>{value.toFixed(4)}</strong>
+                                <h4><span className="greek-symbol">{GREEK_SYMBOLS[greek]}</span> {greek}</h4>
+                                <strong className="greek-value">{value.toFixed(4)}</strong>
                                 <div 
                                     className="greek-indicator"
                                     style={{ 

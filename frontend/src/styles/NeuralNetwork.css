@@ -1,13 +1,13 @@
 /* src/styles/NeuralNetwork.css */
 
 .documentation-containerN {
-  padding: 40px; 
+  padding: 40px;
   max-width: 900px;
   margin: 30px auto;
-  background-color: #141414;
-  color: #f5f5f5;
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
 }
 
 .doc-titleN {
@@ -31,7 +31,7 @@
 }
 
 .doc-sectionN h2 {
-  color: var(--accent-primary);
+  color: var(--accent);
   font-size: 1.8rem;
   margin-bottom: 1rem;
   margin-top: 1rem;

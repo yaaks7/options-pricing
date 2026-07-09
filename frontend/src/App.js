@@ -12,7 +12,6 @@ import NeuralNetwork from './pages/docs/NeuralNetwork';
 import Greeks from './pages/docs/Greeks';
 import Contributions from './pages/Contributions'
 import Header from './components/Header';
-import Background from './components/Background';
 import { Analytics } from "@vercel/analytics/react"
 
 function App() {

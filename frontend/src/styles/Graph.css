@@ -34,7 +34,7 @@
   .input-field input,
   .input-field select {
     background-color: var(--bg-secondary);
-    border: 1px solid rgba(124, 58, 237, 0.1);
+    border: 1px solid var(--border);
     border-radius: 0.5rem;
     color: var(--text-primary);
     padding: 0.75rem 1rem;
@@ -46,31 +46,30 @@
   .input-field input:focus,
   .input-field select:focus {
     outline: none;
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--border);
   }
   
   /* Generate Button */
   .generate-button {
-    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
-    color: white;
+    background: var(--accent);
+    color: var(--bg-primary);
     border: none;
     padding: 0.75rem 1.5rem;
     border-radius: 0.5rem;
     cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    font-weight: 600;
+    transition: background-color 0.15s ease;
     width: fit-content;
     margin: 1rem 0;
   }
-  
+
   .generate-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+    background: #75BFCB;
   }
-  
+
   .generate-button:active {
-    transform: translateY(0);
+    transform: translateY(1px);
   }
   
   /* Plotly Customization */
@@ -87,20 +86,11 @@
     background-color: transparent !important;
   }
   
-  /* Grid lines colors */
-  .js-plotly-plot .plotly .gridlayer path {
-    stroke: rgba(229, 239, 193, 0.1) !important; /* Light grid lines */
-  }
-  
-  /* Axis colors */
-  .js-plotly-plot .plotly .xtick text,
-  .js-plotly-plot .plotly .ytick text {
-    fill: #7C3AED !important; /* Light text for visibility */
-  }
-  
-  /* Heatmap specific colors */
+  /* Grid lines and axis text colors are set directly in each chart's Plotly
+     layout (see plotlyTheme.js) so they can't drift out of sync with the
+     app's palette; this file only needs the structural/visibility rules. */
   .js-plotly-plot .plotly .heatmap path {
-    stroke: rgba(229, 239, 193, 0.5) !important;
+    stroke: rgba(255, 255, 255, 0.08);
   }
   
   /* Make sure plotly container is visible */
@@ -135,7 +125,7 @@
   }
   
   .checkbox-group input[type="checkbox"] {
-    accent-color: var(--accent-primary);
+    accent-color: var(--accent);
   }
   
   /* Responsive */
@@ -177,14 +167,14 @@
   }
   
   .checkbox-group:hover {
-    background-color: rgba(124, 58, 237, 0.1);
+    background-color: var(--border);
     border-radius: 0.25rem;
   }
   
   .checkbox-group input[type="checkbox"] {
     width: 1rem;
     height: 1rem;
-    accent-color: var(--accent-primary);
+    accent-color: var(--accent);
     cursor: pointer;
   }
   
