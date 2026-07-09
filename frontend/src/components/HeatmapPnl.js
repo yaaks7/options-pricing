@@ -24,10 +24,6 @@ const HeatmapPnl = ({ strikePrice, timeToMaturity, interestRate, pricesGenerated
     }
   };
 
-  const handleOptionTypeChange = (e) => {
-    setOptionType(e.target.value); 
-  };
-
   const generateHeatmap = async () => {
     setLoading(true);
 

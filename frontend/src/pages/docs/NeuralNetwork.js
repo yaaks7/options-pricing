@@ -2,7 +2,6 @@
 import React from 'react';
 import '../../styles/NeuralNetwork.css'; 
 import 'katex/dist/katex.min.css';
-import { BlockMath, InlineMath } from 'react-katex';
 
 const NeuralNetwork = () => {
   return (

@@ -35,8 +35,6 @@ const Modeling = ({ historyRequest, clearHistoryRequest }) => {
   const [greeks, setGreeks] = useState(null);
   const [modelNames, setModelNames] = useState([]);
   const [errors, setErrors] = useState({});
-  const [lastCalculation, setLastCalculation] = useState(null);
-  const [calculationHistory, setCalculationHistory] = useState([]);
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [pricesGenerated, setPricesGenerated] = useState(false);
@@ -57,18 +55,6 @@ const Modeling = ({ historyRequest, clearHistoryRequest }) => {
     timeToMaturity: "Time until expiration in years (e.g., 0.5 for 6 months)",
     volatility: "Annual volatility of the underlying asset in percentage",
     interestRate: "Annual risk-free interest rate in percentage",
-  };
-
-  // Model Configuration
-const MODEL_CONFIG = {
-  monteCarlo: {
-    num_simulations: 10000,
-    num_steps: 100
-  },
-  binomial: {
-    steps: 100,
-    is_american: false
-  }
   };
 
   // History Load Effect
@@ -103,18 +89,6 @@ const MODEL_CONFIG = {
       resetForm();
     }
   }, [location.pathname]);
-
-  // Local Storage Effect
-  useEffect(() => {
-    try {
-      const savedHistory = JSON.parse(localStorage.getItem('calculationHistory'));
-      if (savedHistory) {
-        setCalculationHistory(savedHistory);
-      }
-    } catch (error) {
-      console.error('Error loading calculation history:', error);
-    }
-  }, []);
 
   // Error Handling Function
   const showError = (message) => {
@@ -281,7 +255,6 @@ const MODEL_CONFIG = {
       };
 
       saveToHistory(calculationData);
-      setLastCalculation(calculationData);
 
     } catch (error) {
       console.error('Calculation error:', error);
@@ -303,7 +276,6 @@ const MODEL_CONFIG = {
       if (!isDuplicate) {
         const updatedHistory = [...history, newEntry].slice(-50); // Keep last 50 calculations
         localStorage.setItem('history', JSON.stringify(updatedHistory));
-        setCalculationHistory(updatedHistory);
       }
     } catch (error) {
       console.error('Error saving to history:', error);

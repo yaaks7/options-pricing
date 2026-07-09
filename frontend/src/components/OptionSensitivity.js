@@ -129,22 +129,6 @@ const OptionSensitivityGraph = ({ currentPrice, strikePrice, timeToMaturity, vol
     );
   };
 
-  const getLabel = (param) => {
-    switch (param) {
-      case 'volatility':
-        return ['Volatility Min (%) :', 'Volatility Max (%) :'];
-      case 'current_price':
-        return ['Current Price Min ($) :', 'Current Price Max ($) :'];
-      case 'strike':
-        return ['Strike Price Min ($) :', 'Strike Price Max ($) :'];
-      case 'time_to_maturity':
-        return ['Time To Maturity Min (Years) :', 'Time To Maturity Max (Years) :'];
-      default:
-        return ['Min:', 'Max:'];
-    }
-  };
-
-  const [minLabel, maxLabel] = getLabel(parameter);
 
 
   return (
